@@ -12,7 +12,7 @@
   <artifactId>ArnaconSDK</artifactId>
   <packaging>jar</packaging>
   <version>1.0</version>
-  <name>signJTest</name>
+  <name>Arnacon</name>
   <url>http://maven.apache.org</url>
 
   <dependencies>

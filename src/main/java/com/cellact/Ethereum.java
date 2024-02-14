@@ -2,12 +2,11 @@ package com.cellact;
 
 import com.Config.Network;
 
-public class Mumbai extends Network{
+public class Ethereum extends Network{
+    String ENTRY_POINT_URL = "https://ethereum.publicnode.com";
+    int CHAIN_ID = 1;
 
-    String ENTRY_POINT_URL = "https://polygon-mumbai-bor.publicnode.com";
-    int CHAIN_ID = 80001;
-
-    public Mumbai() {}
+    public Ethereum() {}
 
     public String getRPC() {
         return this.ENTRY_POINT_URL;

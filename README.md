@@ -135,11 +135,14 @@ Extends `Contracts` from the `Utils` SubPackage to provide specific contract add
 
 Includes methods to interact with cloud functions for tasks such as retrieving user ENS or service provider details.
 
+***
+***
+
 ```java
 getUserENS(String userAddress)
 ```
 - Sends a request to a cloud function to retrieve the ENS name associated with the given user address.
-
+***
 
 ```java
 getShopCID(String serviceProvider)
@@ -258,7 +261,8 @@ The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
 ### Utils
 
 Provides utility functions such as package validation, shop opening, and payment URL generation.
-
+***
+***
 
 ```java
 isValidPackage(String userInput, String jsonData)
@@ -266,6 +270,7 @@ isValidPackage(String userInput, String jsonData)
 - Validates if the user input matches any of the packages listed in the provided JSON data. 
   This function is essential for verifying user selections against available options.
 
+***
 
 ```java
 getPaymentURL(String userID, String packageNum, String jsonData)
@@ -276,20 +281,22 @@ getPaymentURL(String userID, String packageNum, String jsonData)
 ### Wallet
 
 Manages wallet functionalities including key generation, import, and retrieval.
-
-
+***
+***
 ```java
 generateMnemonic()
 ```
 - Generates a new mnemonic phrase following the BIP-39 standard.
   This mnemonic can be used to regenerate a wallet's private keys.
 
+***
 
 ```java
 getPrivateKeyFromMnemonic(String mnemonic)
 ```
 - Derives the private key from the given mnemonic phrase, allowing for wallet recovery and transaction signing.
 
+***
 
 ```java
 getPublicKey()
@@ -297,12 +304,15 @@ getPublicKey()
 - Returns the public key derived from the wallet's private key. 
   The public key is used to derive the wallet's address and can be safely shared.
 
+***
 
 ```java
 getCredentials()
 ```
 - Retrieves the wallet's credentials, including its private key, which is crucial for signing transactions and interacting with smart contracts.
 
+***
+***
 
 ### Web3AJ
 

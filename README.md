@@ -31,76 +31,55 @@ The Cellact SDK offers a robust set of tools for developers looking to incorpora
 
 ## Installation
 
-The Arnacon SDK is designed to be easily integrated into your Java projects using Maven. Follow the steps below to include the SDK in your project.
+The Arnacon SDK is designed to be easily integrated into your Java projects using Maven Or Gradl. Follow the steps below to include the SDK in your project.
 
 ### Prerequisites
 
 Ensure you have Maven installed and configured on your system. The SDK requires Java 11 or higher due to its dependencies and language features.
 
-### Adding SDK to Your Project
+### Android studio
 
-1. **Maven Configuration**: Open your project's `pom.xml` file and ensure the `<properties>`, `<dependencies>`, and `<build>` sections are properly configured.
+Place the JAR file in the project folder `libs`.
 
-2. **Set Java Compiler Version**: Inside the `<properties>` section, specify the Java version to ensure compatibility with the SDK.
+Open your build.gradle file located in your app module directory.
+Add the include JAR Package and web3j dependency within the dependencies block as shown above.
+Sync your Gradle project to ensure the dependencies are downloaded and included in your project build path.
 
-    ```xml
-    <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
-    </properties>
-    ```
+```gradle
+implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
+implementation "org.web3j:core:4.8.7-android"
+```
 
-3. **Add Dependencies**: Include the following dependencies within the `<dependencies>` section of your `pom.xml` file. These dependencies are essential for the SDK's operation, including blockchain interactions (`web3j`), and data manipulation (`json`).
+This version of web3j is optimized for Android development, providing compatibility with Android's networking and concurrency frameworks.
 
-    ```xml
-    <dependencies>
-        <!-- JUnit for testing -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>3.8.1</version>
-            <scope>test</scope>
-        </dependency>
+### Maven
 
-        <!-- Web3j for blockchain interactions -->
-        <dependency>
-            <groupId>org.web3j</groupId>
-            <artifactId>core</artifactId>
-            <version>4.10.3</version>
-        </dependency>
+### Adding the SDK to Your Project
 
-        <!-- JSON.org for JSON parsing -->
-        <dependency>
-            <groupId>org.json</groupId>
-            <artifactId>json</artifactId>
-            <version>20231013</version>
-        </dependency>
-    </dependencies>
-    ```
+1. Install the JAR into Your Local Maven Repository
 
-4. **Compiler Plugin Configuration**: Ensure the Maven Compiler Plugin is configured to use Java 11, aligning with the SDK's requirements.
+To use this JAR in other projects on your local machine, you'll need to install it into your local Maven repository.
+If you've already built the JAR with Maven, it should be correctly formatted. 
+To manually install it, use the following command:
+```bash
+mvn install:install-file -Dfile=target/ArnaconSDK-1.0.jar -DgroupId=com.Arnacon -DartifactId=ArnaconSDK -Dversion=1.0 -Dpackaging=jar
+```
 
-    ```xml
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-    ```
+Ensure to replace target/ArnaconSDK-1.0.jar with the actual path to your generated JAR file.
 
-5. **Building the Project**: After adding the dependencies and configuring the compiler plugin, build your project to ensure all dependencies are correctly resolved and downloaded.
+2. Include Your JAR as a Dependency in Other Projects
 
-    ```bash
-    mvn clean install
-    ```
+With your JAR installed in your local Maven repository, you can include it as a dependency in any Maven project by adding the following to the pom.xml file of those projects:
+```xml
+<dependency>
+    <groupId>com.Arnacon</groupId>
+    <artifactId>ArnaconSDK</artifactId>
+    <version>1.0</version>
+</dependency>
+```
+
+This configuration tells Maven to look for your *ArnaconSDK* artifact in the local repository and include it in the project's classpath.
+
 
 ### Verifying Installation
 

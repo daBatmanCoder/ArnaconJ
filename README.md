@@ -336,7 +336,23 @@ fetchStoreFromIPFS(String cid)
 - Fetches content from IPFS using the provided CID (Content Identifier).
   This function is useful for retrieving decentralized content.
 
-**
+  Store example will be a JSON format file:
+  ```json
+  {
+    "1": {
+        "description": "Landline",
+        "image": "https://imgur.com/e0JPFxK.png",
+        "name": "Landline",
+        "attributes": [
+          {"trait_type": "InitP", "value": "0.99"},
+          {"trait_type": "Price", "value": "9.99"},
+          {"trait_type": "Currency", "value": "EUR"},
+          {"display_type": "boost_number", "trait_type": "Duration", "value": 30}
+        ]
+    }
+}
+```
+  
 ***
 ****
 *****

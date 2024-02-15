@@ -135,8 +135,7 @@ Extends `Contracts` from the `Utils` SubPackage to provide specific contract add
 
 Includes methods to interact with cloud functions for tasks such as retrieving user ENS or service provider details.
 
-***
-***
+
 
 ```java
 getUserENS(String userAddress)
@@ -149,6 +148,8 @@ getShopCID(String serviceProvider)
 ```
 - Fetches the CID of the shop associated with the given service provider. This CID can be used to access the shop's content on IPFS.
 
+***
+***
 
 ### Config Service Provider
 
@@ -261,8 +262,6 @@ The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
 ### Utils
 
 Provides utility functions such as package validation, shop opening, and payment URL generation.
-***
-***
 
 ```java
 isValidPackage(String userInput, String jsonData)
@@ -276,13 +275,15 @@ isValidPackage(String userInput, String jsonData)
 getPaymentURL(String userID, String packageNum, String jsonData)
 ```
 - Constructs a URL for processing payments for a selected package using Stripe payment service. 
-        
+
+
+***
+***      
 
 ### Wallet
 
 Manages wallet functionalities including key generation, import, and retrieval.
-***
-***
+
 ```java
 generateMnemonic()
 ```
@@ -318,8 +319,7 @@ getCredentials()
 
 Core component for interacting with the blockchain, including contract interactions, signing messages, and handling transactions.
 
-***
-***
+
 ```java
 signMessage(String Message)
 ```
@@ -355,6 +355,8 @@ fetchStoreFromIPFS(String cid)
 - Fetches content from IPFS using the provided CID (Content Identifier).
   This function is useful for retrieving decentralized content.
 
+***
+***
 
 ## License
 

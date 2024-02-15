@@ -1,6 +1,6 @@
 package com.Arnacon;
 
-import com.Config.Network;
+import com.Config.ANetwork;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -43,23 +43,23 @@ import org.web3j.tx.response.PollingTransactionReceiptProcessor;
 public class Web3AJ {
 
     public Wallet wallet;
-    Network network; // Ethereum / Polygon / Binance Smart Chain
+    ANetwork network; // Ethereum / Polygon / Binance Smart Chain
     Web3j web3j;
     Contracts contracts;
 
 
     // Constructor with no private key
-    public Web3AJ(Network _network) {
+    public Web3AJ(ANetwork _network) {
         this.wallet = new Wallet();
         commonConstructor(_network);
     }
 
-    public Web3AJ(Network _network, String privateKey) {
+    public Web3AJ(ANetwork _network, String privateKey) {
         this.wallet = new Wallet(privateKey);
         commonConstructor(_network);
     }
 
-    private void commonConstructor(Network _network){
+    private void commonConstructor(ANetwork _network){
         this.network = _network;
         this.web3j = Web3j.build(new HttpService(this.network.getRPC()));
         contracts = new Contracts();

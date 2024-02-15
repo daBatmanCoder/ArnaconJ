@@ -1,4 +1,4 @@
-package com.Arnacon.Initialization;
+package com.Arnacon.initialization;
 
 import java.io.IOException;
 

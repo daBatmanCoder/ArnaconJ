@@ -1,6 +1,6 @@
 package com.Config;
 
-public abstract class Contract {
+public abstract class AContract {
     
     String NAME_HASH_ADDRESS;
     String W_ENS_ADDRESS;

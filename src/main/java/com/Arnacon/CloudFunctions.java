@@ -12,10 +12,60 @@ import org.json.JSONObject;
 
 public class CloudFunctions {
 
-    String ens_url = "https://us-central1-arnacon-nl.cloudfunctions.net/get_user_new_ens";
-    String get_service_provider_url = "https://us-central1-arnacon-nl.cloudfunctions.net/get_service_providers";
+    private String MasterURL = "https://us-central1-arnacon-nl.cloudfunctions.net/Functions";
 
-    public CloudFunctions() {}
+    private String ens_url;
+    private String get_service_provider_url;
+    private String get_networks_url;
+    private String get_contracts_url;
+    public String send_stripe_url;
+
+    public CloudFunctions() {
+        String urls = RequestGetFromCloud(MasterURL, false);
+        JSONObject urlsObject = new JSONObject(urls);
+        this.ens_url = urlsObject.getString("ens_url");
+        this.get_service_provider_url = urlsObject.getString("get_service_provider_url");
+        this.get_networks_url = urlsObject.getString("get_networks_url");
+        this.get_contracts_url = urlsObject.getString("get_contracts_url");
+        this.send_stripe_url = urlsObject.getString("send_stripe");
+    }
+
+    private String RequestGetFromCloud(String RequestURL,boolean lowerCase) {
+        String result = "";
+
+        try {
+            URL url = new URL(RequestURL);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            con.setRequestMethod("GET");
+            con.setRequestProperty("Accept", "application/json");
+
+            int responseCode = con.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
+                    StringBuilder response = new StringBuilder();
+                    String responseLine;
+                    while ((responseLine = br.readLine()) != null) {
+                        response.append(responseLine.trim());
+                    }
+
+                    if(lowerCase){
+                        String result1 = response.toString();
+                        result = result1.toLowerCase();
+                    }else{
+                        result = response.toString();
+                    }
+                    
+                }
+            } else {
+                System.out.println("GET request failed. Response Code: " + responseCode);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+
+    }
     
     public String getUserENS(String userAddress) {
         
@@ -58,32 +108,10 @@ public class CloudFunctions {
     }
 
     public String getShopCID(String serviceProvider) {
-        String result = "";
-
-        try {
-            URL url = new URL(get_service_provider_url);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            con.setRequestMethod("GET");
-            con.setRequestProperty("Accept", "application/json");
-
-            int responseCode = con.getResponseCode();
-            if (responseCode == HttpURLConnection.HTTP_OK) {
-                try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
-                    StringBuilder response = new StringBuilder();
-                    String responseLine;
-                    while ((responseLine = br.readLine()) != null) {
-                        response.append(responseLine.trim());
-                    }
-                    result = response.toString();
-                }
-            } else {
-                System.out.println("GET request failed. Response Code: " + responseCode);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        String result = RequestGetFromCloud(get_networks_url, false);
+        
         JSONObject jsonObject = new JSONObject(result);
+
         for (String key : jsonObject.keySet()) {
             JSONObject serviceProviderObject = jsonObject.getJSONObject(key);
             if (serviceProviderObject.getString("name").equals(serviceProvider)) {
@@ -93,4 +121,27 @@ public class CloudFunctions {
 
         return result;
     }
+
+    public JSONObject getNetwork(String InetworkName) {
+
+        String result = RequestGetFromCloud(get_networks_url, true);
+
+        String networkName = InetworkName.toLowerCase();
+
+        JSONObject config = new JSONObject(result);
+        JSONObject networkConfig = config.getJSONObject("networks").getJSONObject(networkName);
+
+        return networkConfig;
+    }
+
+    public String getContractAddress(String contractName) {
+
+        String result = RequestGetFromCloud(get_contracts_url, false);
+
+        JSONObject config = new JSONObject(result);
+        String contractAddress = config.getString(contractName);
+
+        return contractAddress;
+    }
+
 }

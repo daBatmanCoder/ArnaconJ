@@ -1,4 +1,4 @@
-package com.Arnacon.Initialization;
+package com.Arnacon.initialization;
 
 import java.util.Scanner;
 
@@ -6,7 +6,7 @@ import com.Arnacon.CloudFunctions;
 import com.Arnacon.ConfigServiceProvider;
 import com.Arnacon.Utils;
 import com.Arnacon.Web3AJ;
-import com.Arnacon.Networks.Mumbai;
+import com.Arnacon.Network;
 
 public class InitAppWeb2 {
 
@@ -15,8 +15,9 @@ public class InitAppWeb2 {
     ConfigServiceProvider configServiceProvider;
 
     public InitAppWeb2() throws Exception {
+        
 
-        this.Web3Service = new Web3AJ(new Mumbai());
+        this.Web3Service = new Web3AJ(new Network("mumbai"));
         configServiceProvider = new ConfigServiceProvider("test2.cellact.nl");
         cloudFunctions = new CloudFunctions();
 
@@ -24,7 +25,6 @@ public class InitAppWeb2 {
         String shopCID = cloudFunctions.getShopCID(configServiceProvider.getServiceProviderName());
         System.out.println("Shop CID: " + shopCID);
 
-        //QmP8DwZv1actfYthxwcdTSVYvQMF8cxBht275uCafsy2oB
         String ipfsContent = Web3AJ.fetchStoreFromIPFS(shopCID);
 
         System.out.println("IPFS Content: " + ipfsContent);

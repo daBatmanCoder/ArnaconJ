@@ -10,15 +10,13 @@ Welcome to the Arnacon SDK documentation. This SDK is designed to facilitate blo
     - [Android studio](#android-studio)
     - [Maven](#maven)
 - [Configuration](#configuration)
-    - [Contracts](#contracts)
-    - [Network](#network)
+    - [AContracts](#contracts)
+    - [ANetwork](#anetwork)
 - [Arnacon Components](#arnacon-components)
     - [Contracts](#contracts)
     - [Cloud Functions](#cloud-functions)
-    - [Config Service Provider](#config-service-provider)
-    - [Networks](#networks)
-        - [Ethereum Network](#ethereum)
-        - [Mumbai Network](#mumbai)
+    - [Config Service Provider](#configserviceprovider)
+    - [Network](#network)
     - [Initialization](#initialization)
         - [InitAppWeb2](#initappweb2)
         - [InitAppWeb3](#initappweb3)
@@ -90,16 +88,16 @@ After completing the build process, verify the installation by running a simple 
 
 ## Config
 
-### Contracts
+### AContracts
 
-The `Contracts` abstraction in the `Config` folder allows for easy management of contract addresses and related functionalities.
+The `AContracts` abstraction in the `Config` folder allows for easy management of contract addresses and related functionalities.
 
 - **NAME_HASH_ADDRESS**: Address for the NameHash contract.
 - **W_ENS_ADDRESS**: Address for the Wrapped ENS contract - (.web3) 
 
-### Network
+### ANetwork
 
-The `Network` abstraction facilitates the configuration of different blockchain networks.
+The `ANetwork` abstraction facilitates the configuration of different blockchain networks.
 
 - **ENTRY_POINT_URL**: URL for the network's entry point.
 - **CHAIN_ID**: Identifier for the blockchain network.
@@ -110,41 +108,47 @@ Detailed overview of each component within the `Arnacon` directory.
 
 ### Contracts
 
-Extends `Contracts` from the `Utils` SubPackage to provide specific contract addresses for the Arnacon ecosystem.
+Extends `AContract` from the `Utils` SubPackage to provide specific contract addresses for the Arnacon ecosystem.
 
-### Cloud Functions
+### CloudFunctions
 
 Includes methods to interact with cloud functions for tasks such as retrieving user ENS or service provider details.
 
 
 
 ```java
-getUserENS(String userAddress)
+String getUserENS(String userAddress)
 ```
 - Sends a request to a cloud function to retrieve the ENS name associated with the given user address.
 ***
 
 ```java
-getShopCID(String serviceProvider)
+String getShopCID(String serviceProvider)
 ```
 - Fetches the CID of the shop associated with the given service provider. This CID can be used to access the shop's content on IPFS.
+***
+
+```java
+JSONObject getNetwork(String InetworkName)
+```
+- Fetches the details - RPC and chain ID for the input network.
+***
+
+```java
+String getContractAddress(String contractName)
+```
+- Returns the contract address from a contract name.
 
 ***
 ***
 
-### Config Service Provider
+### ConfigServiceProvider
 
 Manages service provider configurations, allowing for customization of service provider-related functionalities.
 
-### Networks 
-
-#### Ethereum
-
-Configures the SDK to interact with the Ethereum blockchain.
-
-#### Mumbai
-
-Configures the SDK for interaction with the Polygon Mumbai test network.
+### Network 
+(Extends ANetwork)
+This class is used to get the network configuration from a cloud functions for a wanted network name
 
 ### Initialization
 
@@ -167,7 +171,7 @@ The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
     - Instantiates the cloud functions service.
 
         ```java
-        this.Web3Service = new Web3AJ(new Mumbai());
+        this.Web3Service = new Web3AJ(new Network("mumbai"));
         configServiceProvider = new configServiceProvider("test2.cellact.nl");
         cloudFunctions = new cloudFunctions();
         ```
@@ -245,7 +249,7 @@ The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
 Provides utility functions such as package validation, shop opening, and payment URL generation.
 
 ```java
-isValidPackage(String userInput, String jsonData)
+isValidPackage(String packageNum, String shopData)
 ```
 - Validates if the user input matches any of the packages listed in the provided JSON data. 
   This function is essential for verifying user selections against available options.
@@ -253,10 +257,10 @@ isValidPackage(String userInput, String jsonData)
 ***
 
 ```java
-getPaymentURL(String userID, String packageNum, String jsonData)
+getPaymentURL(String userID, String packageNum, String shopData)
 ```
 - Constructs a URL for processing payments for a selected package using Stripe payment service. 
-
+(The store is a fetched json with a number of items)
 
 ***
 ***      
@@ -349,9 +353,26 @@ fetchStoreFromIPFS(String cid)
           {"trait_type": "Currency", "value": "EUR"},
           {"display_type": "boost_number", "trait_type": "Duration", "value": 30}
         ]
+    },
+    "2": {
+        "description": "Subline",
+        "image": "https://imgur.com/e0JPFxK.png",
+        "name": "Subline",
+        "attributes": [
+          {"trait_type": "InitP", "value": "2.99"},
+          {"trait_type": "Price", "value": "19.99"},
+          {"trait_type": "Currency", "value": "EUR"},
+          {"display_type": "boost_number", "trait_type": "Duration", "value": 45}
+        ]
     }
-}
-```
+  }
+  ```
+
+  Where:
+   `InitP` is the a one-time payment for the initalizing of the product,
+   `Price` is the Subscription price paid every `Duration` days.
+   `Currency` The Currency to pay - (iDeal is supported with EUR)
+
   
 ***
 ****

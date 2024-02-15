@@ -10,13 +10,14 @@ import org.json.JSONObject; // Make sure to include the JSON library in your pro
 
 public class Utils {
 
-    public static boolean isValidPackage(String userInput, String jsonData) {
+
+    public static boolean isValidPackage(String packageNum, String jsonStore) {
         // Parse the JSON data
-        JSONObject json = new JSONObject(jsonData);
+        JSONObject json = new JSONObject(jsonStore);
         
         try {
             // Attempt to convert the user's input to an integer
-            int packageNumber = Integer.parseInt(userInput);
+            int packageNumber = Integer.parseInt(packageNum);
             
             // Check if the JSON data contains a key corresponding to the user's input
             if (json.has(String.valueOf(packageNumber))) {
@@ -40,10 +41,11 @@ public class Utils {
         }
     }
 
-    public static String getPaymentURL(String userID, String packageNum, String jsonData) {
+    public static String getPaymentURL(String userID, String packageNum, String jsonStore) {
         try {
+            
 
-            JSONObject json = new JSONObject(jsonData);
+            JSONObject json = new JSONObject(jsonStore);
             JSONObject selectedPackage = json.getJSONObject(packageNum);
             String packageName = selectedPackage.getString("name");
             double transactionPrice = 0.0;
@@ -65,8 +67,9 @@ public class Utils {
                 }
             }
 
+            CloudFunctions cloudFunctions = new CloudFunctions();
             // Prepare the URL and open connection
-            URL url = new URL("https://us-central1-arnacon-nl.cloudfunctions.net/send_stripe");
+            URL url = new URL(cloudFunctions.send_stripe_url);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");

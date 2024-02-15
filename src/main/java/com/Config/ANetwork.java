@@ -1,6 +1,6 @@
 package com.Config;
 
-public abstract class Network {
+public abstract class ANetwork {
 
     String ENTRY_POINT_URL;
     int CHAIN_ID;

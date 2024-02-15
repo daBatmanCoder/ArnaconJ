@@ -47,7 +47,7 @@ Ensure you have Maven installed and configured on your system. The SDK requires 
 
 #### Android studio
 
-Place the JAR file in the project folder `libs`.
+- Place the JAR file in the project folder `libs`.
 
 Open your build.gradle file located in your app module directory.
 Add the include JAR Package and web3j dependency within the dependencies block as shown above.
@@ -377,8 +377,8 @@ fetchStoreFromIPFS(String cid)
 
   Where:
    `InitP` is the a one-time payment for the initalizing of the product,
-   `Price` is the Subscription price paid every `Duration` days.
-   `Currency` The Currency to pay - (iDeal is supported with EUR)
+   `Price` is the Subscription price paid every `Duration` days,
+   `Currency` to pay (iDeal is supported with EUR).
 
   
 ***
@@ -387,4 +387,4 @@ fetchStoreFromIPFS(String cid)
 
 ## License
 
-&copy; All right reserved to B.V Cellact NL.
+&copy; All right reserved to B.V Cellact NL

@@ -251,55 +251,90 @@ The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
 
 Provides utility functions such as package validation, shop opening, and payment URL generation.
 
-    isValidPackage(String userInput, String jsonData): 
-        Validates if the user input matches any of the packages listed in the provided JSON data. 
-        This function is essential for verifying user selections against available options.
 
-    getPaymentURL(String userID, String packageNum, String jsonData): 
-        Constructs a URL for processing payments for a selected package using Stripe payment service. 
+```java
+isValidPackage(String userInput, String jsonData)
+```
+- Validates if the user input matches any of the packages listed in the provided JSON data. 
+  This function is essential for verifying user selections against available options.
+
+
+```java
+getPaymentURL(String userID, String packageNum, String jsonData)
+```
+- Constructs a URL for processing payments for a selected package using Stripe payment service. 
         
 
 ### Wallet
 
 Manages wallet functionalities including key generation, import, and retrieval.
 
-    generateMnemonic():
-        Generates a new mnemonic phrase following the BIP-39 standard.
-        This mnemonic can be used to regenerate a wallet's private keys.
 
-    getPrivateKeyFromMnemonic(String mnemonic):
-         Derives the private key from the given mnemonic phrase, allowing for wallet recovery and transaction signing.
+```java
+generateMnemonic()
+```
+- Generates a new mnemonic phrase following the BIP-39 standard.
+  This mnemonic can be used to regenerate a wallet's private keys.
 
-    getPublicKey():
-        Returns the public key derived from the wallet's private key. 
-        The public key is used to derive the wallet's address and can be safely shared.
 
-    getCredentials(): 
-        Retrieves the wallet's credentials, including its private key, which is crucial for signing transactions and interacting with smart contracts.
+```java
+getPrivateKeyFromMnemonic(String mnemonic)
+```
+- Derives the private key from the given mnemonic phrase, allowing for wallet recovery and transaction signing.
+
+
+```java
+getPublicKey()
+```
+- Returns the public key derived from the wallet's private key. 
+  The public key is used to derive the wallet's address and can be safely shared.
+
+
+```java
+getCredentials()
+```
+- Retrieves the wallet's credentials, including its private key, which is crucial for signing transactions and interacting with smart contracts.
+
 
 ### Web3AJ
 
 Core component for interacting with the blockchain, including contract interactions, signing messages, and handling transactions.
 
-    signMessage(String Message): 
-        Takes a string message, signs it with the private key of the current wallet, and returns the signature.
-        This is useful for proving ownership of a wallet address without revealing the private key.
 
-    mintNFT(String _userENS): 
-        Encodes a function call to mint an NFT with the provided ENS (Ethereum Name Service) name. 
-        It constructs and sends a transaction to mint the NFT, then returns the transaction hash.
+```java
+signMessage(String Message)
+```
+- Takes a string message, signs it with the private key of the current wallet, and returns the signature.
+  This is useful for proving ownership of a wallet address without revealing the private key.
 
-    buyENS(String _userENS): 
-        Similar to mintNFT, but specifically for purchasing an ENS name. 
-        It sends a transaction to the ENS contract to register the name under the user's wallet address.
 
-    checkBalance(String publicKey): 
-        Returns the balance of the wallet associated with the given public key. 
-        This function is essential for monitoring wallet funds.
+```java
+mintNFT(String _userENS)
+```
+- Encodes a function call to mint an NFT with the provided ENS (Ethereum Name Service) name. 
+  It constructs and sends a transaction to mint the NFT, then returns the transaction hash.
 
-    fetchStoreFromIPFS(String cid):
-        Fetches content from IPFS using the provided CID (Content Identifier).
-        This function is useful for retrieving decentralized content.
+
+```java
+buyENS(String _userENS)
+```
+- Similar to mintNFT, but specifically for purchasing an ENS name. 
+  It sends a transaction to the ENS contract to register the name under the user's wallet address.
+
+
+```java
+checkBalance(String publicKey)
+```
+- Returns the balance of the wallet associated with the given public key. 
+  This function is essential for monitoring wallet funds.
+
+
+```java
+fetchStoreFromIPFS(String cid) 
+```
+- Fetches content from IPFS using the provided CID (Content Identifier).
+  This function is useful for retrieving decentralized content.
+
 
 ## License
 

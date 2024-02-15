@@ -107,7 +107,7 @@ Ensure you have Maven installed and configured on your system. The SDK requires 
 After completing the build process, verify the installation by running a simple test that imports and utilizes a class from the SDK. If the project builds successfully without errors, the SDK has been correctly integrated into your project.
 
 
-## Config ()
+## Config
 
 ### Contracts
 
@@ -135,9 +135,17 @@ Extends `Contracts` from the `Utils` SubPackage to provide specific contract add
 
 Includes methods to interact with cloud functions for tasks such as retrieving user ENS or service provider details.
 
-    getUserENS(String userAddress): Sends a request to a cloud function to retrieve the ENS name associated with the given user address.
+```java
+getUserENS(String userAddress)
+```
+- Sends a request to a cloud function to retrieve the ENS name associated with the given user address.
 
-    getShopCID(String serviceProvider): Fetches the CID of the shop associated with the given service provider. This CID can be used to access the shop's content on IPFS.
+
+```java
+getShopCID(String serviceProvider)
+```
+- Fetches the CID of the shop associated with the given service provider. This CID can be used to access the shop's content on IPFS.
+
 
 ### Config Service Provider
 
@@ -190,7 +198,7 @@ The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
 
 3. **IPFS Content Fetch and Display**     
 
-        - Retrieves content from IPFS using the shop CID and displays the content.
+    - Retrieves content from IPFS using the shop CID and displays the content.
 
         ```java
         String ipfsContent = Web3AJ.fetchStoreFromIPFS(shopCID);
@@ -300,13 +308,15 @@ getCredentials()
 
 Core component for interacting with the blockchain, including contract interactions, signing messages, and handling transactions.
 
-
+====
+====
 ```java
 signMessage(String Message)
 ```
 - Takes a string message, signs it with the private key of the current wallet, and returns the signature.
   This is useful for proving ownership of a wallet address without revealing the private key.
 
+====
 
 ```java
 mintNFT(String _userENS)
@@ -314,21 +324,21 @@ mintNFT(String _userENS)
 - Encodes a function call to mint an NFT with the provided ENS (Ethereum Name Service) name. 
   It constructs and sends a transaction to mint the NFT, then returns the transaction hash.
 
-
+====
 ```java
 buyENS(String _userENS)
 ```
 - Similar to mintNFT, but specifically for purchasing an ENS name. 
   It sends a transaction to the ENS contract to register the name under the user's wallet address.
 
-
+====
 ```java
 checkBalance(String publicKey)
 ```
 - Returns the balance of the wallet associated with the given public key. 
   This function is essential for monitoring wallet funds.
 
-
+==== 
 ```java
 fetchStoreFromIPFS(String cid) 
 ```
@@ -338,4 +348,4 @@ fetchStoreFromIPFS(String cid)
 
 ## License
 
-All right reserved to B.V Cellact NL.
+&copy; All right reserved to B.V Cellact NL.

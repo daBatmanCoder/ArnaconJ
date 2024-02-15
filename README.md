@@ -25,15 +25,23 @@ Welcome to the Arnacon SDK documentation. This SDK is designed to facilitate blo
     - [Web3AJ](#web3aj)
 - [License](#license)
 
+***
+***
+***
+***
+
 ## Introduction
 
 The Cellact SDK offers a robust set of tools for developers looking to incorporate blockchain features into their applications. This includes managing network configurations, interacting with smart contracts, and performing a variety of blockchain-related tasks.
+
+***
 
 ## Installation
 
 The Arnacon SDK is designed to be easily integrated into your Java projects using Maven Or Gradl. Follow the steps below to include the SDK in your project.
 
-### Prerequisites
+
+### -Prerequisites
 
 Ensure you have Maven installed and configured on your system. The SDK requires Java 11 or higher due to its dependencies and language features.
 
@@ -52,9 +60,9 @@ implementation("org.web3j:core:4.8.7-android")
 
 This version of web3j is optimized for Android development, providing compatibility with Android's networking and concurrency frameworks.
 
-#### Maven
+***
 
-### Adding the SDK to Your Project
+### Maven
 
 1. Install the JAR into Your Local Maven Repository
 
@@ -80,11 +88,14 @@ With your JAR installed in your local Maven repository, you can include it as a 
 
 This configuration tells Maven to look for your *ArnaconSDK* artifact in the local repository and include it in the project's classpath.
 
+***
 
 ### Verifying Installation
 
 After completing the build process, verify the installation by running a simple test that imports and utilizes a class from the SDK. If the project builds successfully without errors, the SDK has been correctly integrated into your project.
 
+***
+***
 
 ## Config
 
@@ -95,12 +106,17 @@ The `AContracts` abstraction in the `Config` folder allows for easy management o
 - **NAME_HASH_ADDRESS**: Address for the NameHash contract.
 - **W_ENS_ADDRESS**: Address for the Wrapped ENS contract - (.web3) 
 
+***
+
 ### ANetwork
 
 The `ANetwork` abstraction facilitates the configuration of different blockchain networks.
 
 - **ENTRY_POINT_URL**: URL for the network's entry point.
 - **CHAIN_ID**: Identifier for the blockchain network.
+
+***
+***
 
 ## Arnacon Components
 
@@ -109,6 +125,8 @@ Detailed overview of each component within the `Arnacon` directory.
 ### Contracts
 
 Extends `AContract` from the `Utils` SubPackage to provide specific contract addresses for the Arnacon ecosystem.
+
+***
 
 ### CloudFunctions
 
@@ -120,26 +138,22 @@ Includes methods to interact with cloud functions for tasks such as retrieving u
 String getUserENS(String userAddress)
 ```
 - Sends a request to a cloud function to retrieve the ENS name associated with the given user address.
-***
 
 ```java
 String getShopCID(String serviceProvider)
 ```
 - Fetches the CID of the shop associated with the given service provider. This CID can be used to access the shop's content on IPFS.
-***
 
 ```java
 JSONObject getNetwork(String InetworkName)
 ```
 - Fetches the details - RPC and chain ID for the input network.
-***
 
 ```java
 String getContractAddress(String contractName)
 ```
 - Returns the contract address from a contract name.
 
-***
 ***
 
 ### ConfigServiceProvider
@@ -244,6 +258,9 @@ The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
 
 (TBD: Initialization steps for Web3 applications.)
 
+***
+***
+
 ### Utils
 
 Provides utility functions such as package validation, shop opening, and payment URL generation.
@@ -254,7 +271,6 @@ isValidPackage(String packageNum, String shopData)
 - Validates if the user input matches any of the packages listed in the provided JSON data. 
   This function is essential for verifying user selections against available options.
 
-***
 
 ```java
 getPaymentURL(String userID, String packageNum, String shopData)
@@ -262,8 +278,7 @@ getPaymentURL(String userID, String packageNum, String shopData)
 - Constructs a URL for processing payments for a selected package using Stripe payment service. 
 (The store is a fetched json with a number of items)
 
-***
-***      
+*** 
 
 ### Wallet
 
@@ -275,14 +290,12 @@ generateMnemonic()
 - Generates a new mnemonic phrase following the BIP-39 standard.
   This mnemonic can be used to regenerate a wallet's private keys.
 
-***
 
 ```java
 getPrivateKeyFromMnemonic(String mnemonic)
 ```
 - Derives the private key from the given mnemonic phrase, allowing for wallet recovery and transaction signing.
 
-***
 
 ```java
 getPublicKey()
@@ -290,14 +303,12 @@ getPublicKey()
 - Returns the public key derived from the wallet's private key. 
   The public key is used to derive the wallet's address and can be safely shared.
 
-***
 
 ```java
 getCredentials()
 ```
 - Retrieves the wallet's credentials, including its private key, which is crucial for signing transactions and interacting with smart contracts.
 
-***
 ***
 
 ### Web3AJ
@@ -311,7 +322,6 @@ signMessage(String Message)
 - Takes a string message, signs it with the private key of the current wallet, and returns the signature.
   This is useful for proving ownership of a wallet address without revealing the private key.
 
-***
 
 ```java
 mintNFT(String _userENS)
@@ -319,21 +329,18 @@ mintNFT(String _userENS)
 - Encodes a function call to mint an NFT with the provided ENS (Ethereum Name Service) name. 
   It constructs and sends a transaction to mint the NFT, then returns the transaction hash.
 
-***
 ```java
 buyENS(String _userENS)
 ```
 - Similar to mintNFT, but specifically for purchasing an ENS name. 
   It sends a transaction to the ENS contract to register the name under the user's wallet address.
 
-***
 ```java
 checkBalance(String publicKey)
 ```
 - Returns the balance of the wallet associated with the given public key. 
   This function is essential for monitoring wallet funds.
 
-*** 
 ```java
 fetchStoreFromIPFS(String cid) 
 ```
@@ -375,7 +382,7 @@ fetchStoreFromIPFS(String cid)
 
   
 ***
-****
+**** 
 *****
 
 ## License

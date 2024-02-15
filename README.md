@@ -41,7 +41,7 @@ The Cellact SDK offers a robust set of tools for developers looking to incorpora
 The Arnacon SDK is designed to be easily integrated into your Java projects using Maven Or Gradl. Follow the steps below to include the SDK in your project.
 
 
-### -Prerequisites
+### Prerequisites
 
 Ensure you have Maven installed and configured on your system. The SDK requires Java 11 or higher due to its dependencies and language features.
 
@@ -60,7 +60,6 @@ implementation("org.web3j:core:4.8.7-android")
 
 This version of web3j is optimized for Android development, providing compatibility with Android's networking and concurrency frameworks.
 
-***
 
 ### Maven
 
@@ -88,7 +87,6 @@ With your JAR installed in your local Maven repository, you can include it as a 
 
 This configuration tells Maven to look for your *ArnaconSDK* artifact in the local repository and include it in the project's classpath.
 
-***
 
 ### Verifying Installation
 
@@ -163,6 +161,8 @@ Manages service provider configurations, allowing for customization of service p
 ### Network 
 (Extends ANetwork)
 This class is used to get the network configuration from a cloud functions for a wanted network name
+
+***
 
 ### Initialization
 
@@ -253,12 +253,12 @@ The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
 
 - **Asynchronous Nature of Blockchain**: While this example uses a synchronous approach for simplicity - thus between steps you may want to consider to make some checking to the blockchain before continuing 
 
+***
 
 #### InitAppWeb3
 
 (TBD: Initialization steps for Web3 applications.)
 
-***
 ***
 
 ### Utils

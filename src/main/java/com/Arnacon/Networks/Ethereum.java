@@ -1,8 +1,9 @@
-package com.cellact;
+package com.Arnacon.Networks;
 
 import com.Config.Network;
 
 public class Ethereum extends Network{
+    
     String ENTRY_POINT_URL = "https://ethereum.publicnode.com";
     int CHAIN_ID = 1;
 

@@ -1,18 +1,24 @@
-package com.cellact;
+package com.Arnacon.Initialization;
 
 import java.util.Scanner;
+
+import com.Arnacon.CloudFunctions;
+import com.Arnacon.ConfigServiceProvider;
+import com.Arnacon.Utils;
+import com.Arnacon.Web3AJ;
+import com.Arnacon.Networks.Mumbai;
 
 public class InitAppWeb2 {
 
     Web3AJ Web3Service;
-    cloudFunctions cloudFunctions;
-    configServiceProvider configServiceProvider;
+    CloudFunctions cloudFunctions;
+    ConfigServiceProvider configServiceProvider;
 
     public InitAppWeb2() throws Exception {
 
         this.Web3Service = new Web3AJ(new Mumbai());
-        configServiceProvider = new configServiceProvider("test2.cellact.nl");
-        cloudFunctions = new cloudFunctions();
+        configServiceProvider = new ConfigServiceProvider("test2.cellact.nl");
+        cloudFunctions = new CloudFunctions();
 
         System.out.println("Public Key: " + this.Web3Service.wallet.getPublicKey());
         String shopCID = cloudFunctions.getShopCID(configServiceProvider.getServiceProviderName());

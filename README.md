@@ -1,28 +1,28 @@
-# Cellact SDK Documentation
+# Arnacon SDK Documentation
 
-Welcome to the Cellact SDK documentation. This SDK is designed to facilitate blockchain integration into your applications, providing a wide range of functionalities from network configurations to smart contract interactions and utility functions.
+Welcome to the Arnacon SDK documentation. This SDK is designed to facilitate blockchain integration into your applications, providing a wide range of functionalities from network configurations to smart contract interactions and utility functions.
 
 ## Table of Contents
 
 - [Introduction](#introduction)
 - [Installation](#installation)
+    - [Prerequisites](#prerequisities)
 - [Configuration](#configuration)
-  - [Contracts](#contracts)
-  - [Network](#network)
-- [Cellact Components](#cellact-components)
-  - [CellContracts](#cellcontracts)
-  - [Cloud Functions](#cloud-functions)
-  - [Config Service Provider](#config-service-provider)
-  - [Ethereum Network](#ethereum-network)
-  - [Mumbai Network](#mumbai-network)
-  - [Initialization](#initialization)
-    - [InitAppWeb2](#initappweb2)
-    - [InitAppWeb3](#initappweb3)
-  - [Utilities](#Utils)
-  - [Wallet](#wallet)
-  - [Web3AJ](#web3aj)
-- [Examples](#examples)
-- [Contributing](#contributing)
+    - [Contracts](#contracts)
+    - [Network](#network)
+- [Arnacon Components](#arnacon-components)
+    - [CellContracts](#cellcontracts)
+    - [Cloud Functions](#cloud-functions)
+    - [Config Service Provider](#config-service-provider)
+    - [Networks](#networks)
+        - [Ethereum Network](#ethereum)
+        - [Mumbai Network](#mumbai)
+    - [Initialization](#initialization)
+        - [InitAppWeb2](#initappweb2)
+        - [InitAppWeb3](#initappweb3)
+    - [Utilities](#Utils)
+    - [Wallet](#wallet)
+    - [Web3AJ](#web3aj)
 - [License](#license)
 
 ## Introduction
@@ -31,16 +31,90 @@ The Cellact SDK offers a robust set of tools for developers looking to incorpora
 
 ## Installation
 
-Instructions on how to install and configure the SDK in your project.
+The Arnacon SDK is designed to be easily integrated into your Java projects using Maven. Follow the steps below to include the SDK in your project.
 
-## Configuration
+### Prerequisites
+
+Ensure you have Maven installed and configured on your system. The SDK requires Java 11 or higher due to its dependencies and language features.
+
+### Adding SDK to Your Project
+
+1. **Maven Configuration**: Open your project's `pom.xml` file and ensure the `<properties>`, `<dependencies>`, and `<build>` sections are properly configured.
+
+2. **Set Java Compiler Version**: Inside the `<properties>` section, specify the Java version to ensure compatibility with the SDK.
+
+    ```xml
+    <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+    </properties>
+    ```
+
+3. **Add Dependencies**: Include the following dependencies within the `<dependencies>` section of your `pom.xml` file. These dependencies are essential for the SDK's operation, including blockchain interactions (`web3j`), and data manipulation (`json`).
+
+    ```xml
+    <dependencies>
+        <!-- JUnit for testing -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Web3j for blockchain interactions -->
+        <dependency>
+            <groupId>org.web3j</groupId>
+            <artifactId>core</artifactId>
+            <version>4.10.3</version>
+        </dependency>
+
+        <!-- JSON.org for JSON parsing -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version>
+        </dependency>
+    </dependencies>
+    ```
+
+4. **Compiler Plugin Configuration**: Ensure the Maven Compiler Plugin is configured to use Java 11, aligning with the SDK's requirements.
+
+    ```xml
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>11</source>
+                    <target>11</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    ```
+
+5. **Building the Project**: After adding the dependencies and configuring the compiler plugin, build your project to ensure all dependencies are correctly resolved and downloaded.
+
+    ```bash
+    mvn clean install
+    ```
+
+### Verifying Installation
+
+After completing the build process, verify the installation by running a simple test that imports and utilizes a class from the SDK. If the project builds successfully without errors, the SDK has been correctly integrated into your project.
+
+
+## Config ()
 
 ### Contracts
 
 The `Contracts` abstraction in the `Config` folder allows for easy management of contract addresses and related functionalities.
 
 - **NAME_HASH_ADDRESS**: Address for the NameHash contract.
-- **W_ENS_ADDRESS**: Address for the Wrapped ENS contract - .web3 (generated by cellact)
+- **W_ENS_ADDRESS**: Address for the Wrapped ENS contract - (.web3) 
 
 ### Network
 
@@ -49,13 +123,13 @@ The `Network` abstraction facilitates the configuration of different blockchain 
 - **ENTRY_POINT_URL**: URL for the network's entry point.
 - **CHAIN_ID**: Identifier for the blockchain network.
 
-## Cellact Components
+## Arnacon Components
 
-Detailed overview of each component within the `Cellact` directory.
+Detailed overview of each component within the `Arnacon` directory.
 
 ### CellContracts
 
-Extends `Contracts` to provide specific contract addresses for the Cellact ecosystem.
+Extends `Contracts` to provide specific contract addresses for the Arnacon ecosystem.
 
 ### Cloud Functions
 
@@ -69,11 +143,13 @@ Includes methods to interact with cloud functions for tasks such as retrieving u
 
 Manages service provider configurations, allowing for customization of service provider-related functionalities.
 
-### Ethereum
+### Networks 
+
+#### Ethereum
 
 Configures the SDK to interact with the Ethereum blockchain.
 
-### Mumbai
+#### Mumbai
 
 Configures the SDK for interaction with the Polygon Mumbai test network.
 
@@ -89,125 +165,88 @@ Configures the SDK for interaction with the Polygon Mumbai test network.
 
     The `InitAppWeb2` class is provided as a conceptual example to illustrate how Web2 applications can interact with blockchain technologies using the Cellact SDK. This class demonstrates a series of operations from initializing network connections to executing blockchain transactions, all within a synchronous, step-by-step execution model typical in Web2 environments.
 
-    ### Purpose
-
-    This example aims to bridge the gap for developers familiar with traditional web applications (Web2) by providing a straightforward, procedural approach to blockchain interactions. It showcases essential operations such as wallet creation, transaction signing, and smart contract interactions, contextualized within a Web2 application flow.
-
     ### Synchronous Process Execution
 
-    The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate, serving two primary purposes:
+    The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
 
-    1. **Interactivity**: By prompting for user input, the class simulates real-world scenarios where user actions trigger blockchain operations. This interactivity helps developers understand the cause and effect within blockchain applications.
-
-    2. **Process Synchronization**: The `Scanner` lines act as breakpoints, ensuring that each step is completed before proceeding to the next. This is crucial in blockchain interactions where operations depend on the successful completion of previous steps (e.g., a transaction must be mined before its effects can be observed).
+    **Process Synchronization**: The `Scanner` lines act as breakpoints, ensuring that each step is completed before proceeding to the next. This is crucial in blockchain interactions where operations depend on the successful completion of previous steps (e.g., a transaction must be mined before its effects can be observed).
 
     ### Step-by-Step Guide
 
-    1. **Initialization**: The class begins by setting up network connections and initializing services, laying the groundwork for blockchain interactions.
+    1. **Initialization**
 
-    2. **Wallet and Public Key**: Demonstrates wallet creation and retrieval of the associated public key, a fundamental aspect of blockchain operations.
+        - Initializes the Web3 service with the Mumbai test network configuration.
+        - Sets up the configuration for the service provider.
+        - Instantiates the cloud functions service.
 
-    3. **Shop CID and IPFS Content**: Illustrates how to interact with decentralized storage (IPFS) to retrieve and display content, simulating real-world data retrieval in blockchain applications.
+            ```java
+            this.Web3Service = new Web3AJ(new Mumbai());
+            configServiceProvider = new configServiceProvider("test2.cellact.nl");
+            cloudFunctions = new cloudFunctions();
+            ```
 
-    4. **User Interaction for Package Selection**: Emphasizes the interactive nature of applications, where user input directly influences blockchain operations.
+    2. **Shop CID Retrieval and Display**
 
-    5. **Validation and Transactions**: Showcases how to validate user input against blockchain data and initiate transactions based on user choices.
+        - Uses the `cloudFunctions` service to retrieve the CID for the shop associated with the configured service provider.
+        - Displays the shop CID, which is used to fetch content from IPFS.
 
-    6. **ENS and Signature**: Introduces more advanced concepts like ENS (Ethereum Name Service) and cryptographic signatures, highlighting the security aspects of blockchain applications.
+            ```java
+            String shopCID = cloudFunctions.getShopCID(configServiceProvider.getServiceProviderName());
+            ```
+
+    3. **IPFS Content Fetch and Display**     
+
+         - Retrieves content from IPFS using the shop CID and displays the content.
+
+            ```java
+            String ipfsContent = Web3AJ.fetchStoreFromIPFS(shopCID);
+            ```
+
+    4. **User Interaction for Package Selection**
+
+        - Prompts the user to select a package and validates the selection against the available packages in the IPFS content- that correspondes to the store packages.
+
+            ```java
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Enter package you want: ");
+            String packageNum = scanner.nextLine();
+            boolean isValid = Utils.isValidPackage(packageNum, ipfsContent);
+            System.out.println("Package validated? " + isValid);
+            ```
+
+    5. **Payment URL Generation**
+
+        - If the package selection is valid, generates a payment URL for the selected package.
+
+            ```java
+            String url = Utils.getPaymentURL(this.Web3Service.wallet.getPublicKey(), packageNum, ipfsContent);
+            ```
+    ***
+    (Remark) Between those steps there should be a waiting time in order to complete the registration of the user and be able to retrieve the ENS.
+    ***
+
+    6. **User ENS Retrieval**
+
+        - Retrieves the ENS name associated with the user's public key - Only after the payment and google as been completed(before this step there should be a wait of 10-20 seconds)
+
+            ```java
+            String ens = cloudFunctions.getUserENS(this.Web3Service.wallet.getPublicKey());
+            ```
+
+    7. **Message Signing**
+
+        - Demonstrates signing a message with the user's private key- signing using hash protcol- SHA3
+
+            ```java
+            String message = "9c71ab46-370b-40f6-8235-bf1b03da1867"; // Example message
+            String signed = Web3Service.signMessage(message);
+            ```
 
     ### Important Considerations
 
     - **Security**: Always ensure sensitive operations, especially those involving private keys and signatures, are handled securely. Avoid exposing private keys in your application code.
 
-    - **Asynchronous Nature of Blockchain**: While this example uses a synchronous approach for simplicity, real-world blockchain interactions are inherently asynchronous. Developers should consider asynchronous patterns and error handling for production applications.
-
-    - **Network Delays and Transaction Confirmation**: Blockchain operations, particularly on public networks, can experience variable delays. Ensure your application logic accommodates these delays, particularly when waiting for transaction confirmations.
-
-
-
-
-
-The `InitAppWeb2` class is designed to initialize the application within a Web 2.0 environment, setting up the necessary components and services for operation. Below is a step-by-step breakdown of the initialization process and operations performed by the `InitAppWeb2` class:
-
-1. **Network and Services Initialization**
-   - Initializes the Web3 service with the Mumbai test network configuration.
-   - Sets up the configuration for the service provider.
-   - Instantiates the cloud functions service.
-
-    ```java
-    this.Web3Service = new Web3AJ(new Mumbai());
-    configServiceProvider = new configServiceProvider("test2.cellact.nl");
-    cloudFunctions = new cloudFunctions();
-    ```
-
-2. **Public Key Display**
-   - Retrieves and displays the public key from the wallet associated with the `Web3AJ` service.
-
-    ```java
-    System.out.println("Public Key: " + this.Web3Service.wallet.getPublicKey());
-    ```
-
-3. **Shop CID Retrieval and Display**
-   - Uses the `cloudFunctions` service to retrieve the CID for the shop associated with the configured service provider.
-   - Displays the shop CID, which is used to fetch content from IPFS.
-
-    ```java
-    String shopCID = cloudFunctions.getShopCID(configServiceProvider.getServiceProviderName());
-    System.out.println("Shop CID: " + shopCID);
-    ```
-
-4. **IPFS Content Fetch and Display**
-   - Retrieves content from IPFS using the shop CID and displays the content.
-
-    ```java
-    String ipfsContent = Web3AJ.fetchStoreFromIPFS(shopCID);
-    System.out.println("IPFS Content: " + ipfsContent);
-    ```
-
-5. **Package Selection and Validation**
-   - Prompts the user to select a package and validates the selection against the available packages in the IPFS content.
-
-    ```java
-    Scanner scanner = new Scanner(System.in);
-    System.out.println("Enter package you want: ");
-    String packageNum = scanner.nextLine();
-    boolean isValid = Utils.isValidPackage(packageNum, ipfsContent);
-    System.out.println("Is the package valid? " + isValid);
-    ```
-
-6. **Payment URL Generation and Display**
-   - If the package selection is valid, generates a payment URL for the selected package and displays it.
-
-    ```java
-    String url = Utils.getPaymentURL(this.Web3Service.wallet.getPublicKey(), packageNum, ipfsContent);
-    System.out.println("Payment URL: " + url);
-    ```
-
-7. **User ENS Retrieval and Display**
-   - Retrieves the ENS name associated with the user's public key and displays it.
-
-    ```java
-    String ens = cloudFunctions.getUserENS(this.Web3Service.wallet.getPublicKey());
-    System.out.println("ENS: " + ens);
-    ```
-
-8. **Message Signing**
-   - Demonstrates signing a message with the user's private key and displays the signature.
-
-    ```java
-    String message = "9c71ab46-370b-40f6-8235-bf1b03da1867"; // Example message
-    String signed = Web3Service.signMessage(message);
-    System.out.println("Signature: " + signed);
-    ```
-
-9. **Resource Cleanup**
-   - Ensures that any open resources, such as scanners, are properly closed to prevent memory leaks.
-
-    ```java
-    scanner.close();
-    ```
-
-This sequence ensures the proper initialization and operation of your application within a Web 2.0 context, including interactions with the blockchain, user input validation, content retrieval from IPFS, and transaction handling.
+    - **Asynchronous Nature of Blockchain**: While this example uses a synchronous approach for simplicity - thus between steps you may want to consider to make some checking to the blockchain before continuing 
 
 
 #### InitAppWeb3
@@ -218,45 +257,55 @@ This sequence ensures the proper initialization and operation of your applicatio
 
 Provides utility functions such as package validation, shop opening, and payment URL generation.
 
-    isValidPackage(String userInput, String jsonData): Validates if the user input matches any of the packages listed in the provided JSON data. This function is essential for verifying user selections against available options.
+    isValidPackage(String userInput, String jsonData): 
+        Validates if the user input matches any of the packages listed in the provided JSON data. 
+        This function is essential for verifying user selections against available options.
 
-    openShop(String publicKey): Opens the shop URL in a web browser, using the public key as a parameter. This is useful for directing users to a web-based storefront.
-
-    getPaymentURL(String userID, String packageNum, String jsonData): Constructs a URL for processing payments for a selected package. This function is crucial for integrating payment gateways and facilitating transactions.
+    getPaymentURL(String userID, String packageNum, String jsonData): 
+        Constructs a URL for processing payments for a selected package using Stripe payment service. 
+        
 
 ### Wallet
 
 Manages wallet functionalities including key generation, import, and retrieval.
 
-    generateMnemonic(): Generates a new mnemonic phrase following the BIP-39 standard. This mnemonic can be used to regenerate a wallet's private keys.
+    generateMnemonic():
+        Generates a new mnemonic phrase following the BIP-39 standard.
+        This mnemonic can be used to regenerate a wallet's private keys.
 
-    getPrivateKeyFromMnemonic(String mnemonic): Derives the private key from the given mnemonic phrase, allowing for wallet recovery and transaction signing.
+    getPrivateKeyFromMnemonic(String mnemonic):
+         Derives the private key from the given mnemonic phrase, allowing for wallet recovery and transaction signing.
 
-    getPublicKey(): Returns the public key derived from the wallet's private key. The public key is used to derive the wallet's address and can be safely shared.
+    getPublicKey():
+        Returns the public key derived from the wallet's private key. 
+        The public key is used to derive the wallet's address and can be safely shared.
 
-    getCredentials(): Retrieves the wallet's credentials, including its private key, which is crucial for signing transactions and interacting with smart contracts.
+    getCredentials(): 
+        Retrieves the wallet's credentials, including its private key, which is crucial for signing transactions and interacting with smart contracts.
 
 ### Web3AJ
 
 Core component for interacting with the blockchain, including contract interactions, signing messages, and handling transactions.
 
-    signMessage(String Message): Takes a string message, signs it with the private key of the current wallet, and returns the signature. This is useful for proving ownership of a wallet address without revealing the private key.
+    signMessage(String Message): 
+        Takes a string message, signs it with the private key of the current wallet, and returns the signature.
+        This is useful for proving ownership of a wallet address without revealing the private key.
 
-    mintNFT(String _userENS): Encodes a function call to mint an NFT with the provided ENS (Ethereum Name Service) name. It constructs and sends a transaction to mint the NFT, then returns the transaction hash.
+    mintNFT(String _userENS): 
+        Encodes a function call to mint an NFT with the provided ENS (Ethereum Name Service) name. 
+        It constructs and sends a transaction to mint the NFT, then returns the transaction hash.
 
-    buyENS(String _userENS): Similar to mintNFT, but specifically for purchasing an ENS name. It sends a transaction to the ENS contract to register the name under the user's wallet address.
+    buyENS(String _userENS): 
+        Similar to mintNFT, but specifically for purchasing an ENS name. 
+        It sends a transaction to the ENS contract to register the name under the user's wallet address.
 
-    getEstimatedGasForStateChanging(...): Estimates the gas required for a state-changing transaction. This is helpful to avoid setting a gas limit too low, which would result in a failed transaction.
+    checkBalance(String publicKey): 
+        Returns the balance of the wallet associated with the given public key. 
+        This function is essential for monitoring wallet funds.
 
-    checkBalance(String publicKey): Returns the balance of the wallet associated with the given public key. This function is essential for monitoring wallet funds.
-
-    fetchStoreFromIPFS(String cid): Fetches content from IPFS using the provided CID (Content Identifier). This function is useful for retrieving decentralized content.
-
-## Examples
-
-## Contributing
-
-Guidelines for contributing to the SDK's development.
+    fetchStoreFromIPFS(String cid):
+        Fetches content from IPFS using the provided CID (Content Identifier).
+        This function is useful for retrieving decentralized content.
 
 ## License
 

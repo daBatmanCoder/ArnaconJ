@@ -1,10 +1,10 @@
-package com.cellact;
+package com.Arnacon;
 
-public class configServiceProvider {
+public class ConfigServiceProvider {
 
     String serviceProviderName;
 
-    public configServiceProvider(String _serviceProviderName) {
+    public ConfigServiceProvider(String _serviceProviderName) {
         this.serviceProviderName = _serviceProviderName;
     }
 

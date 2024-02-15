@@ -1,4 +1,4 @@
-package com.cellact;
+package com.Arnacon;
 
 import com.Config.Network;
 
@@ -42,7 +42,7 @@ import org.web3j.tx.response.PollingTransactionReceiptProcessor;
 
 public class Web3AJ {
 
-    Wallet wallet;
+    public Wallet wallet;
     Network network; // Ethereum / Polygon / Binance Smart Chain
     Web3j web3j;
     CellContracts contracts;

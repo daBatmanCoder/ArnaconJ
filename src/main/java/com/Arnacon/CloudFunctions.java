@@ -1,4 +1,4 @@
-package com.cellact;
+package com.Arnacon;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,12 +10,12 @@ import java.net.URLEncoder;
 
 import org.json.JSONObject;
 
-public class cloudFunctions {
+public class CloudFunctions {
 
     String ens_url = "https://us-central1-arnacon-nl.cloudfunctions.net/get_user_new_ens";
     String get_service_provider_url = "https://us-central1-arnacon-nl.cloudfunctions.net/get_service_providers";
 
-    public cloudFunctions() {}
+    public CloudFunctions() {}
     
     public String getUserENS(String userAddress) {
         

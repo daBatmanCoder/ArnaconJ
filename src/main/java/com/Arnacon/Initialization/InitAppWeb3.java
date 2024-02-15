@@ -1,6 +1,8 @@
-package com.cellact;
+package com.Arnacon.Initialization;
 
 import java.io.IOException;
+
+import com.Arnacon.Web3AJ;
 
 public class InitAppWeb3 {
 

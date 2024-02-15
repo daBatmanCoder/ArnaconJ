@@ -157,9 +157,9 @@ Configures the SDK for interaction with the Polygon Mumbai test network.
 
 #### InitAppWeb2
 
-    The `InitAppWeb2` class is provided as a conceptual example to illustrate how Web2 applications can interact with blockchain technologies using the Cellact SDK. This class demonstrates a series of operations from initializing network connections to executing blockchain transactions, all within a synchronous, step-by-step execution model typical in Web2 environments.
+The `InitAppWeb2` class is provided as a conceptual example to illustrate how Web2 applications can interact with blockchain technologies using the Cellact SDK. This class demonstrates a series of operations from initializing network connections to executing blockchain transactions, all within a synchronous, step-by-step execution model typical in Web2 environments.
 
-    ### Synchronous Process Execution
+### Synchronous Process Execution
 
 The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
 

@@ -7,6 +7,8 @@ Welcome to the Arnacon SDK documentation. This SDK is designed to facilitate blo
 - [Introduction](#introduction)
 - [Installation](#installation)
     - [Prerequisites](#prerequisities)
+    - [Android studio](#android-studio)
+    - [Maven](#maven)
 - [Configuration](#configuration)
     - [Contracts](#contracts)
     - [Network](#network)
@@ -37,7 +39,7 @@ The Arnacon SDK is designed to be easily integrated into your Java projects usin
 
 Ensure you have Maven installed and configured on your system. The SDK requires Java 11 or higher due to its dependencies and language features.
 
-### Android studio
+#### Android studio
 
 Place the JAR file in the project folder `libs`.
 
@@ -47,12 +49,12 @@ Sync your Gradle project to ensure the dependencies are downloaded and included 
 
 ```gradle
 implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar"))))
-implementation "org.web3j:core:4.8.7-android"
+implementation("org.web3j:core:4.8.7-android")
 ```
 
 This version of web3j is optimized for Android development, providing compatibility with Android's networking and concurrency frameworks.
 
-### Maven
+#### Maven
 
 ### Adding the SDK to Your Project
 
@@ -334,8 +336,10 @@ fetchStoreFromIPFS(String cid)
 - Fetches content from IPFS using the provided CID (Content Identifier).
   This function is useful for retrieving decentralized content.
 
+**
 ***
-***
+****
+*****
 
 ## License
 

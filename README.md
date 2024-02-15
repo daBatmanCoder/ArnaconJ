@@ -308,15 +308,15 @@ getCredentials()
 
 Core component for interacting with the blockchain, including contract interactions, signing messages, and handling transactions.
 
-====
-====
+***
+***
 ```java
 signMessage(String Message)
 ```
 - Takes a string message, signs it with the private key of the current wallet, and returns the signature.
   This is useful for proving ownership of a wallet address without revealing the private key.
 
-====
+***
 
 ```java
 mintNFT(String _userENS)
@@ -324,21 +324,21 @@ mintNFT(String _userENS)
 - Encodes a function call to mint an NFT with the provided ENS (Ethereum Name Service) name. 
   It constructs and sends a transaction to mint the NFT, then returns the transaction hash.
 
-====
+***
 ```java
 buyENS(String _userENS)
 ```
 - Similar to mintNFT, but specifically for purchasing an ENS name. 
   It sends a transaction to the ENS contract to register the name under the user's wallet address.
 
-====
+***
 ```java
 checkBalance(String publicKey)
 ```
 - Returns the balance of the wallet associated with the given public key. 
   This function is essential for monitoring wallet funds.
 
-==== 
+*** 
 ```java
 fetchStoreFromIPFS(String cid) 
 ```

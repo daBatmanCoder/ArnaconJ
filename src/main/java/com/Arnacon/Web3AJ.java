@@ -45,7 +45,7 @@ public class Web3AJ {
     public Wallet wallet;
     Network network; // Ethereum / Polygon / Binance Smart Chain
     Web3j web3j;
-    CellContracts contracts;
+    Contracts contracts;
 
 
     // Constructor with no private key
@@ -62,7 +62,7 @@ public class Web3AJ {
     private void commonConstructor(Network _network){
         this.network = _network;
         this.web3j = Web3j.build(new HttpService(this.network.getRPC()));
-        contracts = new CellContracts();
+        contracts = new Contracts();
     }
 
     // Takes a message and signs it with the private key of the current wallet

@@ -4,7 +4,8 @@ import org.json.JSONObject;
 
 import com.Config.ANetwork;
 
-public class Network extends ANetwork{
+public class Network implements ANetwork{
+    
     private String ENTRY_POINT_URL;
     private int CHAIN_ID;
 

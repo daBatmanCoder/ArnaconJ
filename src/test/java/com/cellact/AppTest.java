@@ -14,8 +14,9 @@ public class AppTest
      * Create the test case
      *
      * @param testName name of the test case
+     * @throws Exception 
      */
-    public AppTest( String testName )
+    public AppTest( String testName ) throws Exception
     {
         super( testName );
     }

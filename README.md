@@ -178,7 +178,7 @@ The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
 
 ### Step-by-Step Guide
 
-1. **Initialization**
+1. **Initialization** ( cloudFunctions are now under Utils)
 
     - Initializes the Web3 service with the Mumbai test network configuration.
     - Sets up the configuration for the service provider.
@@ -199,7 +199,7 @@ The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
         String shopCID = cloudFunctions.getShopCID(configServiceProvider.getServiceProviderName());
         ```
 
-3. **IPFS Content Fetch and Display**     
+3. **IPFS Content Fetch and Display**   ( 2 + 3 are now together)  
 
     - Retrieves content from IPFS using the shop CID and displays the content.
 
@@ -264,6 +264,15 @@ The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
 ### Utils
 
 Provides utility functions such as package validation, shop opening, and payment URL generation.
+
+
+- The cloud functions and Contracts class are under Utils
+
+```java
+public static CloudFunctions CloudFunctions = new CloudFunctions();
+public static Contracts Contracts = new Contracts();
+```
+
 
 ```java
 isValidPackage(String packageNum, String shopData)

@@ -45,7 +45,6 @@ public class Web3AJ {
     public Wallet wallet;
     ANetwork network; // Ethereum / Polygon / Binance Smart Chain
     Web3j web3j;
-    Contracts contracts;
 
 
     // Constructor with no private key
@@ -62,7 +61,6 @@ public class Web3AJ {
     private void commonConstructor(ANetwork _network){
         this.network = _network;
         this.web3j = Web3j.build(new HttpService(this.network.getRPC()));
-        contracts = new Contracts();
     }
 
     // Takes a message and signs it with the private key of the current wallet
@@ -119,12 +117,12 @@ public class Web3AJ {
         EthGasPrice ethGasPrice = web3j.ethGasPrice().send();
         BigInteger gasPrice = ethGasPrice.getGasPrice();
         BigInteger valueInWei = new BigInteger("0"); 
-        BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(credentials, encodedFunction, valueInWei, gasPrice, contracts.NAME_HASH_ADDRESS);
+        BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(credentials, encodedFunction, valueInWei, gasPrice, Utils.Contracts.NAME_HASH_ADDRESS);
 
         EthSendTransaction response = transactionManager.sendTransaction(
                 gasPrice,
                 estimatedGasLimit,
-                contracts.NAME_HASH_ADDRESS,
+                Utils.Contracts.NAME_HASH_ADDRESS,
                 encodedFunction,
                 valueInWei
         );
@@ -160,12 +158,12 @@ public class Web3AJ {
             // Need to change this to MATIC (network currency let's say.)
             BigInteger valueInWei = new BigInteger("0"); 
             
-            BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(credentials, encodedFunction, valueInWei, gasPrice,contracts.W_ENS_ADDRESS);
+            BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(credentials, encodedFunction, valueInWei, gasPrice,Utils.Contracts.W_ENS_ADDRESS);
 
             EthSendTransaction response = transactionManager.sendTransaction(
                     gasPrice,
                     estimatedGasLimit,
-                    contracts.W_ENS_ADDRESS,
+                    Utils.Contracts.W_ENS_ADDRESS,
                     encodedFunction,
                     valueInWei 
             );
@@ -227,7 +225,10 @@ public class Web3AJ {
         return precise_balance;
     }
 
-    public static String fetchStoreFromIPFS(String cid) throws Exception {
+    public static String fetchStoreFromIPFS(String serviceProviderName) throws Exception {
+
+        String cid = Utils.CloudFunctions.getShopCID(serviceProviderName);
+
         // Use a public IPFS gateway to fetch the content. You can also use a local IPFS node if you have one running.
         String ipfsGateway = "https://ipfs.io/ipfs/";
         String ipfsLink = ipfsGateway + cid;

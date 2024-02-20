@@ -2,7 +2,7 @@ package com.Arnacon;
 
 import com.Config.AContract;
 
-public class Contracts extends AContract{
+public class Contracts implements AContract{
     
     String NAME_HASH_ADDRESS;
     String W_ENS_ADDRESS;

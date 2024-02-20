@@ -10,6 +10,9 @@ import org.json.JSONObject; // Make sure to include the JSON library in your pro
 
 public class Utils {
 
+    public static CloudFunctions CloudFunctions = new CloudFunctions();
+    public static Contracts Contracts = new Contracts();
+
 
     public static boolean isValidPackage(String packageNum, String jsonStore) {
         // Parse the JSON data
@@ -42,6 +45,12 @@ public class Utils {
     }
 
     public static String getPaymentURL(String userID, String packageNum, String jsonStore) {
+        boolean isValid = Utils.isValidPackage(packageNum, jsonStore);
+        if (!isValid) {
+            System.out.println("The package number is not valid.");
+            return null;
+        }
+
         try {
             
 

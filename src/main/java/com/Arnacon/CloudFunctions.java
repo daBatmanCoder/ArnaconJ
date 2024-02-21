@@ -108,7 +108,7 @@ public class CloudFunctions {
     }
 
     public String getShopCID(String serviceProvider) {
-        String result = RequestGetFromCloud(get_networks_url, false);
+        String result = RequestGetFromCloud(get_service_provider_url, false);
         
         JSONObject jsonObject = new JSONObject(result);
 

@@ -14,27 +14,31 @@ public class InitAppWeb2 {
 
     public InitAppWeb2() throws Exception {
 
+        // Make Web3 Instance
         this.Web3Service = new Web3AJ(new Network("mumbai"));
         serviceProvider = new ConfigServiceProvider("test2.cellact.nl");
 
-        String ipfsContent = Web3AJ.fetchStoreFromIPFS(serviceProvider.getServiceProviderName());
+        // Fetch store
+        String ipfsContent = Web3AJ.fetchStore(serviceProvider.getServiceProviderName());
+        System.out.println("Store: " + ipfsContent);
 
-        System.out.println("IPFS Content: " + ipfsContent);
-
+        // Choose a product
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter package you want: ");
-
         String packageNum = scanner.nextLine();
 
+        // Payment URL
         String url = Utils.getPaymentURL(this.Web3Service.wallet.getPublicKey(), packageNum, ipfsContent);
         System.out.println("Payment URL: " + url);
 
         scanner.nextLine();
         scanner.close();
 
+        // After everything is done server side- retrieve the user ENS
         String ens = Utils.CloudFunctions.getUserENS(this.Web3Service.wallet.getPublicKey());
         System.out.println("ENS: " + ens);
 
+        // Sign a message
         String message = "9c71ab46-370b-40f6-8235-bf1b03da1867";
         String signed = Web3Service.signMessage(message);
         System.out.println("Signature: " + signed);

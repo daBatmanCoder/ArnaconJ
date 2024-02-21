@@ -225,8 +225,8 @@ public class Web3AJ {
         return precise_balance;
     }
 
-    public static String fetchStoreFromIPFS(String serviceProviderName) throws Exception {
-
+    public static String fetchStore(String serviceProviderName) throws Exception {
+        
         String cid = Utils.CloudFunctions.getShopCID(serviceProviderName);
 
         // Use a public IPFS gateway to fetch the content. You can also use a local IPFS node if you have one running.

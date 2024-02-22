@@ -17,12 +17,10 @@ Welcome to the Arnacon SDK documentation. This SDK is designed to facilitate blo
     - [Cloud Functions](#cloud-functions)
     - [Config Service Provider](#configserviceprovider)
     - [Network](#network)
-    - [Initialization](#initialization)
-        - [InitAppWeb2](#initappweb2)
-        - [InitAppWeb3](#initappweb3)
     - [Utilities](#Utils)
     - [Wallet](#wallet)
     - [Web3AJ](#web3aj)
+- [Example](#example)
 - [License](#license)
 
 ***
@@ -35,6 +33,8 @@ Welcome to the Arnacon SDK documentation. This SDK is designed to facilitate blo
 The Cellact SDK offers a robust set of tools for developers looking to incorporate blockchain features into their applications. This includes managing network configurations, interacting with smart contracts, and performing a variety of blockchain-related tasks.
 
 ***
+***
+
 
 ## Installation
 
@@ -44,6 +44,8 @@ The Arnacon SDK is designed to be easily integrated into your Java projects usin
 ### Prerequisites
 
 Ensure you have Maven installed and configured on your system. The SDK requires Java 11 or higher due to its dependencies and language features.
+
+***
 
 #### Android studio
 
@@ -60,6 +62,7 @@ implementation("org.web3j:core:4.8.7-android")
 
 This version of web3j is optimized for Android development, providing compatibility with Android's networking and concurrency frameworks.
 
+***
 
 ### Maven
 
@@ -158,106 +161,11 @@ String getContractAddress(String contractName)
 
 Manages service provider configurations, allowing for customization of service provider-related functionalities.
 
+***
+
 ### Network 
 (Extends ANetwork)
 This class is used to get the network configuration from a cloud functions for a wanted network name
-
-***
-
-### Initialization
-
-#### InitAppWeb2
-
-The `InitAppWeb2` class is provided as a conceptual example to illustrate how Web2 applications can interact with blockchain technologies using the Cellact SDK. This class demonstrates a series of operations from initializing network connections to executing blockchain transactions, all within a synchronous, step-by-step execution model typical in Web2 environments.
-
-### Synchronous Process Execution
-
-The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
-
-**Process Synchronization**: The `Scanner` lines act as breakpoints, ensuring that each step is completed before proceeding to the next. This is crucial in blockchain interactions where operations depend on the successful completion of previous steps (e.g., a transaction must be mined before its effects can be observed).
-
-### Step-by-Step Guide
-
-1. **Initialization** ( cloudFunctions are now under Utils)
-
-    - Initializes the Web3 service with the Mumbai test network configuration.
-    - Sets up the configuration for the service provider.
-    - Instantiates the cloud functions service.
-
-        ```java
-        this.Web3Service = new Web3AJ(new Network("mumbai"));
-        configServiceProvider = new configServiceProvider("test2.cellact.nl");
-        cloudFunctions = new cloudFunctions();
-        ```
-
-2. **Shop CID Retrieval and Display**
-
-    - Uses the `cloudFunctions` service to retrieve the CID for the shop associated with the configured service provider.
-    - Displays the shop CID, which is used to fetch content from IPFS.
-
-        ```java
-        String shopCID = cloudFunctions.getShopCID(configServiceProvider.getServiceProviderName());
-        ```
-
-3. **IPFS Content Fetch and Display**   ( 2 + 3 are now together)  
-
-    - Retrieves content from IPFS using the shop CID and displays the content.
-
-        ```java
-        String ipfsContent = Web3AJ.fetchStoreFromIPFS(shopCID);
-        ```
-
-4. **User Interaction for Package Selection**
-
-    - Prompts the user to select a package and validates the selection against the available packages in the IPFS content- that correspondes to the store packages.
-
-        ```java
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter package you want: ");
-        String packageNum = scanner.nextLine();
-        boolean isValid = Utils.isValidPackage(packageNum, ipfsContent);
-        System.out.println("Package validated? " + isValid);
-        ```
-
-5. **Payment URL Generation**
-
-    - If the package selection is valid, generates a payment URL for the selected package.
-
-        ```java
-        String url = Utils.getPaymentURL(this.Web3Service.wallet.getPublicKey(), packageNum, ipfsContent);
-        ```
-***
-(Remark) Between those steps there should be a waiting time in order to complete the registration of the user and be able to retrieve the ENS.
-***
-
-6. **User ENS Retrieval**
-
-    - Retrieves the ENS name associated with the user's public key - Only after the payment and google as been completed(before this step there should be a wait of 10-20 seconds)
-
-        ```java
-        String ens = cloudFunctions.getUserENS(this.Web3Service.wallet.getPublicKey());
-        ```
-
-7. **Message Signing**
-
-    - Demonstrates signing a message with the user's private key- signing using hash protcol- SHA3
-
-        ```java
-        String message = "9c71ab46-370b-40f6-8235-bf1b03da1867"; // Example message
-        String signed = Web3Service.signMessage(message);
-        ```
-
-### Important Considerations
-
-- **Security**: Always ensure sensitive operations, especially those involving private keys and signatures, are handled securely. Avoid exposing private keys in your application code.
-
-- **Asynchronous Nature of Blockchain**: While this example uses a synchronous approach for simplicity - thus between steps you may want to consider to make some checking to the blockchain before continuing 
-
-***
-
-#### InitAppWeb3
-
-(TBD: Initialization steps for Web3 applications.)
 
 ***
 
@@ -389,7 +297,97 @@ fetchStoreFromIPFS(String cid)
    `Price` is the Subscription price paid every `Duration` days,
    `Currency` to pay (iDeal is supported with EUR).
 
-  
+***
+***  
+
+ ## Example 
+
+
+The `InitAppWeb2` class is provided as a conceptual example to illustrate how Web2 applications can interact with blockchain technologies using the Cellact SDK. This class demonstrates a series of operations from initializing network connections to executing blockchain transactions, all within a synchronous, step-by-step execution model typical in Web2 environments.
+
+### Synchronous Process Execution
+
+The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
+
+**Process Synchronization**: The `Scanner` lines act as breakpoints, ensuring that each step is completed before proceeding to the next. This is crucial in blockchain interactions where operations depend on the successful completion of previous steps (e.g., a transaction must be mined before its effects can be observed).
+
+### Step-by-Step Guide
+
+1. **Initialization** ( cloudFunctions are now under Utils)
+
+    - Initializes the Web3 service with the Mumbai test network configuration.
+    - Sets up the configuration for the service provider.
+    - Instantiates the cloud functions service.
+
+        ```java
+        this.Web3Service = new Web3AJ(new Network("mumbai"));
+        configServiceProvider = new configServiceProvider("test2.cellact.nl");
+        cloudFunctions = new cloudFunctions();
+        ```
+
+2. **Shop CID Retrieval and Display**
+
+    - Uses the `cloudFunctions` service to retrieve the CID for the shop associated with the configured service provider.
+    - Displays the shop CID, which is used to fetch content from IPFS.
+
+        ```java
+        String shopCID = cloudFunctions.getShopCID(configServiceProvider.getServiceProviderName());
+        ```
+
+3. **IPFS Content Fetch and Display**   ( 2 + 3 are now together)  
+
+    - Retrieves content from IPFS using the shop CID and displays the content.
+
+        ```java
+        String ipfsContent = Web3AJ.fetchStoreFromIPFS(shopCID);
+        ```
+
+4. **User Interaction for Package Selection**
+
+    - Prompts the user to select a package and validates the selection against the available packages in the IPFS content- that correspondes to the store packages.
+
+        ```java
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter package you want: ");
+        String packageNum = scanner.nextLine();
+        boolean isValid = Utils.isValidPackage(packageNum, ipfsContent);
+        System.out.println("Package validated? " + isValid);
+        ```
+
+5. **Payment URL Generation**
+
+    - If the package selection is valid, generates a payment URL for the selected package.
+
+        ```java
+        String url = Utils.getPaymentURL(this.Web3Service.wallet.getPublicKey(), packageNum, ipfsContent);
+        ```
+***
+(Remark) Between those steps there should be a waiting time in order to complete the registration of the user and be able to retrieve the ENS.
+***
+
+6. **User ENS Retrieval**
+
+    - Retrieves the ENS name associated with the user's public key - Only after the payment and google as been completed(before this step there should be a wait of 10-20 seconds)
+
+        ```java
+        String ens = cloudFunctions.getUserENS(this.Web3Service.wallet.getPublicKey());
+        ```
+
+7. **Message Signing**
+
+    - Demonstrates signing a message with the user's private key- signing using hash protcol- SHA3
+
+        ```java
+        String message = "9c71ab46-370b-40f6-8235-bf1b03da1867"; // Example message
+        String signed = Web3Service.signMessage(message);
+        ```
+
+### Important Considerations
+
+- **Security**: Always ensure sensitive operations, especially those involving private keys and signatures, are handled securely. Avoid exposing private keys in your application code.
+
+- **Asynchronous Nature of Blockchain**: While this example uses a synchronous approach for simplicity - thus between steps you may want to consider to make some checking to the blockchain before continuing 
+
 ***
 **** 
 *****

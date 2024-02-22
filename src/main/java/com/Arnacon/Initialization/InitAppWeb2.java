@@ -21,7 +21,7 @@ public class InitAppWeb2 {
         // Fetch store
         String ipfsContent = Web3AJ.fetchStore(serviceProvider.getServiceProviderName());
         System.out.println("Store: " + ipfsContent);
-
+        
         // Choose a product
         Scanner scanner = new Scanner(System.in);
         System.out.println("Enter package you want: ");

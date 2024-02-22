@@ -173,13 +173,12 @@ This class is used to get the network configuration from a cloud functions for a
 
 Provides utility functions such as package validation, shop opening, and payment URL generation.
 
-
-- The cloud functions and Contracts class are under Utils
-
 ```java
 public static CloudFunctions CloudFunctions = new CloudFunctions();
 public static Contracts Contracts = new Contracts();
 ```
+
+- The cloud functions and Contracts class are under Utils
 
 
 ```java
@@ -259,9 +258,10 @@ checkBalance(String publicKey)
   This function is essential for monitoring wallet funds.
 
 ```java
-fetchStoreFromIPFS(String cid) 
+fetchStore(String serviceProviderName) 
 ```
-- Fetches content from IPFS using the provided CID (Content Identifier).
+- Fetches for a given service provider the CID of his store and then 
+  fetches content from IPFS using the received CID (Content Identifier).
   This function is useful for retrieving decentralized content.
 
   Store example will be a JSON format file:
@@ -317,46 +317,24 @@ The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
 
     - Initializes the Web3 service with the Mumbai test network configuration.
     - Sets up the configuration for the service provider.
-    - Instantiates the cloud functions service.
 
         ```java
         this.Web3Service = new Web3AJ(new Network("mumbai"));
         configServiceProvider = new configServiceProvider("test2.cellact.nl");
-        cloudFunctions = new cloudFunctions();
         ```
 
-2. **Shop CID Retrieval and Display**
-
-    - Uses the `cloudFunctions` service to retrieve the CID for the shop associated with the configured service provider.
-    - Displays the shop CID, which is used to fetch content from IPFS.
-
-        ```java
-        String shopCID = cloudFunctions.getShopCID(configServiceProvider.getServiceProviderName());
-        ```
-
-3. **IPFS Content Fetch and Display**   ( 2 + 3 are now together)  
+2. **Fetch Store** 
 
     - Retrieves content from IPFS using the shop CID and displays the content.
 
         ```java
-        String ipfsContent = Web3AJ.fetchStoreFromIPFS(shopCID);
+        String ipfsContent = Web3AJ.fetchStore(shopCID);
         ```
 
-4. **User Interaction for Package Selection**
+3. **Payment URL Generation**
 
-    - Prompts the user to select a package and validates the selection against the available packages in the IPFS content- that correspondes to the store packages.
+    - After user selection (packageNum) we send the user's public key,package num and the shop JSON and get a URL to pay.
 
-        ```java
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Enter package you want: ");
-        String packageNum = scanner.nextLine();
-        boolean isValid = Utils.isValidPackage(packageNum, ipfsContent);
-        System.out.println("Package validated? " + isValid);
-        ```
-
-5. **Payment URL Generation**
-
-    - If the package selection is valid, generates a payment URL for the selected package.
 
         ```java
         String url = Utils.getPaymentURL(this.Web3Service.wallet.getPublicKey(), packageNum, ipfsContent);
@@ -365,15 +343,15 @@ The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
 (Remark) Between those steps there should be a waiting time in order to complete the registration of the user and be able to retrieve the ENS.
 ***
 
-6. **User ENS Retrieval**
+4. **User ENS Retrieval**
 
     - Retrieves the ENS name associated with the user's public key - Only after the payment and google as been completed(before this step there should be a wait of 10-20 seconds)
 
         ```java
-        String ens = cloudFunctions.getUserENS(this.Web3Service.wallet.getPublicKey());
+        String ens = Utils.cloudFunctions.getUserENS(this.Web3Service.wallet.getPublicKey());
         ```
 
-7. **Message Signing**
+5. **Message Signing**
 
     - Demonstrates signing a message with the user's private key- signing using hash protcol- SHA3
 

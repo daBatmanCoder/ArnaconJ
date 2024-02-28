@@ -129,7 +129,7 @@ public class CloudFunctions {
         String networkName = InetworkName.toLowerCase();
 
         JSONObject config = new JSONObject(result);
-        JSONObject networkConfig = config.getJSONObject("networks").getJSONObject(networkName);
+        JSONObject networkConfig = config.getJSONObject(networkName);
 
         return networkConfig;
     }

@@ -34,16 +34,8 @@ public class InitAppWeb2 {
         scanner.nextLine();
         scanner.close();
 
-        // After everything is done server side- retrieve the user ENS
-        String ens = Utils.CloudFunctions.getUserENS(this.Web3Service.wallet.getPublicKey());
-        System.out.println("ENS: " + ens);
-
-        // Sign a message
         String fcm_token = "9c71ab46-370b-40f6-8235-bf1b03da1867";
-        String fcm_signed = Web3Service.signMessage(fcm_token);
-        System.out.println("Signature: " + fcm_signed);
-
-        Utils.CloudFunctions.sendFCM(fcm_token,fcm_signed,ens);
+        Web3Service.sendFCM(fcm_token);
 
     }
     

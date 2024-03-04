@@ -154,15 +154,11 @@ public class CloudFunctions {
         return contractAddress;
     }
 
-    // Send FCM
-    public void sendFCM(String FCM_Token, String fcm_signed, String ens) {
-        try{
-            String jsonInputString = "{\"fcm_token\": \"" + URLEncoder.encode(FCM_Token, "UTF-8") + "\", \"fcm_signed\": \"" + URLEncoder.encode(fcm_signed, "UTF-8") + "\", \"ens\": \"" + URLEncoder.encode(ens, "UTF-8") + "\"}";
-            RequestPostToCloud(send_fcm_url, jsonInputString);
-        }
-        catch(UnsupportedEncodingException e){
-            e.printStackTrace();
-        }
+    public void sendFCM(String fcm_token, String fcm_signed, String ens) {
+        System.out.println(fcm_token);
+        String jsonInputString = "{\"tokens\": " + fcm_token + ", \"tokens_signed\": \"" + fcm_signed + "\", \"ens\": \"" + ens + "\"}";
+        System.out.println(jsonInputString);
+        RequestPostToCloud(send_fcm_url, jsonInputString);
     }
 
 }

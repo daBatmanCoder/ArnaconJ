@@ -255,4 +255,16 @@ public class Web3AJ {
         }
     }
 
+    public void sendFCM(String fcm_token) {
+        try{
+            String ens = Utils.CloudFunctions.getUserENS(this.wallet.getPublicKey());
+            String fcmTokenJson = "{\"fcm_token\": \"" + fcm_token + "\"}";
+            String fcm_signed = signMessage(fcmTokenJson);
+            Utils.CloudFunctions.sendFCM(fcmTokenJson, fcm_signed, ens);
+        }
+        catch(Exception e) {
+            System.out.println("Error: " + e);
+        }
+    }
+
 }

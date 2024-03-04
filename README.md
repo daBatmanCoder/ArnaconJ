@@ -194,7 +194,7 @@ isValidPackage(String packageNum, String shopData)
 
 
 ```java
-getPaymentURL(String userID, String packageNum, String shopData)
+getPaymentURL(String userID, String packageNum, String jsonStore, String successURL, String failureURL)
 ```
 - Constructs a URL for processing payments for a selected package using Stripe payment service. 
 (The store is a fetched json with a number of items)
@@ -338,11 +338,12 @@ The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
 
 3. **Payment URL Generation**
 
-    - After user selection (packageNum) we send the user's public key,package num and the shop JSON and get a URL to pay.
+    - After user selection (packageNum) we send the user's public key,package num and the shop JSON and get a URL to pay,
+      Success and Failure URL are to return to the place you want in-case of a success and failure correspondely. 
 
 
         ```java
-        String url = Utils.getPaymentURL(this.Web3Service.wallet.getPublicKey(), packageNum, ipfsContent);
+        String url = Utils.getPaymentURL(this.Web3Service.wallet.getPublicKey(), packageNum, ipfsContent,success_url,failure_url);
         ```
 ***
 (Remark) Between those steps there should be a waiting time in order to complete the registration of the user and be able to retrieve the ENS.

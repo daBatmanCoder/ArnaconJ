@@ -27,8 +27,10 @@ public class InitAppWeb2 {
         System.out.println("Enter package you want: ");
         String packageNum = scanner.nextLine();
 
+        String success_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+        String failure_url = "google.com";
         // Payment URL
-        String url = Utils.getPaymentURL(this.Web3Service.wallet.getPublicKey(), packageNum, ipfsContent);
+        String url = Utils.getPaymentURL(this.Web3Service.wallet.getPublicKey(), packageNum, ipfsContent,success_url,failure_url);
         System.out.println("Payment URL: " + url);
 
         scanner.nextLine();

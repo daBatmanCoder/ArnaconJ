@@ -44,7 +44,7 @@ public class Utils {
         }
     }
 
-    public static String getPaymentURL(String userID, String packageNum, String jsonStore) {
+    public static String getPaymentURL(String userID, String packageNum, String jsonStore, String successURL, String failureURL) {
         boolean isValid = Utils.isValidPackage(packageNum, jsonStore);
         if (!isValid) {
             System.out.println("The package number is not valid.");
@@ -93,6 +93,9 @@ public class Utils {
             requestJson.put("transactionPrice", transactionPrice); // One-time price
             requestJson.put("subscriptionPrice", subscriptionPrice); // Subscription price
             requestJson.put("currency", currency); // Currency
+            requestJson.put("success_url", successURL); // Currency
+            requestJson.put("failure_url", failureURL); // Currency
+
 
             // Send the JSON as request body
             try (OutputStream os = con.getOutputStream()) {

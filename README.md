@@ -155,6 +155,11 @@ String getContractAddress(String contractName)
 ```
 - Returns the contract address from a contract name.
 
+```java
+void sendFCM(String FCM_Token, String fcm_signed, String ens)
+```
+- Sends the server the FCM token to authenticate and update the user's FCM_token for notification
+
 ***
 
 ### ConfigServiceProvider
@@ -351,13 +356,20 @@ The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
         String ens = Utils.cloudFunctions.getUserENS(this.Web3Service.wallet.getPublicKey());
         ```
 
-5. **Message Signing**
+5. **FCM Token Signing**
 
-    - Demonstrates signing a message with the user's private key- signing using hash protcol- SHA3
+    - Demonstrates signing a FCM token with the user's private key- signing using hash protcol- SHA3
 
         ```java
-        String message = "9c71ab46-370b-40f6-8235-bf1b03da1867"; // Example message
-        String signed = Web3Service.signMessage(message);
+        String fcm_token = "9c71ab46-370b-40f6-8235-bf1b03da1867"; // Example message
+        String fcm_signed = Web3Service.signMessage(fcm_token);
+        ```
+6. **FCM Token sending**
+
+    - Sending the signed fcm_token, fcm_token and the user's ENS to the server to update the FCM token required for notification sending
+
+        ```java
+        Utils.CloudFunctions.sendFCM(fcm_token,fcm_signed,ens);
         ```
 
 ### Important Considerations

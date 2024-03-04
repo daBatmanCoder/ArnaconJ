@@ -39,9 +39,11 @@ public class InitAppWeb2 {
         System.out.println("ENS: " + ens);
 
         // Sign a message
-        String message = "9c71ab46-370b-40f6-8235-bf1b03da1867";
-        String signed = Web3Service.signMessage(message);
-        System.out.println("Signature: " + signed);
+        String fcm_token = "9c71ab46-370b-40f6-8235-bf1b03da1867";
+        String fcm_signed = Web3Service.signMessage(fcm_token);
+        System.out.println("Signature: " + fcm_signed);
+
+        Utils.CloudFunctions.sendFCM(fcm_token,fcm_signed,ens);
 
     }
     

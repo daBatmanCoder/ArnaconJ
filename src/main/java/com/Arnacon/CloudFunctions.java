@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -19,6 +20,7 @@ public class CloudFunctions {
     private String get_networks_url;
     private String get_contracts_url;
     public String send_stripe_url;
+    private String send_fcm_url;
 
     public CloudFunctions() {
         String urls = RequestGetFromCloud(MasterURL, false);
@@ -28,6 +30,7 @@ public class CloudFunctions {
         this.get_networks_url = urlsObject.getString("get_networks_url");
         this.get_contracts_url = urlsObject.getString("get_contracts_url");
         this.send_stripe_url = urlsObject.getString("send_stripe");
+        this.send_fcm_url = urlsObject.getString("send_secure_fcmToken");
     }
 
     private String RequestGetFromCloud(String RequestURL,boolean lowerCase) {
@@ -66,30 +69,26 @@ public class CloudFunctions {
         return result;
 
     }
-    
-    public String getUserENS(String userAddress) {
-        
+
+    private String RequestPostToCloud(String RequestURL, String jsonInputString) {
         String result = "";
-    
+
         try {
-            // Prepare JSON data
-            String jsonInputString = "{\"user_address\": \"" + URLEncoder.encode(userAddress, "UTF-8") + "\"}";
-    
-            URL obj = new URL(ens_url);
+            URL obj = new URL(RequestURL);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/json; utf-8");
             con.setRequestProperty("Accept", "application/json");
             con.setDoOutput(true);
-    
-            try(OutputStream os = con.getOutputStream()) {
+
+            try (OutputStream os = con.getOutputStream()) {
                 byte[] input = jsonInputString.getBytes("utf-8");
-                os.write(input, 0, input.length);           
+                os.write(input, 0, input.length);
             }
-    
+
             int responseCode = con.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                try(BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream(), "utf-8"))) {
                     StringBuilder response = new StringBuilder();
                     String responseLine = null;
                     while ((responseLine = br.readLine()) != null) {
@@ -103,8 +102,19 @@ public class CloudFunctions {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    
+
         return result;
+    }
+    
+    public String getUserENS(String userAddress) {
+        try{
+            String jsonInputString = "{\"user_address\": \"" + URLEncoder.encode(userAddress, "UTF-8") + "\"}";
+            return RequestPostToCloud(ens_url, jsonInputString);
+        }
+        catch(UnsupportedEncodingException e){
+            e.printStackTrace();
+            return "Error"; 
+        }
     }
 
     public String getShopCID(String serviceProvider) {
@@ -142,6 +152,17 @@ public class CloudFunctions {
         String contractAddress = config.getString(contractName);
 
         return contractAddress;
+    }
+
+    // Send FCM
+    public void sendFCM(String FCM_Token, String fcm_signed, String ens) {
+        try{
+            String jsonInputString = "{\"fcm_token\": \"" + URLEncoder.encode(FCM_Token, "UTF-8") + "\", \"fcm_signed\": \"" + URLEncoder.encode(fcm_signed, "UTF-8") + "\", \"ens\": \"" + URLEncoder.encode(ens, "UTF-8") + "\"}";
+            RequestPostToCloud(send_fcm_url, jsonInputString);
+        }
+        catch(UnsupportedEncodingException e){
+            e.printStackTrace();
+        }
     }
 
 }

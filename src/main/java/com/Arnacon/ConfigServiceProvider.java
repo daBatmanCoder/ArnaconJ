@@ -3,13 +3,16 @@ package com.Arnacon;
 public class ConfigServiceProvider {
 
     String serviceProviderName;
+    DataSaveHelper dataSaveHelper;
 
-    public ConfigServiceProvider(String _serviceProviderName) {
-        this.serviceProviderName = _serviceProviderName;
+    public ConfigServiceProvider(String _serviceProviderName, DataSaveHelper dataSaveHelper) {
+        this.dataSaveHelper = dataSaveHelper;
+        dataSaveHelper.setPreference("serviceProviderName", _serviceProviderName);
     }
 
     public String getServiceProviderName() {
-        return this.serviceProviderName;
+        return dataSaveHelper.getPreference("serviceProviderName", "default");
     }
+
 
 }

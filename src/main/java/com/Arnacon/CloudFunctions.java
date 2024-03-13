@@ -22,6 +22,7 @@ public class CloudFunctions {
     public String send_stripe_url;
     private String send_fcm_url;
 
+
     public CloudFunctions() {
         String urls = RequestGetFromCloud(MasterURL, false);
         JSONObject urlsObject = new JSONObject(urls);

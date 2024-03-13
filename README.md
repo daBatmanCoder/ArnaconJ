@@ -18,6 +18,7 @@ Welcome to the Arnacon SDK documentation. This SDK is designed to facilitate blo
     - [Config Service Provider](#configserviceprovider)
     - [Network](#network)
     - [Utilities](#Utils)
+    - [DataSaverHelper](#data-saver-helper)
     - [Wallet](#wallet)
     - [Web3AJ](#web3aj)
 - [Example](#example)
@@ -72,10 +73,10 @@ To use this JAR in other projects on your local machine, you'll need to install 
 If you've already built the JAR with Maven, it should be correctly formatted. 
 To manually install it, use the following command:
 ```bash
-mvn install:install-file -Dfile=target/ArnaconSDK-1.0.jar -DgroupId=com.Arnacon -DartifactId=ArnaconSDK -Dversion=1.0 -Dpackaging=jar
+mvn install:install-file -Dfile=target/ArnaconSDK-1.0.2.jar -DgroupId=com.Arnacon -DartifactId=ArnaconSDK -Dversion=1.0.2 -Dpackaging=jar
 ```
 
-Ensure to replace target/ArnaconSDK-1.0.jar with the actual path to your generated JAR file.
+Ensure to replace target/ArnaconSDK-1.0.2.jar with the actual path to your generated JAR file.
 
 2. Include Your JAR as a Dependency in Other Projects
 
@@ -84,7 +85,7 @@ With your JAR installed in your local Maven repository, you can include it as a 
 <dependency>
     <groupId>com.Arnacon</groupId>
     <artifactId>ArnaconSDK</artifactId>
-    <version>1.0</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 
@@ -129,7 +130,7 @@ Extends `AContract` from the `Utils` SubPackage to provide specific contract add
 
 ***
 
-### CloudFunctions
+### Cloud Functions
 
 Includes methods to interact with cloud functions for tasks such as retrieving user ENS or service provider details.
 
@@ -162,7 +163,7 @@ void sendFCM(String fcm_token)
 
 ***
 
-### ConfigServiceProvider
+### Config Service Provider
 
 Manages service provider configurations, allowing for customization of service provider-related functionalities.
 
@@ -194,12 +195,26 @@ isValidPackage(String packageNum, String shopData)
 
 
 ```java
-getPaymentURL(String userID, String packageNum, String jsonStore, String successURL, String failureURL)
+getPaymentURL(String userID, String packageNum, String jsonStore)
 ```
 - Constructs a URL for processing payments for a selected package using Stripe payment service. 
 (The store is a fetched json with a number of items)
 
-*** 
+***
+### Data Saver Helper
+
+Interface to manage the data storing mechanism. (Set,Get)
+
+```java
+setPreference(String key, String value);
+```
+
+```java
+getPreference(String key, String defaultValue);
+```
+
+
+***
 
 ### Wallet
 
@@ -263,7 +278,7 @@ checkBalance(String publicKey)
   This function is essential for monitoring wallet funds.
 
 ```java
-fetchStore(String serviceProviderName) 
+fetchStore() 
 ```
 - Fetches for a given service provider the CID of his store and then 
   fetches content from IPFS using the received CID (Content Identifier).
@@ -302,30 +317,32 @@ fetchStore(String serviceProviderName)
    `Price` is the Subscription price paid every `Duration` days,
    `Currency` to pay (iDeal is supported with EUR).
 
+```java
+public String getPaymentURL(String packageNum) 
+```
+- Receiving user's choice and then sends it to the Utils- getPaymentURL to retrieve the URL
+
+
 ***
 ***  
 
  ## Example 
 
 
-The `InitAppWeb2` class is provided as a conceptual example to illustrate how Web2 applications can interact with blockchain technologies using the Cellact SDK. This class demonstrates a series of operations from initializing network connections to executing blockchain transactions, all within a synchronous, step-by-step execution model typical in Web2 environments.
-
-### Synchronous Process Execution
-
-The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
-
-**Process Synchronization**: The `Scanner` lines act as breakpoints, ensuring that each step is completed before proceeding to the next. This is crucial in blockchain interactions where operations depend on the successful completion of previous steps (e.g., a transaction must be mined before its effects can be observed).
+The `InitAppWeb2` md file is provided as a conceptual example to illustrate how Web2 applications can interact with blockchain technologies using the Cellact SDK. This class demonstrates a series of operations from initializing network connections to executing blockchain transactions, all within a synchronous, step-by-step execution model typical in Web2 environments.
 
 ### Step-by-Step Guide
 
-1. **Initialization** ( cloudFunctions are now under Utils)
+1. **Initialization**
 
-    - Initializes the Web3 service with the Mumbai test network configuration.
+    - Initializes the Web3 service with a desired network
     - Sets up the configuration for the service provider.
+    - Initalize the Saver Helper to save to your local machine
 
         ```java
-        this.Web3Service = new Web3AJ(new Network("mumbai"));
-        configServiceProvider = new configServiceProvider("test2.cellact.nl");
+        DataSaveHelper dataSaveHelper = new SharedPreferencesHelper();
+        this.Web3Service = new Web3AJ(new Network(<network_name>), dataSaveHelper);
+        configServiceProvider = new configServiceProvider("test2.cellact.nl" , dataSaveHelper);
         ```
 
 2. **Fetch Store** 
@@ -333,17 +350,16 @@ The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
     - Retrieves content from IPFS using the shop CID and displays the content.
 
         ```java
-        String ipfsContent = Web3AJ.fetchStore(shopCID);
+        String ipfsContent = Web3AJ.fetchStore();
         ```
 
 3. **Payment URL Generation**
 
-    - After user selection (packageNum) we send the user's public key,package num and the shop JSON and get a URL to pay,
-      Success and Failure URL are to return to the place you want in-case of a success and failure correspondely. 
+    - After user selection (packageNum) we send the selection to get the payment URL
 
 
         ```java
-        String url = Utils.getPaymentURL(this.Web3Service.wallet.getPublicKey(), packageNum, ipfsContent,success_url,failure_url);
+        String url = Web3Service.getPaymentURL(packageNum);
         ```
 ***
 (Remark) Between those steps there should be a waiting time in order to complete the registration of the user and be able to retrieve the ENS.
@@ -355,7 +371,7 @@ The use of `Scanner` and user input prompts in `InitAppWeb2` is deliberate:
     - Sending the fcm_token to update in the server side for future notification
 
         ```java
-        Utils.CloudFunctions.sendFCM(fcm_token);
+        Web3Service.sendFCM(fcm_token);
         ```
 
 ### Important Considerations

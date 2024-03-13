@@ -13,6 +13,8 @@ public class Utils {
     public static CloudFunctions CloudFunctions = new CloudFunctions();
     public static Contracts Contracts = new Contracts();
 
+    static String PAYMENT_DEEPLINK_OK = "https://success-java.vercel.app/";
+    static String PAYMENT_DEEPLINK_NOK = "https://failure-java.vercel.app/";
 
     public static boolean isValidPackage(String packageNum, String jsonStore) {
         // Parse the JSON data
@@ -44,7 +46,7 @@ public class Utils {
         }
     }
 
-    public static String getPaymentURL(String userID, String packageNum, String jsonStore, String successURL, String failureURL) {
+    public static String getPaymentURL(String userID, String packageNum, String jsonStore) {
         boolean isValid = Utils.isValidPackage(packageNum, jsonStore);
         if (!isValid) {
             System.out.println("The package number is not valid.");
@@ -52,7 +54,6 @@ public class Utils {
         }
 
         try {
-            
 
             JSONObject json = new JSONObject(jsonStore);
             JSONObject selectedPackage = json.getJSONObject(packageNum);
@@ -93,8 +94,8 @@ public class Utils {
             requestJson.put("transactionPrice", transactionPrice); // One-time price
             requestJson.put("subscriptionPrice", subscriptionPrice); // Subscription price
             requestJson.put("currency", currency); // Currency
-            requestJson.put("success_url", successURL); // Currency
-            requestJson.put("failure_url", failureURL); // Currency
+            requestJson.put("success_url", PAYMENT_DEEPLINK_OK); 
+            requestJson.put("failure_url", PAYMENT_DEEPLINK_NOK);
 
 
             // Send the JSON as request body

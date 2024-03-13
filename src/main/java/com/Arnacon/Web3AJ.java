@@ -1,7 +1,5 @@
 package com.Arnacon;
 
-import com.Config.ANetwork;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -42,25 +40,40 @@ import org.web3j.tx.response.PollingTransactionReceiptProcessor;
 
 public class Web3AJ {
 
-    public Wallet wallet;
-    ANetwork network; // Ethereum / Polygon / Binance Smart Chain
     Web3j web3j;
+    Wallet wallet;
+    Network network; // Ethereum / Polygon / Binance Smart Chain
+    DataSaveHelper dataSaveHelper;
 
+    public Web3AJ(DataSaveHelper dataSaveHelper) {
+        this(new Network(), dataSaveHelper);
+    }
+
+    public Web3AJ(Network _network, DataSaveHelper dataSaveHelper) {
+        this(_network.networkName, dataSaveHelper);
+    }
 
     // Constructor with no private key
-    public Web3AJ(ANetwork _network) {
-        this.wallet = new Wallet();
-        commonConstructor(_network);
+    public Web3AJ(String _networkName, DataSaveHelper dataSaveHelper) {
+        
+        String privateKey = dataSaveHelper.getPreference("privateKey", null);
+
+        if (privateKey != null){
+            this.wallet = new Wallet(privateKey);
+        }
+        else{
+            this.wallet = new Wallet();
+            dataSaveHelper.setPreference("privateKey", this.wallet.getPrivateKey());
+        }
+
+        commonConstructor(_networkName,dataSaveHelper);
     }
 
-    public Web3AJ(ANetwork _network, String privateKey) {
-        this.wallet = new Wallet(privateKey);
-        commonConstructor(_network);
-    }
-
-    private void commonConstructor(ANetwork _network){
+    private void commonConstructor(String _networkName, DataSaveHelper dataSaveHelper){
+        Network _network = new Network(_networkName);
         this.network = _network;
         this.web3j = Web3j.build(new HttpService(this.network.getRPC()));
+        this.dataSaveHelper = dataSaveHelper;
     }
 
     // Takes a message and signs it with the private key of the current wallet
@@ -80,7 +93,7 @@ public class Web3AJ {
     }
 
     // Encodes a function call to be used in a transaction
-    private String encodeFunction(String functionName, List<Type> inputParameters, List<TypeReference<?>> outputParameters) {
+    private String encodeFunction(String functionName, @SuppressWarnings("rawtypes") List<Type> inputParameters, List<TypeReference<?>> outputParameters) {
         
         Function function = new Function(
                 functionName,
@@ -106,6 +119,7 @@ public class Web3AJ {
                 new PollingTransactionReceiptProcessor(web3j, 1000, 60)
         );
 
+        @SuppressWarnings("rawtypes")
         List<Type> inputParameters = Arrays.asList(new Utf8String(this.wallet.getPublicKey()), new Utf8String(_userENS));
         
         String encodedFunction = encodeFunction(
@@ -144,6 +158,7 @@ public class Web3AJ {
                     new PollingTransactionReceiptProcessor(web3j, 1000, 60)
             );
 
+            @SuppressWarnings("rawtypes")
             List<Type> inputParameters = Arrays.asList(new Address(this.wallet.getPublicKey()), new Utf8String(_userENS));
             
             String encodedFunction = encodeFunction(
@@ -225,8 +240,11 @@ public class Web3AJ {
         return precise_balance;
     }
 
-    public static String fetchStore(String serviceProviderName) throws Exception {
-        
+    public String fetchStore() throws Exception {
+
+        String serviceProviderName = dataSaveHelper.getPreference("serviceProviderName", null);
+        System.out.println("Service Provider: " + serviceProviderName);
+
         String cid = Utils.CloudFunctions.getShopCID(serviceProviderName);
 
         // Use a public IPFS gateway to fetch the content. You can also use a local IPFS node if you have one running.
@@ -249,6 +267,8 @@ public class Web3AJ {
             }
             in.close();
 
+            dataSaveHelper.setPreference("store", content.toString());
+
             return content.toString(); // Returns the content of the file
         } else {
             throw new Exception("Failed to fetch content from IPFS. Response code: " + responseCode);
@@ -258,13 +278,20 @@ public class Web3AJ {
     public void sendFCM(String fcm_token) {
         try{
             String ens = Utils.CloudFunctions.getUserENS(this.wallet.getPublicKey());
+            dataSaveHelper.setPreference("ens", ens);
+
             String fcmTokenJson = "{\"fcm_token\": \"" + fcm_token + "\"}";
             String fcm_signed = signMessage(fcmTokenJson);
+            
             Utils.CloudFunctions.sendFCM(fcmTokenJson, fcm_signed, ens);
         }
         catch(Exception e) {
-            System.out.println("Error: " + e);
+            throw new RuntimeException("Error: " + e);
         }
+    }
+
+    public String getPaymentURL(String packageNum) {
+        return Utils.getPaymentURL(this.wallet.getPublicKey(), packageNum, dataSaveHelper.getPreference("store", packageNum));
     }
 
 }

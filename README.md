@@ -180,22 +180,22 @@ This class is used to get the network configuration from a cloud functions for a
 Provides utility functions such as package validation, shop opening, and payment URL generation.
 
 ```java
-public static CloudFunctions CloudFunctions = new CloudFunctions();
-public static Contracts Contracts = new Contracts();
+CloudFunctions CloudFunctions = new CloudFunctions();
+Contracts Contracts = new Contracts();
 ```
 
 - The cloud functions and Contracts class are under Utils
 
 
 ```java
-isValidPackage(String packageNum, String shopData)
+static boolean isValidPackage(String packageNum, String shopData)
 ```
 - Validates if the user input matches any of the packages listed in the provided JSON data. 
   This function is essential for verifying user selections against available options.
 
 
 ```java
-getPaymentURL(String userID, String packageNum, String jsonStore)
+static String getPaymentURL(String userID, String packageNum, String jsonStore)
 ```
 - Constructs a URL for processing payments for a selected package using Stripe payment service. 
 (The store is a fetched json with a number of items)
@@ -206,11 +206,11 @@ getPaymentURL(String userID, String packageNum, String jsonStore)
 Interface to manage the data storing mechanism. (Set,Get)
 
 ```java
-setPreference(String key, String value);
+void setPreference(String key, String value)
 ```
 
 ```java
-getPreference(String key, String defaultValue);
+String getPreference(String key, String defaultValue)
 ```
 
 
@@ -258,8 +258,8 @@ signMessage(String Message)
 - Takes a string message, signs it with the private key of the current wallet, and returns the signature.
   This is useful for proving ownership of a wallet address without revealing the private key.
 
-
-```java
+??? Future ???
+<!-- ```java
 mintNFT(String _userENS)
 ```
 - Encodes a function call to mint an NFT with the provided ENS (Ethereum Name Service) name. 
@@ -275,10 +275,10 @@ buyENS(String _userENS)
 checkBalance(String publicKey)
 ```
 - Returns the balance of the wallet associated with the given public key. 
-  This function is essential for monitoring wallet funds.
+  This function is essential for monitoring wallet funds. -->
 
 ```java
-fetchStore() 
+public String fetchStore() 
 ```
 - Fetches for a given service provider the CID of his store and then 
   fetches content from IPFS using the received CID (Content Identifier).
@@ -318,6 +318,12 @@ fetchStore()
    `Currency` to pay (iDeal is supported with EUR).
 
 ```java
+public void sendFCM(String fcm_token) 
+```
+- Sending the FCM token to update in the server side for future notification
+
+
+```java
 public String getPaymentURL(String packageNum) 
 ```
 - Receiving user's choice and then sends it to the Utils- getPaymentURL to retrieve the URL
@@ -334,10 +340,11 @@ The `InitAppWeb2` md file is provided as a conceptual example to illustrate how 
 ### Step-by-Step Guide
 
 1. **Initialization**
-
+    - Initalizes a new dataSaverHelper - interface you need to implement in order to save necessary parameters.
+        The SharedPreferencesHelper (Saver to the file system) is just one way to implement the Data Saver protocol.
     - Initializes the Web3 service with a desired network
     - Sets up the configuration for the service provider.
-    - Initalize the Saver Helper to save to your local machine
+    
 
         ```java
         DataSaveHelper dataSaveHelper = new SharedPreferencesHelper();
@@ -350,7 +357,7 @@ The `InitAppWeb2` md file is provided as a conceptual example to illustrate how 
     - Retrieves content from IPFS using the shop CID and displays the content.
 
         ```java
-        String ipfsContent = Web3AJ.fetchStore();
+        String ipfsContent = Web3Service.fetchStore();
         ```
 
 3. **Payment URL Generation**

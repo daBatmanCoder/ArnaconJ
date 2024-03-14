@@ -66,11 +66,8 @@ public class Web3AJ {
             dataSaveHelper.setPreference("privateKey", this.wallet.getPrivateKey());
         }
 
-        commonConstructor(_networkName,dataSaveHelper);
-    }
-
-    private void commonConstructor(String _networkName, DataSaveHelper dataSaveHelper){
         Network _network = new Network(_networkName);
+
         this.network = _network;
         this.web3j = Web3j.build(new HttpService(this.network.getRPC()));
         this.dataSaveHelper = dataSaveHelper;
@@ -106,7 +103,7 @@ public class Web3AJ {
     }
 
     // Mint an NFT - for the user wallet and ENS
-    public String mintNFT(String _userENS) throws IOException {
+    String mintNFT(String _userENS) throws IOException {
 
         // Load your Ethereum wallet credentials
         Credentials credentials = Credentials.create(this.wallet.getPrivateKey());
@@ -145,7 +142,7 @@ public class Web3AJ {
     }
 
     // Buys our ENS (for web2 users)
-    public String buyENS(String _userENS) throws IOException {
+    String buyENS(String _userENS) throws IOException {
 
             // Load your Ethereum wallet credentials
             Credentials credentials = Credentials.create(this.wallet.getPrivateKey());
@@ -295,3 +292,4 @@ public class Web3AJ {
     }
 
 }
+

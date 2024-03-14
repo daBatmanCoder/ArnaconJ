@@ -16,7 +16,7 @@ public class Utils {
     static String PAYMENT_DEEPLINK_OK = "https://success-java.vercel.app/";
     static String PAYMENT_DEEPLINK_NOK = "https://failure-java.vercel.app/";
 
-    public static boolean isValidPackage(String packageNum, String jsonStore) {
+    static boolean isValidPackage(String packageNum, String jsonStore) {
         // Parse the JSON data
         JSONObject json = new JSONObject(jsonStore);
         
@@ -37,7 +37,7 @@ public class Utils {
         }
     }
 
-    public void openShop(String publicKey) {
+    static void openShop(String publicKey) {
         String url = "https://arnacon-shop.vercel.app/?user_address=" + publicKey;
         try {
             java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
@@ -46,7 +46,7 @@ public class Utils {
         }
     }
 
-    public static String getPaymentURL(String userID, String packageNum, String jsonStore) {
+    static String getPaymentURL(String userID, String packageNum, String jsonStore) {
         boolean isValid = Utils.isValidPackage(packageNum, jsonStore);
         if (!isValid) {
             System.out.println("The package number is not valid.");

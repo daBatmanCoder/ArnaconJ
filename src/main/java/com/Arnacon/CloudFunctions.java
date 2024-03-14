@@ -156,9 +156,7 @@ public class CloudFunctions {
     }
 
     public void sendFCM(String fcm_token, String fcm_signed, String ens) {
-        System.out.println(fcm_token);
         String jsonInputString = "{\"tokens\": " + fcm_token + ", \"tokens_signed\": \"" + fcm_signed + "\", \"ens\": \"" + ens + "\"}";
-        System.out.println(jsonInputString);
         RequestPostToCloud(send_fcm_url, jsonInputString);
     }
 

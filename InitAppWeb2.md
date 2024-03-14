@@ -10,8 +10,8 @@ public class InitAppWeb2 {
         Web3AJ Web3Service = new Web3AJ(dataSaveHelper);
 
         // Fetch store
-        String ipfsContent = Web3Service.fetchStore();
-        System.out.println("Store: " + ipfsContent);
+        String store = Web3Service.fetchStore();
+        System.out.println("Store: " + store);
 
         // // Choose a product
         System.out.println("Enter package you want: ");

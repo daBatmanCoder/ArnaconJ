@@ -291,7 +291,7 @@ public class Web3AJ {
     }
 
     public String getPaymentURL(String packageNum, String successURL, String cancelURL) {
-        return Utils.getPaymentURL(this.wallet.getPublicKey(), packageNum, dataSaveHelper.getPreference("store", packageNum), successURL, cancelURL, dataSaveHelper);
+        return Utils.getPaymentURL(this.wallet.getPublicKey(), packageNum, dataSaveHelper.getPreference("store", packageNum), successURL, cancelURL, self.dataSaveHelper);
     }
 
     public String[] getServiceProviderList(){

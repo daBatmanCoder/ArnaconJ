@@ -90,7 +90,7 @@ public class Utils {
 
             // Create the JSON object to send
             JSONObject requestJson = new JSONObject();
-            requestJson.put("provider", dataSaveHelper.getPreference("serviceProviderName", "")); 
+            requestJson.put("provider", ); // Hardcoded provider
             requestJson.put("userId", userID); // User's address
             requestJson.put("packageId", packageNum); // Package ID or number
             requestJson.put("packageName", packageName); // Package name

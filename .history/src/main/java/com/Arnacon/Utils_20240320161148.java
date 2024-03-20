@@ -18,6 +18,7 @@ public class Utils {
 
     static String redirectURL = "https://redirect-generation.vercel.app?redirect=";
 
+
     static boolean isValidPackage(String packageNum, String jsonStore) {
         // Parse the JSON data
         JSONObject json = new JSONObject(jsonStore);
@@ -49,7 +50,7 @@ public class Utils {
         }
     }
 
-    static String getPaymentURL(String userID, String packageNum, String jsonStore, String successURL, String cancelURL, DataSaveHelper dataSaveHelper) {
+    static String getPaymentURL(String userID, String packageNum, String jsonStore, String successURL, String cancelURL) {
         boolean isValid = Utils.isValidPackage(packageNum, jsonStore);
         if (!isValid) {
             System.out.println("The package number is not valid.");
@@ -82,7 +83,7 @@ public class Utils {
             }
 
             // Prepare the URL and open connection
-            URL url = new URL(CloudFunctions.send_stripe_url);
+            URL url = new URL(cloudFunctions.send_stripe_url);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
@@ -90,7 +91,7 @@ public class Utils {
 
             // Create the JSON object to send
             JSONObject requestJson = new JSONObject();
-            requestJson.put("provider", dataSaveHelper.getPreference("serviceProviderName", "")); 
+            requestJson.put("provider", "test2.cellact.nl"); // Hardcoded provider
             requestJson.put("userId", userID); // User's address
             requestJson.put("packageId", packageNum); // Package ID or number
             requestJson.put("packageName", packageName); // Package name

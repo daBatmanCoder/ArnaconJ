@@ -49,7 +49,7 @@ public class Utils {
         }
     }
 
-    static String getPaymentURL(String userID, String packageNum, String jsonStore, String successURL, String cancelURL, DataSaveHelper dataSaveHelper) {
+    static String getPaymentURL(String userID, String packageNum, String jsonStore, String successURL, String cancelURL) {
         boolean isValid = Utils.isValidPackage(packageNum, jsonStore);
         if (!isValid) {
             System.out.println("The package number is not valid.");
@@ -90,7 +90,7 @@ public class Utils {
 
             // Create the JSON object to send
             JSONObject requestJson = new JSONObject();
-            requestJson.put("provider", dataSaveHelper.getPreference("serviceProviderName", "")); 
+            requestJson.put("provider", ); // Hardcoded provider
             requestJson.put("userId", userID); // User's address
             requestJson.put("packageId", packageNum); // Package ID or number
             requestJson.put("packageName", packageName); // Package name

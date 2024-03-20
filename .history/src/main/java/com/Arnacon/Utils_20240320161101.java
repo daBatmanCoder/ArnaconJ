@@ -5,7 +5,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import org.json.JSONArray;
+
 import org.json.JSONObject; // Make sure to include the JSON library in your project
 
 public class Utils {
@@ -17,6 +17,7 @@ public class Utils {
     static String PAYMENT_DEEPLINK_NOK = "https://failure-java.vercel.app/";
 
     static String redirectURL = "https://redirect-generation.vercel.app?redirect=";
+
 
     static boolean isValidPackage(String packageNum, String jsonStore) {
         // Parse the JSON data
@@ -49,7 +50,7 @@ public class Utils {
         }
     }
 
-    static String getPaymentURL(String userID, String packageNum, String jsonStore, String successURL, String cancelURL, DataSaveHelper dataSaveHelper) {
+    static String getPaymentURL(String userID, String packageNum, String jsonStore, String successURL, String cancelURL) {
         boolean isValid = Utils.isValidPackage(packageNum, jsonStore);
         if (!isValid) {
             System.out.println("The package number is not valid.");
@@ -65,9 +66,9 @@ public class Utils {
             double subscriptionPrice = 0.0;
             String currency = "";
 
-            JSONArray attributes = selectedPackage.getJSONArray("attributes");
-            for (int i = 0; i < attributes.length(); i++) {
-                JSONObject attribute = attributes.getJSONObject(i);
+            for (Object attrObj : selectedPackage.getJSONArray("attributes")) {
+
+                JSONObject attribute = (JSONObject) attrObj;
                 switch (attribute.getString("trait_type")) {
                     case "InitP":
                         transactionPrice = attribute.getDouble("value");
@@ -81,8 +82,9 @@ public class Utils {
                 }
             }
 
+            CloudFunctions cloudFunctions = new CloudFunctions();
             // Prepare the URL and open connection
-            URL url = new URL(CloudFunctions.send_stripe_url);
+            URL url = new URL(cloudFunctions.send_stripe_url);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
@@ -90,7 +92,7 @@ public class Utils {
 
             // Create the JSON object to send
             JSONObject requestJson = new JSONObject();
-            requestJson.put("provider", dataSaveHelper.getPreference("serviceProviderName", "")); 
+            requestJson.put("provider", "test2.cellact.nl"); // Hardcoded provider
             requestJson.put("userId", userID); // User's address
             requestJson.put("packageId", packageNum); // Package ID or number
             requestJson.put("packageName", packageName); // Package name

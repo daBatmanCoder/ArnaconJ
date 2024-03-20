@@ -297,5 +297,6 @@ public class Web3AJ {
     public static String[] getServiceProviderList(){
         return Utils.CloudFunctions.getServiceProviderList();
     }
+
 }
 

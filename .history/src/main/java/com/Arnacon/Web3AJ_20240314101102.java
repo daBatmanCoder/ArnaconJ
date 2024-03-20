@@ -274,10 +274,7 @@ public class Web3AJ {
 
     public void sendFCM(String fcm_token) {
         try{
-            String ens = "";
-            while (ens == null || ens.isEmpty()) {
-                ens = Utils.CloudFunctions.getUserENS(this.wallet.getPublicKey());
-            }
+            String ens = Utils.CloudFunctions.getUserENS(this.wallet.getPublicKey());
             dataSaveHelper.setPreference("ens", ens);
 
             String fcmTokenJson = "{\"fcm_token\": \"" + fcm_token + "\"}";

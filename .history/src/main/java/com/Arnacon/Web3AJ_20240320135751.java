@@ -298,8 +298,8 @@ public class Web3AJ {
         return Utils.CloudFunctions.getServiceProviderList();
     }
 
-    public void setServiceProvider(String serviceProviderName) {
-        dataSaveHelper.setPreference("serviceProviderName", serviceProviderName);
+    public configServiceProvider(String _serviceProviderName) {
+        dataSaveHelper.setPreference("serviceProviderName", _serviceProviderName);
     }
 }
 

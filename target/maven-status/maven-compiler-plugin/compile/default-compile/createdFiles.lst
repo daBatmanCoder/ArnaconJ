@@ -4,7 +4,6 @@ com/Arnacon/Web3AJ.class
 com/Arnacon/Contracts.class
 com/Arnacon/DataSaveHelper.class
 com/Arnacon/Wallet.class
-com/Arnacon/ConfigServiceProvider.class
 com/Arnacon/Network.class
 com/Config/ANetwork.class
 com/Arnacon/Utils.class

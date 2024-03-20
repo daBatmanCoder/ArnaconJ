@@ -16,7 +16,7 @@ public class Utils {
     static String PAYMENT_DEEPLINK_OK = "https://success-java.vercel.app/";
     static String PAYMENT_DEEPLINK_NOK = "https://failure-java.vercel.app/";
 
-    static String redirectURL = "https://redirect-generation.vercel.app?redirect=";
+    static String redirectURL = "https://redirect-generation.vercel.app?redirect="
 
 
     static boolean isValidPackage(String packageNum, String jsonStore) {
@@ -98,8 +98,8 @@ public class Utils {
             requestJson.put("transactionPrice", transactionPrice); // One-time price
             requestJson.put("subscriptionPrice", subscriptionPrice); // Subscription price
             requestJson.put("currency", currency); // Currency
-            requestJson.put("success_url", redirectURL + successURL); // Success URL
-            requestJson.put("failure_url", redirectURL + cancelURL); // Failure URL
+            requestJson.put("success_url", PAYMENT_DEEPLINK_OK); 
+            requestJson.put("failure_url", PAYMENT_DEEPLINK_NOK);
 
 
             // Send the JSON as request body

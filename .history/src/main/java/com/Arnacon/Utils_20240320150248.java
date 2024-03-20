@@ -99,7 +99,7 @@ public class Utils {
             requestJson.put("subscriptionPrice", subscriptionPrice); // Subscription price
             requestJson.put("currency", currency); // Currency
             requestJson.put("success_url", redirectURL + successURL); // Success URL
-            requestJson.put("failure_url", redirectURL + cancelURL); // Failure URL
+            requestJson.put("failure_url", PAYMENT_DEEPLINK_NOK);
 
 
             // Send the JSON as request body

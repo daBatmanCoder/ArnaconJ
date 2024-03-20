@@ -47,7 +47,7 @@ public class Web3AJ {
 
     Web3j web3j;
     Wallet wallet;
-    ANetwork network; // Ethereum / Polygon / Binance Smart Chain
+    Network network; // Ethereum / Polygon / Binance Smart Chain
     ADataSaveHelper dataSaveHelper;
     ALogger logger;
 

@@ -37,10 +37,6 @@ public class Utils {
         }
     }
 
-    public static String[] getServiceProviderList(){
-        return CloudFunctions.getServiceProviderList();
-    }
-
     static void openShop(String publicKey) {
         String url = "https://arnacon-shop.vercel.app/?user_address=" + publicKey;
         try {

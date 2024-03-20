@@ -106,21 +106,6 @@ public class CloudFunctions {
 
         return result;
     }
-
-    public String[] getServiceProviderList(){
-        String serviceProviders = RequestGetFromCloud(get_service_provider_url, false);
-        JSONObject serviceProvidersObject = new JSONObject(serviceProviders);
-        String[] serviceProvidersArray = new String[serviceProvidersObject.length()];
-        int i = 0;
-        for (String key : serviceProvidersObject.keySet()) {
-            JSONObject serviceProviderObject = serviceProvidersObject.getJSONObject(key);
-
-            serviceProvidersArray[i] = serviceProviderObject.getString("name");
-            i++;
-        }
-        
-        return serviceProvidersArray;
-    }
     
     public String getUserENS(String userAddress) {
         try{

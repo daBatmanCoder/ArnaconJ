@@ -51,20 +51,12 @@ public class Web3AJ {
     ADataSaveHelper dataSaveHelper;
     ALogger logger;
 
-    // Constructor (no network specified)
-    public Web3AJ(
-        ADataSaveHelper dataSaveHelper, 
-        ALogger logger
-    ) {
+    public Web3AJ(ADataSaveHelper dataSaveHelper, ALogger logger) {
         this(new Network(), dataSaveHelper, logger);
     }
 
-    // Constructor (with network specified)
-    public Web3AJ(
-        ANetwork _network, 
-        ADataSaveHelper dataSaveHelper, 
-        ALogger logger
-    ) {
+    // Constructor with no private key
+    public Web3AJ(ANetwork _network, ADataSaveHelper dataSaveHelper, ALogger logger) {
         
         String privateKey = dataSaveHelper.getPreference("privateKey", null);
 
@@ -79,11 +71,7 @@ public class Web3AJ {
         commonConstructor(_network,dataSaveHelper,logger);
     }
 
-    private void commonConstructor(
-        ANetwork _network,
-        ADataSaveHelper dataSaveHelper, 
-        ALogger logger
-    ){
+    private void commonConstructor(ANetwork _network, ADataSaveHelper dataSaveHelper, ALogger logger){
         this.network = _network;
         this.web3j = Web3j.build(new HttpService(this.network.getRPC()));
         this.dataSaveHelper = dataSaveHelper;
@@ -91,9 +79,7 @@ public class Web3AJ {
     }
 
     // Takes a message and signs it with the private key of the current wallet
-    public String signMessage(
-        String Message
-    ){
+    public String signMessage(String Message){
 
         Credentials credentials = wallet.getCredentials();
 
@@ -153,13 +139,7 @@ public class Web3AJ {
         EthGasPrice ethGasPrice = web3j.ethGasPrice().send();
         BigInteger gasPrice = ethGasPrice.getGasPrice();
         BigInteger valueInWei = new BigInteger("0"); 
-        BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(
-            credentials, 
-            encodedFunction, 
-            valueInWei, 
-            gasPrice, 
-            Utils.Contracts.NAME_HASH_ADDRESS
-        );
+        BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(credentials, encodedFunction, valueInWei, gasPrice, Utils.Contracts.NAME_HASH_ADDRESS);
 
         EthSendTransaction response = transactionManager.sendTransaction(
                 gasPrice,
@@ -203,13 +183,7 @@ public class Web3AJ {
             // Need to change this to MATIC (network currency let's say.)
             BigInteger valueInWei = new BigInteger("0"); 
             
-            BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(
-                credentials,
-                encodedFunction, 
-                valueInWei, 
-                gasPrice,
-                Utils.Contracts.W_ENS_ADDRESS
-            );
+            BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(credentials, encodedFunction, valueInWei, gasPrice,Utils.Contracts.W_ENS_ADDRESS);
 
             EthSendTransaction response = transactionManager.sendTransaction(
                     gasPrice,
@@ -231,10 +205,7 @@ public class Web3AJ {
         String contractAddress
     ) throws IOException {
 
-        BigInteger nonce = web3j.ethGetTransactionCount(
-            credentials.getAddress(), 
-            DefaultBlockParameterName.LATEST
-        ).send().getTransactionCount();
+        BigInteger nonce = web3j.ethGetTransactionCount(credentials.getAddress(), DefaultBlockParameterName.LATEST).send().getTransactionCount();
 
         //  BigInteger gasPrice = web3j.ethGasPrice().send().getGasPrice();
         BigInteger gasLimitEstimation = BigInteger.valueOf(20000000);        
@@ -347,34 +318,11 @@ public class Web3AJ {
         String successDP,
          String cancelDP
     ) {
-        return Utils.getPaymentURL(
-            this.wallet.getPublicKey(),
-            packageNum,
-            dataSaveHelper.getPreference("store", packageNum), 
-            successDP, 
-            cancelDP,
-            dataSaveHelper
-        );
+        return Utils.getPaymentURL(this.wallet.getPublicKey(), packageNum, dataSaveHelper.getPreference("store", packageNum), successDP, cancelDP, dataSaveHelper);
     }
 
     public String[] getServiceProviderList(){
         return Utils.CloudFunctions.getServiceProviderList();
-    }
-
-    public String getENS() {
-
-        if (dataSaveHelper.getPreference("ens", null) != null){
-            return dataSaveHelper.getPreference("ens", null);
-        }
-
-        String ens = Utils.CloudFunctions.getUserENS(this.wallet.getPublicKey());
-        if (ens.equals("Error")){
-            return null;
-        }
-        else{
-            dataSaveHelper.setPreference("ens", ens);
-        }
-        return ens;
     }
 
     public void setServiceProvider(

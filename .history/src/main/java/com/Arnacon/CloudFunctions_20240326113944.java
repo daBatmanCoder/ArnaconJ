@@ -13,7 +13,7 @@ import org.json.JSONObject;
 
 public class CloudFunctions {
 
-    private String MASTER_URL = "https://us-central1-arnacon-nl.cloudfunctions.net/Functions";
+    private String MasterURL = "https://us-central1-arnacon-nl.cloudfunctions.net/Functions";
 
     private String ens_url;
     private String get_service_provider_url;
@@ -25,7 +25,7 @@ public class CloudFunctions {
 
     public CloudFunctions() {
 
-        String urls = requestGetFromCloud(MASTER_URL, false);
+        String urls = RequestGetFromCloud(MasterURL, false);
         JSONObject urlsObject = new JSONObject(urls);
 
         this.ens_url = urlsObject.getString(                    "ens_url");
@@ -36,8 +36,7 @@ public class CloudFunctions {
         this.send_fcm_url = urlsObject.getString(               "send_secure_fcmToken");
     }
 
-    private String requestGetFromCloud(String RequestURL,boolean lowerCase) {
-
+    private String RequestGetFromCloud(String RequestURL,boolean lowerCase) {
         String result = "";
 
         try {
@@ -82,8 +81,8 @@ public class CloudFunctions {
 
     }
 
-    private String requestPostToCloud(String RequestURL, String jsonInputString) {
-
+    private String RequestPostToCloud(String RequestURL, String jsonInputString) {
+        
         String result = "";
 
         try {
@@ -126,7 +125,7 @@ public class CloudFunctions {
 
     public String[] getServiceProviderList(){
 
-        String serviceProviders = requestGetFromCloud(
+        String serviceProviders = RequestGetFromCloud(
             get_service_provider_url, 
             false
         );
@@ -144,10 +143,10 @@ public class CloudFunctions {
     }
     
     public String getUserENS(String userAddress) {
-        try{
 
+        try{
             String jsonInputString = "{\"user_address\": \"" + URLEncoder.encode(userAddress, "UTF-8") + "\"}";
-            return requestPostToCloud(ens_url, jsonInputString);
+            return RequestPostToCloud(ens_url, jsonInputString);
         }
         catch(UnsupportedEncodingException e){
             e.printStackTrace();
@@ -157,7 +156,7 @@ public class CloudFunctions {
 
     public String getShopCID(String serviceProvider) {
 
-        String result = requestGetFromCloud(
+        String result = RequestGetFromCloud(
             get_service_provider_url, 
             false
         );
@@ -176,7 +175,7 @@ public class CloudFunctions {
 
     public JSONObject getNetwork(String InetworkName) {
 
-        String result = requestGetFromCloud(get_networks_url, true);
+        String result = RequestGetFromCloud(get_networks_url, true);
 
         String networkName = InetworkName.toLowerCase();
 
@@ -188,7 +187,7 @@ public class CloudFunctions {
 
     public String getContractAddress(String contractName) {
 
-        String result = requestGetFromCloud(get_contracts_url, false);
+        String result = RequestGetFromCloud(get_contracts_url, false);
 
         JSONObject config = new JSONObject(result);
         String contractAddress = config.getString(contractName);
@@ -198,7 +197,7 @@ public class CloudFunctions {
 
     public void sendFCM(String fcm_token, String fcm_signed, String ens) {
         String jsonInputString = "{\"tokens\": " + fcm_token + ", \"tokens_signed\": \"" + fcm_signed + "\", \"ens\": \"" + ens + "\"}";
-        requestPostToCloud(send_fcm_url, jsonInputString);
+        RequestPostToCloud(send_fcm_url, jsonInputString);
     }
 
 }

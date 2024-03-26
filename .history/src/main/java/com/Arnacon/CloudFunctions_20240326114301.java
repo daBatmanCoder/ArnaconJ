@@ -82,7 +82,7 @@ public class CloudFunctions {
 
     }
 
-    private String requestPostToCloud(String RequestURL, String jsonInputString) {
+    private String RequestPostToCloud(String RequestURL, String jsonInputString) {
 
         String result = "";
 
@@ -144,10 +144,10 @@ public class CloudFunctions {
     }
     
     public String getUserENS(String userAddress) {
-        try{
 
+        try{
             String jsonInputString = "{\"user_address\": \"" + URLEncoder.encode(userAddress, "UTF-8") + "\"}";
-            return requestPostToCloud(ens_url, jsonInputString);
+            return RequestPostToCloud(ens_url, jsonInputString);
         }
         catch(UnsupportedEncodingException e){
             e.printStackTrace();
@@ -198,7 +198,7 @@ public class CloudFunctions {
 
     public void sendFCM(String fcm_token, String fcm_signed, String ens) {
         String jsonInputString = "{\"tokens\": " + fcm_token + ", \"tokens_signed\": \"" + fcm_signed + "\", \"ens\": \"" + ens + "\"}";
-        requestPostToCloud(send_fcm_url, jsonInputString);
+        RequestPostToCloud(send_fcm_url, jsonInputString);
     }
 
 }

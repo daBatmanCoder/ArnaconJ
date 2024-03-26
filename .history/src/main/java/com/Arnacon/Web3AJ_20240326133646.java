@@ -153,13 +153,7 @@ public class Web3AJ {
         EthGasPrice ethGasPrice = web3j.ethGasPrice().send();
         BigInteger gasPrice = ethGasPrice.getGasPrice();
         BigInteger valueInWei = new BigInteger("0"); 
-        BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(
-            credentials, 
-            encodedFunction, 
-            valueInWei, 
-            gasPrice, 
-            Utils.Contracts.NAME_HASH_ADDRESS
-        );
+        BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(credentials, encodedFunction, valueInWei, gasPrice, Utils.Contracts.NAME_HASH_ADDRESS);
 
         EthSendTransaction response = transactionManager.sendTransaction(
                 gasPrice,
@@ -203,13 +197,7 @@ public class Web3AJ {
             // Need to change this to MATIC (network currency let's say.)
             BigInteger valueInWei = new BigInteger("0"); 
             
-            BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(
-                credentials,
-                encodedFunction, 
-                valueInWei, 
-                gasPrice,
-                Utils.Contracts.W_ENS_ADDRESS
-            );
+            BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(credentials, encodedFunction, valueInWei, gasPrice,Utils.Contracts.W_ENS_ADDRESS);
 
             EthSendTransaction response = transactionManager.sendTransaction(
                     gasPrice,

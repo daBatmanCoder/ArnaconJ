@@ -144,8 +144,8 @@ public class CloudFunctions {
     }
     
     public String getUserENS(String userAddress) {
-        try{
 
+        try{
             String jsonInputString = "{\"user_address\": \"" + URLEncoder.encode(userAddress, "UTF-8") + "\"}";
             return requestPostToCloud(ens_url, jsonInputString);
         }

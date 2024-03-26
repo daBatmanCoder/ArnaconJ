@@ -21,9 +21,7 @@ public class Wallet {
     }
 
     // Constructor with private key - for wallet import
-    public Wallet(
-        String privateKey
-    ){
+    public Wallet(String privateKey){
         this.mnemonic = generateMnemonic(); // That's not right... 
         this.privateKey = privateKey;
     }
@@ -39,9 +37,7 @@ public class Wallet {
     }
 
     // Checks if a mnemonic is valid
-    static boolean isValidMnemonic(
-        String mnemonic
-    ) {
+    static boolean isValidMnemonic(String mnemonic) {
         return MnemonicUtils.validateMnemonic(mnemonic);
     }
 

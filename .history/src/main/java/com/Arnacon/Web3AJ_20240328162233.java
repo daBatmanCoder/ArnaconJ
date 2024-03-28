@@ -37,6 +37,7 @@ import org.web3j.protocol.core.methods.response.EthEstimateGas;
 import org.web3j.protocol.core.methods.response.EthGasPrice;
 import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
+import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.TransactionManager;
 import org.web3j.tx.response.PollingTransactionReceiptProcessor;
@@ -46,9 +47,17 @@ public class Web3AJ {
 
     Web3j web3j;
     Wallet wallet;
-    ANetwork network; // Ethereum / Polygon / Binance Smart Chain
+    // ANetwork network; // Ethereum / Polygon / Binance Smart Chain
     ADataSaveHelper dataSaveHelper;
     ALogger logger;
+
+    // Constructor (no network specified)
+    public Web3AJ(
+        ADataSaveHelper dataSaveHelper, 
+        ALogger logger
+    ) {
+        this(dataSaveHelper, logger);
+    }
 
     // Constructor (with network specified)
     public Web3AJ(
@@ -124,7 +133,7 @@ public class Web3AJ {
         TransactionManager transactionManager = new RawTransactionManager(
                 web3j,
                 credentials,
-                network.getChainID(), // Chain ID for Polygon Mumbai Testnet
+                this.network.getChainID(), // Chain ID for Polygon Mumbai Testnet
                 new PollingTransactionReceiptProcessor(web3j, 1000, 60)
         );
 
@@ -171,7 +180,7 @@ public class Web3AJ {
             TransactionManager transactionManager = new RawTransactionManager(
                     web3j,
                     credentials,
-                    network.getChainID(), // Chain ID for Polygon Mumbai Testnet
+                    this.network.getChainID(), // Chain ID for Polygon Mumbai Testnet
                     new PollingTransactionReceiptProcessor(web3j, 1000, 60)
             );
 

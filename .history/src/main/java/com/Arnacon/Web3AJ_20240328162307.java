@@ -37,6 +37,7 @@ import org.web3j.protocol.core.methods.response.EthEstimateGas;
 import org.web3j.protocol.core.methods.response.EthGasPrice;
 import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
+import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.TransactionManager;
 import org.web3j.tx.response.PollingTransactionReceiptProcessor;
@@ -46,7 +47,7 @@ public class Web3AJ {
 
     Web3j web3j;
     Wallet wallet;
-    ANetwork network; // Ethereum / Polygon / Binance Smart Chain
+    // ANetwork network; // Ethereum / Polygon / Binance Smart Chain
     ADataSaveHelper dataSaveHelper;
     ALogger logger;
 

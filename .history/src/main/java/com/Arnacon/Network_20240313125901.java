@@ -24,8 +24,6 @@ public class Network implements ANetwork{
 
         } catch (Exception e) {
             e.printStackTrace();
-            this.ENTRY_POINT_URL = "https://polygon-mumbai-bor-rpc.publicnode.com";
-            this.CHAIN_ID = 80001;
         }
     }
 

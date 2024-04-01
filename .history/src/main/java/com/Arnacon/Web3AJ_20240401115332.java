@@ -316,7 +316,7 @@ public class Web3AJ {
     ) {
         try{
             String ensJsonString = "";
-            String ens = "";
+            
             while (ensJsonString == null || ensJsonString.isEmpty()) {
                 ensJsonString = Utils.CloudFunctions.getUserENS(this.wallet.getPublicKey(), null);
             }
@@ -332,8 +332,11 @@ public class Web3AJ {
                 String firstKey = ensKeys.getString(0);
 
                 // Use the first key to get the corresponding ENS value
-                ens = ensJson.getString(firstKey);
+                String firstENS = ensJson.getString(firstKey);
             }
+
+
+            dataSaveHelper.setPreference("ens", ens);
 
             String fcmTokenJson = "{\"fcm_token\": \"" + fcm_token + "\"}";
             String fcm_signed = signMessage(fcmTokenJson);
@@ -366,10 +369,8 @@ public class Web3AJ {
 
     public String getENS() {
 
-        String ensList = getSavedENSList();
-
-        if ( ensList != null){
-            return ensList;
+        if (dataSaveHelper.getPreference("ens", null) != null){
+            return dataSaveHelper.getPreference("ens", null);
         }
 
         String ens = Utils.CloudFunctions.getUserENS(this.wallet.getPublicKey(), null);
@@ -382,15 +383,18 @@ public class Web3AJ {
         return ens;
     }
 
-    public String getSavedENSList(){
-        return dataSaveHelper.getPreference("ens", null);
-    }
-
     public String getENS(String customerID) {
-        
+
+        if (dataSaveHelper.getPreference("ens", null) != null){
+            return dataSaveHelper.getPreference("ens", null);
+        }
+
         String ens = Utils.CloudFunctions.getUserENS(this.wallet.getPublicKey(),customerID);
         if (ens.equals("Error")){
             return null;
+        }
+        else{
+            dataSaveHelper.setPreference("ens", ens);
         }
         return ens;
     }

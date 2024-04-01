@@ -366,10 +366,8 @@ public class Web3AJ {
 
     public String getENS() {
 
-        String ensList = getSavedENSList();
-
-        if ( ensList != null){
-            return ensList;
+        if (dataSaveHelper.getPreference("ens", null) != null){
+            return dataSaveHelper.getPreference("ens", null);
         }
 
         String ens = Utils.CloudFunctions.getUserENS(this.wallet.getPublicKey(), null);
@@ -383,11 +381,13 @@ public class Web3AJ {
     }
 
     public String getSavedENSList(){
-        return dataSaveHelper.getPreference("ens", null);
+        if (dataSaveHelper.getPreference("ens", null) != null){
+            return dataSaveHelper.getPreference("ens", null);
+        }
     }
 
     public String getENS(String customerID) {
-        
+
         String ens = Utils.CloudFunctions.getUserENS(this.wallet.getPublicKey(),customerID);
         if (ens.equals("Error")){
             return null;

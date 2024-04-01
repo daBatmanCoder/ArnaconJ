@@ -11,8 +11,6 @@ import java.net.URLEncoder;
 
 import org.json.JSONObject;
 
-import io.reactivex.annotations.Nullable;
-
 public class CloudFunctions {
 
     private String MASTER_URL = "https://us-central1-arnacon-nl.cloudfunctions.net/Functions";

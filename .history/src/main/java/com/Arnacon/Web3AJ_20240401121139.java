@@ -365,10 +365,8 @@ public class Web3AJ {
     }
 
     public String getENS() {
-
         String ensList = getSavedENSList();
-
-        if ( ensList != null){
+        if ( ensList!= null){
             return ensList;
         }
 
@@ -387,7 +385,7 @@ public class Web3AJ {
     }
 
     public String getENS(String customerID) {
-        
+
         String ens = Utils.CloudFunctions.getUserENS(this.wallet.getPublicKey(),customerID);
         if (ens.equals("Error")){
             return null;

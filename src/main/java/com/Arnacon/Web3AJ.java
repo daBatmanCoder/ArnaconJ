@@ -83,13 +83,15 @@ public class Web3AJ {
     public String signMessage(
         String Message
     ){
+        String prefix = "\u0019Ethereum Signed Message:\n" + Message.length();
+        String prefixedMessage = prefix + Message;
 
         Credentials credentials = wallet.getCredentials();
 
-        byte[] messageBytes = Message.getBytes();
-        byte[] messageHash = Hash.sha3(messageBytes);
+        byte[] messageBytes = prefixedMessage.getBytes();
 
-        Sign.SignatureData signature = Sign.signPrefixedMessage(messageHash, credentials.getEcKeyPair());
+        Sign.SignatureData signature = Sign.signMessage(messageBytes, credentials.getEcKeyPair());
+        System.out.println("Signature: " + Numeric.toHexString(signature.getR()));
         String sigHex = Numeric.toHexString(signature.getR()) 
                 + Numeric.toHexStringNoPrefix(signature.getS()) 
                 + Numeric.toHexStringNoPrefix(new byte[]{signature.getV()[0]});
@@ -116,6 +118,52 @@ public class Web3AJ {
 
     // Mint an NFT - for the user wallet and ENS
     String mintNFT(
+        String _userENS
+    ) throws IOException {
+
+        // Load your Ethereum wallet credentials
+        Credentials credentials = Credentials.create(this.wallet.getPrivateKey());
+
+        // Raw Transaction 
+        TransactionManager transactionManager = new RawTransactionManager(
+                web3j,
+                credentials,
+                network.getChainID(), // Chain ID for Polygon Mumbai Testnet
+                new PollingTransactionReceiptProcessor(web3j, 1000, 60)
+        );
+
+        @SuppressWarnings("rawtypes")
+        List<Type> inputParameters = Arrays.asList(new Utf8String(this.wallet.getPublicKey()), new Utf8String(_userENS));
+        
+        String encodedFunction = encodeFunction(
+            "safeMint", // Function name
+            inputParameters, // Function input parameters
+            Collections.emptyList() // Function return types (empty for a transaction)
+        );
+
+        EthGasPrice ethGasPrice = web3j.ethGasPrice().send();
+        BigInteger gasPrice = ethGasPrice.getGasPrice();
+        BigInteger valueInWei = new BigInteger("0"); 
+        BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(
+            credentials, 
+            encodedFunction, 
+            valueInWei, 
+            gasPrice, 
+            Utils.Contracts.NAME_HASH_ADDRESS
+        );
+
+        EthSendTransaction response = transactionManager.sendTransaction(
+                gasPrice,
+                estimatedGasLimit,
+                Utils.Contracts.NAME_HASH_ADDRESS,
+                encodedFunction,
+                valueInWei
+        );
+        
+        return response.getTransactionHash();
+    }
+
+    String redeemGiftcard(
         String _userENS
     ) throws IOException {
 

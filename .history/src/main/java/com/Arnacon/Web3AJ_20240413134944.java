@@ -23,6 +23,8 @@ import com.Config.ADataSaveHelper;
 import com.Config.ALogger;
 import com.Config.ANetwork;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.web3j.abi.FunctionEncoder;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Address;
@@ -37,7 +39,6 @@ import org.web3j.protocol.core.methods.response.EthEstimateGas;
 import org.web3j.protocol.core.methods.response.EthGasPrice;
 import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
-import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.RawTransactionManager;
 import org.web3j.tx.TransactionManager;
 import org.web3j.tx.response.PollingTransactionReceiptProcessor;
@@ -51,17 +52,8 @@ public class Web3AJ {
     ADataSaveHelper dataSaveHelper;
     ALogger logger;
 
-    // Constructor (no network specified)
-    public Web3AJ(
-        ADataSaveHelper dataSaveHelper, 
-        ALogger logger
-    ) {
-        this(new Network(), dataSaveHelper, logger);
-    }
-
     // Constructor (with network specified)
     public Web3AJ(
-        ANetwork _network, 
         ADataSaveHelper dataSaveHelper, 
         ALogger logger
     ) {
@@ -76,16 +68,13 @@ public class Web3AJ {
             dataSaveHelper.setPreference("privateKey", this.wallet.getPrivateKey());
         }
 
-        commonConstructor(_network,dataSaveHelper,logger);
+        commonConstructor(dataSaveHelper,logger);
     }
 
     private void commonConstructor(
-        ANetwork _network,
         ADataSaveHelper dataSaveHelper, 
         ALogger logger
     ){
-        this.network = _network;
-        this.web3j = Web3j.build(new HttpService(this.network.getRPC()));
         this.dataSaveHelper = dataSaveHelper;
         this.logger = logger;
     }
@@ -137,7 +126,7 @@ public class Web3AJ {
         TransactionManager transactionManager = new RawTransactionManager(
                 web3j,
                 credentials,
-                this.network.getChainID(), // Chain ID for Polygon Mumbai Testnet
+                network.getChainID(), // Chain ID for Polygon Mumbai Testnet
                 new PollingTransactionReceiptProcessor(web3j, 1000, 60)
         );
 
@@ -153,7 +142,59 @@ public class Web3AJ {
         EthGasPrice ethGasPrice = web3j.ethGasPrice().send();
         BigInteger gasPrice = ethGasPrice.getGasPrice();
         BigInteger valueInWei = new BigInteger("0"); 
-        BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(credentials, encodedFunction, valueInWei, gasPrice, Utils.Contracts.NAME_HASH_ADDRESS);
+        BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(
+            credentials, 
+            encodedFunction, 
+            valueInWei, 
+            gasPrice, 
+            Utils.Contracts.NAME_HASH_ADDRESS
+        );
+
+        EthSendTransaction response = transactionManager.sendTransaction(
+                gasPrice,
+                estimatedGasLimit,
+                Utils.Contracts.NAME_HASH_ADDRESS,
+                encodedFunction,
+                valueInWei
+        );
+        
+        return response.getTransactionHash();
+    }
+
+    String redeemGiftcard(
+        String _userENS
+    ) throws IOException {
+
+        // Load your Ethereum wallet credentials
+        Credentials credentials = Credentials.create(this.wallet.getPrivateKey());
+
+        // Raw Transaction 
+        TransactionManager transactionManager = new RawTransactionManager(
+                web3j,
+                credentials,
+                network.getChainID(), // Chain ID for Polygon Mumbai Testnet
+                new PollingTransactionReceiptProcessor(web3j, 1000, 60)
+        );
+
+        @SuppressWarnings("rawtypes")
+        List<Type> inputParameters = Arrays.asList(new Utf8String(this.wallet.getPublicKey()), new Utf8String(_userENS));
+        
+        String encodedFunction = encodeFunction(
+            "safeMint", // Function name
+            inputParameters, // Function input parameters
+            Collections.emptyList() // Function return types (empty for a transaction)
+        );
+
+        EthGasPrice ethGasPrice = web3j.ethGasPrice().send();
+        BigInteger gasPrice = ethGasPrice.getGasPrice();
+        BigInteger valueInWei = new BigInteger("0"); 
+        BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(
+            credentials, 
+            encodedFunction, 
+            valueInWei, 
+            gasPrice, 
+            Utils.Contracts.NAME_HASH_ADDRESS
+        );
 
         EthSendTransaction response = transactionManager.sendTransaction(
                 gasPrice,
@@ -178,7 +219,7 @@ public class Web3AJ {
             TransactionManager transactionManager = new RawTransactionManager(
                     web3j,
                     credentials,
-                    this.network.getChainID(), // Chain ID for Polygon Mumbai Testnet
+                    network.getChainID(), // Chain ID for Polygon Mumbai Testnet
                     new PollingTransactionReceiptProcessor(web3j, 1000, 60)
             );
 
@@ -197,7 +238,13 @@ public class Web3AJ {
             // Need to change this to MATIC (network currency let's say.)
             BigInteger valueInWei = new BigInteger("0"); 
             
-            BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(credentials, encodedFunction, valueInWei, gasPrice,Utils.Contracts.W_ENS_ADDRESS);
+            BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(
+                credentials,
+                encodedFunction, 
+                valueInWei, 
+                gasPrice,
+                Utils.Contracts.W_ENS_ADDRESS
+            );
 
             EthSendTransaction response = transactionManager.sendTransaction(
                     gasPrice,
@@ -219,7 +266,10 @@ public class Web3AJ {
         String contractAddress
     ) throws IOException {
 
-        BigInteger nonce = web3j.ethGetTransactionCount(credentials.getAddress(), DefaultBlockParameterName.LATEST).send().getTransactionCount();
+        BigInteger nonce = web3j.ethGetTransactionCount(
+            credentials.getAddress(), 
+            DefaultBlockParameterName.LATEST
+        ).send().getTransactionCount();
 
         //  BigInteger gasPrice = web3j.ethGasPrice().send().getGasPrice();
         BigInteger gasLimitEstimation = BigInteger.valueOf(20000000);        
@@ -311,11 +361,25 @@ public class Web3AJ {
         String fcm_token
     ) {
         try{
+            String ensJsonString = "";
             String ens = "";
-            while (ens == null || ens.isEmpty()) {
-                ens = Utils.CloudFunctions.getUserENS(this.wallet.getPublicKey());
+            while (ensJsonString == null || ensJsonString.isEmpty()) {
+                ensJsonString = Utils.CloudFunctions.getUserENS(this.wallet.getPublicKey(), null);
             }
-            dataSaveHelper.setPreference("ens", ens);
+
+            // Parse the JSON string to a JSONObject
+            JSONObject ensJson = new JSONObject(ensJsonString);
+            
+            // Assuming the JSON object's keys are the customer IDs and the values are the ENS names
+            JSONArray ensKeys = ensJson.names();  // Get all keys as a JSONArray
+
+            if (ensKeys != null && ensKeys.length() > 0) {
+                // Get the first key in the JSON object
+                String firstKey = ensKeys.getString(0);
+
+                // Use the first key to get the corresponding ENS value
+                ens = ensJson.getString(firstKey);
+            }
 
             String fcmTokenJson = "{\"fcm_token\": \"" + fcm_token + "\"}";
             String fcm_signed = signMessage(fcmTokenJson);
@@ -332,7 +396,14 @@ public class Web3AJ {
         String successDP,
          String cancelDP
     ) {
-        return Utils.getPaymentURL(this.wallet.getPublicKey(), packageNum, dataSaveHelper.getPreference("store", packageNum), successDP, cancelDP, dataSaveHelper);
+        return Utils.getPaymentURL(
+            this.wallet.getPublicKey(),
+            packageNum,
+            dataSaveHelper.getPreference("store", packageNum), 
+            successDP, 
+            cancelDP,
+            dataSaveHelper
+        );
     }
 
     public String[] getServiceProviderList(){
@@ -340,15 +411,34 @@ public class Web3AJ {
     }
 
     public String getENS() {
-        try{
-            String ens = Utils.CloudFunctions.getUserENS(this.wallet.getPublicKey());
+
+        String ensList = getSavedENSList();
+
+        if ( ensList != null && !ensList.isEmpty()){
+            return ensList;
+        }
+
+        String ens = Utils.CloudFunctions.getUserENS(this.wallet.getPublicKey(), null);
+        if (ens.equals("Error")){
+            return null;
+        }
+        else{
             dataSaveHelper.setPreference("ens", ens);
-            return ens;
         }
-        catch(Exception e) {
-            throw new RuntimeException("Error: " + e);
-        }
+        return ens;
+    }
+
+    public String getSavedENSList(){
+        return dataSaveHelper.getPreference("ens", null);
+    }
+
+    public String getENS(String customerID) {
         
+        String ens = Utils.CloudFunctions.getUserENS(this.wallet.getPublicKey(),customerID);
+        if (ens.equals("Error")){
+            return null;
+        }
+        return ens;
     }
 
     public void setServiceProvider(

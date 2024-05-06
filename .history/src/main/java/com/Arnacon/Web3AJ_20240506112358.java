@@ -13,9 +13,11 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Arrays;
+import java.util.UUID;
+
+import java.time.Instant;
 
 import org.web3j.crypto.Credentials;
-import org.web3j.crypto.Hash;
 import org.web3j.crypto.Sign;
 import org.web3j.utils.Numeric;
 
@@ -79,17 +81,41 @@ public class Web3AJ {
         this.logger = logger;
     }
 
+    public String getXData(){
+        // String xdata = dataSaveHelper.getPreference("xdata", null);
+
+        // if (xdata != null){
+        //     return xdata;
+        // }
+
+        String uuid = UUID.randomUUID().toString();
+        long timestamp = Instant.now().toEpochMilli();
+        String xdata = uuid + ":" + timestamp;
+        // dataSaveHelper.setPreference("xdata", xdata);
+        return xdata;
+    }
+
+    public String getXSign(String data){
+        // String xsign = dataSaveHelper.getPreference("xsign", null);
+        // if (xdata != null){
+        //     return xdata;
+        // }
+        return signMessage(data);
+    }
+
     // Takes a message and signs it with the private key of the current wallet
     public String signMessage(
         String Message
     ){
+        String prefix = "\u0019Ethereum Signed Message:\n" + Message.length();
+        String prefixedMessage = prefix + Message;
 
         Credentials credentials = wallet.getCredentials();
 
-        byte[] messageBytes = Message.getBytes();
-        byte[] messageHash = Hash.sha3(messageBytes);
+        byte[] messageBytes = prefixedMessage.getBytes();
 
-        Sign.SignatureData signature = Sign.signPrefixedMessage(messageHash, credentials.getEcKeyPair());
+        Sign.SignatureData signature = Sign.signMessage(messageBytes, credentials.getEcKeyPair());
+        System.out.println("Signature: " + Numeric.toHexString(signature.getR()));
         String sigHex = Numeric.toHexString(signature.getR()) 
                 + Numeric.toHexStringNoPrefix(signature.getS()) 
                 + Numeric.toHexStringNoPrefix(new byte[]{signature.getV()[0]});
@@ -116,6 +142,52 @@ public class Web3AJ {
 
     // Mint an NFT - for the user wallet and ENS
     String mintNFT(
+        String _userENS
+    ) throws IOException {
+
+        // Load your Ethereum wallet credentials
+        Credentials credentials = Credentials.create(this.wallet.getPrivateKey());
+
+        // Raw Transaction 
+        TransactionManager transactionManager = new RawTransactionManager(
+                web3j,
+                credentials,
+                network.getChainID(), // Chain ID for Polygon Mumbai Testnet
+                new PollingTransactionReceiptProcessor(web3j, 1000, 60)
+        );
+
+        @SuppressWarnings("rawtypes")
+        List<Type> inputParameters = Arrays.asList(new Utf8String(this.wallet.getPublicKey()), new Utf8String(_userENS));
+        
+        String encodedFunction = encodeFunction(
+            "safeMint", // Function name
+            inputParameters, // Function input parameters
+            Collections.emptyList() // Function return types (empty for a transaction)
+        );
+
+        EthGasPrice ethGasPrice = web3j.ethGasPrice().send();
+        BigInteger gasPrice = ethGasPrice.getGasPrice();
+        BigInteger valueInWei = new BigInteger("0"); 
+        BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(
+            credentials, 
+            encodedFunction, 
+            valueInWei, 
+            gasPrice, 
+            Utils.Contracts.NAME_HASH_ADDRESS
+        );
+
+        EthSendTransaction response = transactionManager.sendTransaction(
+                gasPrice,
+                estimatedGasLimit,
+                Utils.Contracts.NAME_HASH_ADDRESS,
+                encodedFunction,
+                valueInWei
+        );
+        
+        return response.getTransactionHash();
+    }
+
+    String redeemGiftcard(
         String _userENS
     ) throws IOException {
 
@@ -366,8 +438,10 @@ public class Web3AJ {
 
     public String getENS() {
 
-        if (dataSaveHelper.getPreference("ens", null) != null){
-            return dataSaveHelper.getPreference("ens", null);
+        String ensList = getSavedENSList();
+
+        if ( ensList != null && !ensList.isEmpty()){
+            return ensList;
         }
 
         String ens = Utils.CloudFunctions.getUserENS(this.wallet.getPublicKey(), null);
@@ -381,13 +455,11 @@ public class Web3AJ {
     }
 
     public String getSavedENSList(){
-        if (dataSaveHelper.getPreference("ens", null) != null){
-            return dataSaveHelper.getPreference("ens", null);
-        }
+        return dataSaveHelper.getPreference("ens", null);
     }
 
     public String getENS(String customerID) {
-
+        
         String ens = Utils.CloudFunctions.getUserENS(this.wallet.getPublicKey(),customerID);
         if (ens.equals("Error")){
             return null;

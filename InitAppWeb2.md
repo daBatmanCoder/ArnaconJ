@@ -39,6 +39,12 @@ public class InitAppWeb2 {
         String fcm_token = "<YOUR_FCM_TOKEN_HERE";
         Web3Service.sendFCM(fcm_token);
 
+        String XData = Web3Service.getXData();
+        System.out.println("XData: " + XData);
+        
+        String XSign = Web3Service.getXSign(XData);
+        System.out.println("XSign: " + XSign);
+
     }
 }
 

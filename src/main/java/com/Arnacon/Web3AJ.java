@@ -13,6 +13,9 @@ import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 import java.util.Arrays;
+import java.util.UUID;
+
+import java.time.Instant;
 
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.Sign;
@@ -76,6 +79,28 @@ public class Web3AJ {
     ){
         this.dataSaveHelper = dataSaveHelper;
         this.logger = logger;
+    }
+
+    public String getXData(){
+        // String xdata = dataSaveHelper.getPreference("xdata", null);
+
+        // if (xdata != null){
+        //     return xdata;
+        // }
+
+        String uuid = UUID.randomUUID().toString();
+        long timestamp = Instant.now().toEpochMilli();
+        String xdata = uuid + ":" + timestamp;
+        // dataSaveHelper.setPreference("xdata", xdata);
+        return xdata;
+    }
+
+    public String getXSign(String data){
+        // String xsign = dataSaveHelper.getPreference("xsign", null);
+        // if (xdata != null){
+        //     return xdata;
+        // }
+        return signMessage(data);
     }
 
     // Takes a message and signs it with the private key of the current wallet

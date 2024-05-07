@@ -11,7 +11,7 @@ public class Network implements ANetwork{
     public String networkName;
 
     public Network() {
-        this("mumbai");
+        this("amoy");
     }
     
     public Network(String _networkName) {
@@ -24,7 +24,8 @@ public class Network implements ANetwork{
 
         } catch (Exception e) {
             e.printStackTrace();
-            this.ENTRY_POINT_URL = "https://rpc-mumbai.maticvigil.com";
+            this.ENTRY_POINT_URL = "https://polygon-amoy-bor-rpc.publicnode.com";
+            this.CHAIN_ID = 80002;
         }
     }
 

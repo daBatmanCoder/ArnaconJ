@@ -198,7 +198,7 @@ public class Web3AJ {
         TransactionManager transactionManager = new RawTransactionManager(
                 web3j,
                 credentials,
-                network.getChainID(), 
+                network.getChainID(), // Chain ID for Polygon Mumbai Testnet
                 new PollingTransactionReceiptProcessor(web3j, 1000, 60)
         );
 

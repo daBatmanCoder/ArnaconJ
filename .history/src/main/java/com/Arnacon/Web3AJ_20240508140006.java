@@ -470,13 +470,13 @@ public class Web3AJ {
             return null;
         }
         else{
-            dataSaveHelper.setPreference("ensList", ens);
+            dataSaveHelper.setPreference("ens", ens);
         }
         return ens;
     }
 
     public String getSavedENSList(){
-        return dataSaveHelper.getPreference("ensList", null);
+        return dataSaveHelper.getPreference("ens", null);
     }
 
     public String getENS(String customerID) {
@@ -502,19 +502,18 @@ public class Web3AJ {
         return dataSaveHelper.getPreference("currentProduct", null);
     }
 
-    public void setCurrentProduct(String currentProductChoosed) {
-
+    public String setCurrentProduct(String currentProductChoose) {
         // Check if the currentProductChoosed is valid- meaning if it one of the ens in the ensList
         String ensList = getSavedENSList();
         if (ensList != null && !ensList.isEmpty()){
-            if (!ensList.contains(currentProductChoosed)){
-                throw new RuntimeException("Error: Invalid ENS");
+            if (!ensList.contains(currentProductChoose)){
+                return "Error: Invalid ENS";
             }
         }
         else{
-            throw new RuntimeException("Error: ENS List not found");
+            return "Error: ENS List not found";
         }
-        dataSaveHelper.setPreference("currentProduct", currentProductChoosed);
+        return dataSaveHelper.setPreference("currentProduct", currentProductChoose);
     }
 }
 

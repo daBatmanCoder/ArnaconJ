@@ -470,7 +470,7 @@ public class Web3AJ {
             return null;
         }
         else{
-            dataSaveHelper.setPreference("ensList", ens);
+            dataSaveHelper.setPreference("ens", ens);
         }
         return ens;
     }

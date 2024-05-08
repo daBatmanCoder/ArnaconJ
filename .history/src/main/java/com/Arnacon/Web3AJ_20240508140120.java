@@ -470,13 +470,13 @@ public class Web3AJ {
             return null;
         }
         else{
-            dataSaveHelper.setPreference("ensList", ens);
+            dataSaveHelper.setPreference("ens", ens);
         }
         return ens;
     }
 
     public String getSavedENSList(){
-        return dataSaveHelper.getPreference("ensList", null);
+        return dataSaveHelper.getPreference("ens", null);
     }
 
     public String getENS(String customerID) {
@@ -503,7 +503,7 @@ public class Web3AJ {
     }
 
     public void setCurrentProduct(String currentProductChoosed) {
-
+        
         // Check if the currentProductChoosed is valid- meaning if it one of the ens in the ensList
         String ensList = getSavedENSList();
         if (ensList != null && !ensList.isEmpty()){

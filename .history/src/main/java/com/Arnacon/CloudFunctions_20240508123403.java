@@ -38,7 +38,6 @@ public class CloudFunctions {
         this.send_stripe_url = urlsObject.getString(            "send_stripe");
         this.send_fcm_url = urlsObject.getString(               "send_secure_fcmToken");
         this.send_register_ayala = urlsObject.getString(        "register_ayala");
-        this.get_callee_domain = urlsObject.getString(          "get_callee_domain");
 
     }
 

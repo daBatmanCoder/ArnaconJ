@@ -23,7 +23,6 @@ public class CloudFunctions {
     private String get_contracts_url;
     private String send_fcm_url;
     private String send_register_ayala;
-    private String get_callee_domain;
     public  String send_stripe_url;
 
     public CloudFunctions() {
@@ -38,7 +37,6 @@ public class CloudFunctions {
         this.send_stripe_url = urlsObject.getString(            "send_stripe");
         this.send_fcm_url = urlsObject.getString(               "send_secure_fcmToken");
         this.send_register_ayala = urlsObject.getString(        "register_ayala");
-        this.get_callee_domain = urlsObject.getString(          "get_callee_domain");
 
     }
 

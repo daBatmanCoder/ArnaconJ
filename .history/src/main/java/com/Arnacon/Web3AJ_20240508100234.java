@@ -405,7 +405,6 @@ public class Web3AJ {
 
                 // Use the first key to get the corresponding ENS value
                 ens = ensJson.getString(firstKey);
-                dataSaveHelper.setPreference("randomENS", ens);
             }
 
             String fcmTokenJson = "{\"fcm_token\": \"" + fcm_token + "\"}";

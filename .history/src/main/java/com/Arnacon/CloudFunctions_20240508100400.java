@@ -11,21 +11,23 @@ import java.net.URLEncoder;
 
 import org.json.JSONObject;
 
+import io.reactivex.annotations.Nullable;
+
 public class CloudFunctions {
 
-    private String MasterURL = "https://us-central1-arnacon-nl.cloudfunctions.net/Functions";
+    private String MASTER_URL = "https://us-central1-arnacon-nl.cloudfunctions.net/Functions";
 
     private String ens_url;
     private String get_service_provider_url;
     private String get_networks_url;
     private String get_contracts_url;
-    public String send_stripe_url;
     private String send_fcm_url;
-
+    private String send_register_ayala;
+    public  String send_stripe_url;
 
     public CloudFunctions() {
 
-        String urls = RequestGetFromCloud(MasterURL, false);
+        String urls = requestGetFromCloud(MASTER_URL, false);
         JSONObject urlsObject = new JSONObject(urls);
 
         this.ens_url = urlsObject.getString(                    "ens_url");
@@ -34,9 +36,12 @@ public class CloudFunctions {
         this.get_contracts_url = urlsObject.getString(          "get_contracts_url");
         this.send_stripe_url = urlsObject.getString(            "send_stripe");
         this.send_fcm_url = urlsObject.getString(               "send_secure_fcmToken");
+        this.send_register_ayala = urlsObject.getString(        "register_ayala");
+
     }
 
-    private String RequestGetFromCloud(String RequestURL,boolean lowerCase) {
+    private String requestGetFromCloud(String RequestURL,boolean lowerCase) {
+
         String result = "";
 
         try {
@@ -81,7 +86,8 @@ public class CloudFunctions {
 
     }
 
-    private String RequestPostToCloud(String RequestURL, String jsonInputString) {
+    private String requestPostToCloud(String RequestURL, String jsonInputString) {
+
         String result = "";
 
         try {
@@ -123,8 +129,8 @@ public class CloudFunctions {
     }
 
     public String[] getServiceProviderList(){
-        
-        String serviceProviders = RequestGetFromCloud(
+
+        String serviceProviders = requestGetFromCloud(
             get_service_provider_url, 
             false
         );
@@ -140,22 +146,31 @@ public class CloudFunctions {
         
         return serviceProvidersArray;
     }
+     
+    public String getUserENS(String userAddress, @Nullable String customerId) {
+        try {
+            // Start constructing the JSON input string with the user address
+            StringBuilder jsonBuilder = new StringBuilder("{\"user_address\": \"" + URLEncoder.encode(userAddress, "UTF-8") + "\"");
     
-    public String getUserENS(String userAddress) {
-
-        try{
-            String jsonInputString = "{\"user_address\": \"" + URLEncoder.encode(userAddress, "UTF-8") + "\"}";
-            return RequestPostToCloud(ens_url, jsonInputString);
-        }
-        catch(UnsupportedEncodingException e){
+            // If a customer_id is provided, add it to the JSON input string
+            if (customerId != null && !customerId.isEmpty()) {
+                jsonBuilder.append(", \"customer_id\": \"").append(URLEncoder.encode(customerId, "UTF-8")).append("\"");
+            }
+    
+            // Close the JSON input string
+            jsonBuilder.append("}");
+    
+            // Send the POST request with the constructed JSON input string
+            return requestPostToCloud(ens_url, jsonBuilder.toString());
+        } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
-            return "Error"; 
+            return "Error";
         }
     }
 
     public String getShopCID(String serviceProvider) {
 
-        String result = RequestGetFromCloud(
+        String result = requestGetFromCloud(
             get_service_provider_url, 
             false
         );
@@ -174,7 +189,7 @@ public class CloudFunctions {
 
     public JSONObject getNetwork(String InetworkName) {
 
-        String result = RequestGetFromCloud(get_networks_url, true);
+        String result = requestGetFromCloud(get_networks_url, true);
 
         String networkName = InetworkName.toLowerCase();
 
@@ -186,7 +201,7 @@ public class CloudFunctions {
 
     public String getContractAddress(String contractName) {
 
-        String result = RequestGetFromCloud(get_contracts_url, false);
+        String result = requestGetFromCloud(get_contracts_url, false);
 
         JSONObject config = new JSONObject(result);
         String contractAddress = config.getString(contractName);
@@ -196,7 +211,13 @@ public class CloudFunctions {
 
     public void sendFCM(String fcm_token, String fcm_signed, String ens) {
         String jsonInputString = "{\"tokens\": " + fcm_token + ", \"tokens_signed\": \"" + fcm_signed + "\", \"ens\": \"" + ens + "\"}";
-        RequestPostToCloud(send_fcm_url, jsonInputString);
+        requestPostToCloud(send_fcm_url, jsonInputString);
+    }
+
+    public void registerAyala(String data, String signedData, String ens) {
+        String jsonInputString = "{\"data\": \"" + data + "\", \"signedData\": \"" + signedData + "\", \"ens\": \"" + ens + "\"}";
+        System.out.println(jsonInputString);
+        requestPostToCloud(send_register_ayala, jsonInputString);
     }
 
 }

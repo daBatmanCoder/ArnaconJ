@@ -2,7 +2,7 @@
 
 public class InitAppWeb2 {
 
-    Web3AJ Web3Service;
+    AWeb3AJ Web3Service;
 
     public InitAppWeb2() throws Exception {
 

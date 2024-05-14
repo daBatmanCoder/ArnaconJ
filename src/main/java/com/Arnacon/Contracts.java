@@ -1,6 +1,6 @@
 package com.Arnacon;
 
-import com.Config.AContract;
+import com.Web3ServiceBase.AContract;
 
 public class Contracts implements AContract{
     

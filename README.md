@@ -9,7 +9,8 @@ Welcome to the Arnacon SDK documentation. This SDK is designed to facilitate blo
     - [Prerequisites](#prerequisities)
     - [Android studio](#android-studio)
     - [Maven](#maven)
-- [Configuration](#configuration)
+- [Web3 Service Base](#web3servicebase)
+    - [AWeb3AJ](#aweb3aj)
     - [AContracts](#contracts)
     - [ANetwork](#anetwork)
     - [ADataSaveHelper](#adatasavehelper)
@@ -76,10 +77,10 @@ To use this JAR in other projects on your local machine, you'll need to install 
 If you've already built the JAR with Maven, it should be correctly formatted. 
 To manually install it, use the following command:
 ```bash
-mvn install:install-file -Dfile=target/ArnaconSDK-1.0.4.7.jar -DgroupId=com.Arnacon -DartifactId=ArnaconSDK -Dversion=1.0.4.7 -Dpackaging=jar
+mvn install:install-file -Dfile=target/ArnaconSDK-1.0.5.jar -DgroupId=com.Arnacon -DartifactId=ArnaconSDK -Dversion=1.0.5 -Dpackaging=jar
 ```
 
-Ensure to replace target/ArnaconSDK-1.0.4.7.jar with the actual path to your generated JAR file.
+Ensure to replace target/ArnaconSDK-1.0.5.jar with the actual path to your generated JAR file.
 
 2. Include Your JAR as a Dependency in Other Projects
 
@@ -88,7 +89,7 @@ With your JAR installed in your local Maven repository, you can include it as a 
 <dependency>
     <groupId>com.Arnacon</groupId>
     <artifactId>ArnaconSDK</artifactId>
-    <version>1.0.4.7</version>
+    <version>1.0.5</version>
 </dependency>
 ```
 
@@ -102,7 +103,28 @@ After completing the build process, verify the installation by running a simple 
 ***
 ***
 
-## Config
+## Web3ServiceBase
+
+The `Web3ServiceBase` abstraction defines the essential methods and functionalities required to interact with web3 services. It serves as a blueprint for implementing concrete web3 service classes.
+
+### AWeb3AJ
+
+The `AWeb3AJ` abstraction defines the methods and functionalities required to interact with web3 services in a structured and flexible manner. It serves as a blueprint for implementing concrete web3 service classes, ensuring consistency and ease of use.
+
+- **ADataSaveHelper dataSaveHelper**: An instance of `ADataSaveHelper` used for saving and retrieving data.
+- **ALogger logger**: An instance of `ALogger` used for logging.
+
+#### Methods
+
+- **getServiceProviderList()**: Retrieves a list of available service providers.
+- **setServiceProvider(String provider)**: Sets the current service provider.
+- **fetchStore()**: Fetches data from the store.
+- **getPaymentURL(String packageNum, String successURL, String cancelURL)**: Generates a payment URL for the specified package.
+- **sendFCM(String fcmToken)**: Sends an FCM notification.
+- **getXData()**: Retrieves XData.
+- **getXSign(String XData)**: Generates a signature for the given XData.
+
+***
 
 ### AContracts
 
@@ -124,13 +146,12 @@ The `ANetwork` abstraction facilitates the configuration of different blockchain
 
 ### ALogger
 
-The `ALogger` abstraction facilitates the log to output for testing purposes
-
+The `ALogger` abstraction defines the logging interface used throughout the application. This allows for flexibility in how logging is handled, whether to console, file, or external services.
 ***
 
 ### ADataSaveHelper
 
-The `ADataSaveHelper` abstraction facilitates the configuration of a saver helper necessary for the SDK to work.
+The `ADataSaveHelper` abstraction provides an interface for saving and retrieving application data. Implementations of this interface can vary, allowing for different storage mechanisms.
 
 !!! In order to use this SDK you'll have to implement this class !!!
 

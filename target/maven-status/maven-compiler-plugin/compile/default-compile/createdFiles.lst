@@ -1,10 +1,11 @@
 com/Arnacon/CloudFunctions.class
-com/Config/AContract.class
+com/Web3ServiceBase/AWeb3AJ.class
 com/Arnacon/Web3AJ.class
 com/Arnacon/Contracts.class
+com/Web3ServiceBase/ALogger.class
 com/Arnacon/Wallet.class
+com/Web3ServiceBase/AContract.class
+com/Web3ServiceBase/ADataSaveHelper.class
 com/Arnacon/Network.class
-com/Config/ANetwork.class
-com/Config/ALogger.class
-com/Config/ADataSaveHelper.class
+com/Web3ServiceBase/ANetwork.class
 com/Arnacon/Utils.class

@@ -2,7 +2,7 @@ package com.Arnacon;
 
 import org.json.JSONObject;
 
-import com.Config.ANetwork;
+import com.Web3ServiceBase.ANetwork;
 
 public class Network implements ANetwork{
     

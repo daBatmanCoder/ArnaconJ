@@ -22,9 +22,10 @@ import org.web3j.crypto.Credentials;
 import org.web3j.crypto.Sign;
 import org.web3j.utils.Numeric;
 
-import com.Config.ADataSaveHelper;
-import com.Config.ALogger;
-import com.Config.ANetwork;
+import com.Web3ServiceBase.ADataSaveHelper;
+import com.Web3ServiceBase.ALogger;
+import com.Web3ServiceBase.ANetwork;
+import com.Web3ServiceBase.AWeb3AJ;
 
 import org.json.JSONArray;
 import org.web3j.abi.FunctionEncoder;
@@ -46,8 +47,8 @@ import org.web3j.tx.TransactionManager;
 import org.web3j.tx.response.PollingTransactionReceiptProcessor;
 
 
-public class Web3AJ {
-
+public class Web3AJ extends AWeb3AJ{
+    
     Web3j web3j;
     Wallet wallet;
     ANetwork network; // Ethereum / Polygon / Binance Smart Chain
@@ -59,6 +60,7 @@ public class Web3AJ {
         ADataSaveHelper dataSaveHelper, 
         ALogger logger
     ) {
+        super(dataSaveHelper, logger);
         
         String privateKey = dataSaveHelper.getPreference("privateKey", null);
 
@@ -70,17 +72,18 @@ public class Web3AJ {
             dataSaveHelper.setPreference("privateKey", this.wallet.getPrivateKey());
         }
 
-        commonConstructor(dataSaveHelper,logger);
+        // commonConstructor(dataSaveHelper,logger);
     }
 
-    private void commonConstructor(
-        ADataSaveHelper dataSaveHelper, 
-        ALogger logger
-    ){
-        this.dataSaveHelper = dataSaveHelper;
-        this.logger = logger;
-    }
-
+    // private void commonConstructor(
+    //     ADataSaveHelper dataSaveHelper, 
+    //     ALogger logger
+    // ){
+    //     this.dataSaveHelper = dataSaveHelper;
+    //     this.logger = logger;
+    // }
+    
+    @Override
     public String getXData(){
         // String xdata = dataSaveHelper.getPreference("xdata", null);
 
@@ -95,6 +98,7 @@ public class Web3AJ {
         return xdata;
     }
 
+    @Override
     public String getXSign(String data){
         // String xsign = dataSaveHelper.getPreference("xsign", null);
         // if (xdata != null){
@@ -348,6 +352,8 @@ public class Web3AJ {
         return precise_balance;
     }
 
+
+    @Override
     public String fetchStore() throws Exception {
 
         String serviceProviderName = dataSaveHelper.getPreference("serviceProviderName", null);
@@ -383,6 +389,7 @@ public class Web3AJ {
         }
     }
 
+    @Override
     public void sendFCM(
         String fcm_token
     ) {
@@ -438,6 +445,7 @@ public class Web3AJ {
         }
     }
 
+    @Override
     public String getPaymentURL(
         String packageNum,
         String successDP,
@@ -453,6 +461,7 @@ public class Web3AJ {
         );
     }
 
+    @Override
     public String[] getServiceProviderList(){
         return Utils.CloudFunctions.getServiceProviderList();
     }
@@ -488,6 +497,7 @@ public class Web3AJ {
         return ens;
     }
 
+    @Override
     public void setServiceProvider(
         String serviceProviderName
     ) {

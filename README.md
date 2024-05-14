@@ -12,6 +12,9 @@ Welcome to the Arnacon SDK documentation. This SDK is designed to facilitate blo
 - [Configuration](#configuration)
     - [AContracts](#contracts)
     - [ANetwork](#anetwork)
+    - [ADataSaveHelper](#adatasavehelper)
+    - [ALogger](#alogger)
+
 - [Arnacon Components](#arnacon-components)
     - [Contracts](#contracts)
     - [Cloud Functions](#cloud-functions)

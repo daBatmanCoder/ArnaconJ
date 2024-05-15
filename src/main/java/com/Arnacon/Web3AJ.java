@@ -61,6 +61,8 @@ public class Web3AJ extends AWeb3AJ{
         ALogger logger
     ) {
         super(dataSaveHelper, logger);
+        this.dataSaveHelper = dataSaveHelper;
+        this.logger = logger;
         
         String privateKey = dataSaveHelper.getPreference("privateKey", null);
 
@@ -425,7 +427,7 @@ public class Web3AJ extends AWeb3AJ{
             throw new RuntimeException("Error: " + e);
         }
     }
-
+    
     public void registerAyala() {
         try{
             

@@ -47,7 +47,7 @@ import org.web3j.tx.TransactionManager;
 import org.web3j.tx.response.PollingTransactionReceiptProcessor;
 
 
-public class Web3AJ extends AWeb3AJ{
+public class Web3AJ {
     
     Web3j web3j;
     Wallet wallet;
@@ -60,7 +60,6 @@ public class Web3AJ extends AWeb3AJ{
         ADataSaveHelper dataSaveHelper, 
         ALogger logger
     ) {
-        super(dataSaveHelper, logger);
         this.dataSaveHelper = dataSaveHelper;
         this.logger = logger;
         
@@ -85,7 +84,6 @@ public class Web3AJ extends AWeb3AJ{
     //     this.logger = logger;
     // }
     
-    @Override
     public String getXData(){
         // String xdata = dataSaveHelper.getPreference("xdata", null);
 
@@ -100,7 +98,6 @@ public class Web3AJ extends AWeb3AJ{
         return xdata;
     }
 
-    @Override
     public String getXSign(String data){
         // String xsign = dataSaveHelper.getPreference("xsign", null);
         // if (xdata != null){
@@ -355,7 +352,6 @@ public class Web3AJ extends AWeb3AJ{
     }
 
 
-    @Override
     public String fetchStore() throws Exception {
 
         String serviceProviderName = dataSaveHelper.getPreference("serviceProviderName", null);
@@ -391,7 +387,6 @@ public class Web3AJ extends AWeb3AJ{
         }
     }
 
-    @Override
     public void sendFCM(
         String fcm_token
     ) {
@@ -447,7 +442,6 @@ public class Web3AJ extends AWeb3AJ{
         }
     }
 
-    @Override
     public String getPaymentURL(
         String packageNum,
         String successDP,
@@ -463,7 +457,6 @@ public class Web3AJ extends AWeb3AJ{
         );
     }
 
-    @Override
     public String[] getServiceProviderList(){
         return Utils.CloudFunctions.getServiceProviderList();
     }
@@ -499,7 +492,6 @@ public class Web3AJ extends AWeb3AJ{
         return ens;
     }
 
-    @Override
     public void setServiceProvider(
         String serviceProviderName
     ) {

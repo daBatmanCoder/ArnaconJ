@@ -11,6 +11,8 @@ import java.net.URLEncoder;
 
 import org.json.JSONObject;
 
+import com.Web3ServiceBase.ALogger;
+
 import io.reactivex.annotations.Nullable;
 
 public class CloudFunctions {
@@ -24,11 +26,13 @@ public class CloudFunctions {
     private String send_fcm_url;
     private String send_register_ayala;
     private String get_callee_domain;
+    public ALogger logger;
     public  String send_stripe_url;
 
-    public CloudFunctions() {
+    public CloudFunctions(ALogger logger) {
+        this.logger = logger;
 
-        String urls = requestGetFromCloud(MASTER_URL, false);
+        String urls = requestGetFromCloud(MASTER_URL, false, logger);
         JSONObject urlsObject = new JSONObject(urls);
 
         this.ens_url = urlsObject.getString(                    "ens_url");
@@ -42,7 +46,7 @@ public class CloudFunctions {
 
     }
 
-    private String requestGetFromCloud(String RequestURL,boolean lowerCase) {
+    private String requestGetFromCloud(String RequestURL,boolean lowerCase, ALogger logger) {
 
         String result = "";
 
@@ -78,7 +82,7 @@ public class CloudFunctions {
                     
                 }
             } else {
-                System.out.println("GET request failed. Response Code: " + responseCode);
+                logger.debug("GET request failed. Response Code: " + responseCode);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -88,7 +92,7 @@ public class CloudFunctions {
 
     }
 
-    private String requestPostToCloud(String RequestURL, String jsonInputString) {
+    private String requestPostToCloud(String RequestURL, String jsonInputString, ALogger logger) {
 
         String result = "";
 
@@ -121,10 +125,14 @@ public class CloudFunctions {
                     result = response.toString();
                 }
             } else {
-                System.out.println("POST request failed. Response Code: " + responseCode);
+                logger.debug("POST request failed. Response Code: " + responseCode);
             }
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        
+        if (result.equals("Error")){
+            result = "";
         }
 
         return result;
@@ -134,7 +142,8 @@ public class CloudFunctions {
 
         String serviceProviders = requestGetFromCloud(
             get_service_provider_url, 
-            false
+            false,
+            logger
         );
         JSONObject serviceProvidersObject = new JSONObject(serviceProviders);
         String[] serviceProvidersArray = new String[serviceProvidersObject.length()];
@@ -163,7 +172,7 @@ public class CloudFunctions {
             jsonBuilder.append("}");
     
             // Send the POST request with the constructed JSON input string
-            return requestPostToCloud(ens_url, jsonBuilder.toString());
+            return requestPostToCloud(ens_url, jsonBuilder.toString(), logger);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return "Error";
@@ -174,7 +183,8 @@ public class CloudFunctions {
 
         String result = requestGetFromCloud(
             get_service_provider_url, 
-            false
+            false,
+            logger
         );
         
         JSONObject jsonObject = new JSONObject(result);
@@ -191,7 +201,7 @@ public class CloudFunctions {
 
     public JSONObject getNetwork(String InetworkName) {
 
-        String result = requestGetFromCloud(get_networks_url, true);
+        String result = requestGetFromCloud(get_networks_url, true, logger);
 
         String networkName = InetworkName.toLowerCase();
 
@@ -203,7 +213,7 @@ public class CloudFunctions {
 
     public String getContractAddress(String contractName) {
 
-        String result = requestGetFromCloud(get_contracts_url, false);
+        String result = requestGetFromCloud(get_contracts_url, false, logger);
 
         JSONObject config = new JSONObject(result);
         String contractAddress = config.getString(contractName);
@@ -213,18 +223,18 @@ public class CloudFunctions {
 
     public void sendFCM(String fcm_token, String fcm_signed, String ens) {
         String jsonInputString = "{\"tokens\": " + fcm_token + ", \"tokens_signed\": \"" + fcm_signed + "\", \"ens\": \"" + ens + "\"}";
-        requestPostToCloud(send_fcm_url, jsonInputString);
+        requestPostToCloud(send_fcm_url, jsonInputString, logger);
     }
 
     public void registerAyala(String data, String signedData, String ens) {
         String jsonInputString = "{\"data\": \"" + data + "\", \"signedData\": \"" + signedData + "\", \"ens\": \"" + ens + "\"}";
         System.out.println(jsonInputString);
-        requestPostToCloud(send_register_ayala, jsonInputString);
+        requestPostToCloud(send_register_ayala, jsonInputString, logger);
     }
 
     public String getCalleeDomain(String callee) {
         String jsonInputString = "{\"ens\": \"" + callee + "\"}";
         System.out.println(jsonInputString);
-        return requestPostToCloud(get_callee_domain, jsonInputString);
+        return requestPostToCloud(get_callee_domain, jsonInputString, logger);
     }
 }

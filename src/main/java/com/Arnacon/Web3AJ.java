@@ -25,7 +25,7 @@ import org.web3j.utils.Numeric;
 import com.Web3ServiceBase.ADataSaveHelper;
 import com.Web3ServiceBase.ALogger;
 import com.Web3ServiceBase.ANetwork;
-import com.Web3ServiceBase.AWeb3AJ;
+// import com.Web3ServiceBase.AWeb3AJ;
 
 import org.json.JSONArray;
 import org.web3j.abi.FunctionEncoder;
@@ -62,6 +62,7 @@ public class Web3AJ {
     ) {
         this.dataSaveHelper = dataSaveHelper;
         this.logger = logger;
+
         
         String privateKey = dataSaveHelper.getPreference("privateKey", null);
 
@@ -118,7 +119,7 @@ public class Web3AJ {
         byte[] messageBytes = prefixedMessage.getBytes();
 
         Sign.SignatureData signature = Sign.signMessage(messageBytes, credentials.getEcKeyPair());
-        System.out.println("Signature: " + Numeric.toHexString(signature.getR()));
+        logger.debug("Signature: " + Numeric.toHexString(signature.getR()));
         String sigHex = Numeric.toHexString(signature.getR()) 
                 + Numeric.toHexStringNoPrefix(signature.getS()) 
                 + Numeric.toHexStringNoPrefix(new byte[]{signature.getV()[0]});
@@ -355,7 +356,7 @@ public class Web3AJ {
     public String fetchStore() throws Exception {
 
         String serviceProviderName = dataSaveHelper.getPreference("serviceProviderName", null);
-        System.out.println("Service Provider: " + serviceProviderName);
+        logger.debug("Service Provider: " + serviceProviderName);
 
         String cid = Utils.CloudFunctions.getShopCID(serviceProviderName);
 
@@ -430,7 +431,7 @@ public class Web3AJ {
             if (ens == null){
                 throw new RuntimeException("Error: ENS not found");
             }
-            System.out.println("ENS: " + ens);
+            logger.debug("ENS: " + ens);
 
             String someData = getXData();
             String signedData = getXSign(someData);
@@ -453,7 +454,8 @@ public class Web3AJ {
             dataSaveHelper.getPreference("store", packageNum), 
             successDP, 
             cancelDP,
-            dataSaveHelper
+            dataSaveHelper,
+            logger
         );
     }
 

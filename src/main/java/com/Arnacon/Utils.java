@@ -9,18 +9,24 @@ import org.json.JSONArray;
 import org.json.JSONObject; // Make sure to include the JSON library in your project
 
 import com.Web3ServiceBase.ADataSaveHelper;
+import com.Web3ServiceBase.ALogger;
+
 
 public class Utils {
 
-    public static CloudFunctions CloudFunctions = new CloudFunctions();
-    public static Contracts Contracts = new Contracts();
+    public static CloudFunctions CloudFunctions;
+    public static Contracts Contracts;
 
     static String PAYMENT_DEEPLINK_OK = "https://success-java.vercel.app/";
     static String PAYMENT_DEEPLINK_NOK = "https://failure-java.vercel.app/";
 
     static String redirectURL = "https://redirect-generation.vercel.app?redirect=";
 
-    static boolean isValidPackage(String packageNum, String jsonStore) {
+    public void newCloudFunctions(ALogger logger) {
+        CloudFunctions = new CloudFunctions(logger);
+    }
+
+    static boolean isValidPackage(String packageNum, String jsonStore, ALogger logger) {
         // Parse the JSON data
         JSONObject json = new JSONObject(jsonStore);
         
@@ -32,11 +38,11 @@ public class Utils {
             if (json.has(String.valueOf(packageNumber))) {
                 return true; // The input is valid
             } else {
-                System.out.println("Package number is not in the range of available packages.");
+                logger.debug("Package number is not in the range of available packages.");
                 return false; // The input number does not correspond to any package index
             }
         } catch (NumberFormatException e) {
-            System.out.println("User input is not a valid number.");
+            logger.error("User input is not a valid number.", e);
             return false; // The input is not a valid number
         }
     }
@@ -51,8 +57,8 @@ public class Utils {
         }
     }
 
-    static String getPaymentURL(String userID, String packageNum, String jsonStore, String successURL, String cancelURL, ADataSaveHelper dataSaveHelper) {
-        boolean isValid = Utils.isValidPackage(packageNum, jsonStore);
+    static String getPaymentURL(String userID, String packageNum, String jsonStore, String successURL, String cancelURL, ADataSaveHelper dataSaveHelper, ALogger logger) {
+        boolean isValid = Utils.isValidPackage(packageNum, jsonStore, logger);
         if (!isValid) {
             System.out.println("The package number is not valid.");
             return null;
@@ -124,7 +130,7 @@ public class Utils {
             }
 
         } catch (Exception e) {
-            System.out.println("There was a problem with the fetch operation: " + e.getMessage());
+            logger.error("There was a problem with the fetch operation: ", e);
         }
 
         return null;

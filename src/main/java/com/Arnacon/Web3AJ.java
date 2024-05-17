@@ -25,7 +25,7 @@ import org.web3j.utils.Numeric;
 import com.Web3ServiceBase.ADataSaveHelper;
 import com.Web3ServiceBase.ALogger;
 import com.Web3ServiceBase.ANetwork;
-// import com.Web3ServiceBase.AWeb3AJ;
+import com.Web3ServiceBase.AWeb3AJ;
 
 import org.json.JSONArray;
 import org.web3j.abi.FunctionEncoder;
@@ -47,23 +47,22 @@ import org.web3j.tx.TransactionManager;
 import org.web3j.tx.response.PollingTransactionReceiptProcessor;
 
 
-public class Web3AJ {
+public class Web3AJ extends AWeb3AJ{
     
-    Web3j web3j;
-    Wallet wallet;
-    ANetwork network; // Ethereum / Polygon / Binance Smart Chain
+    Web3j           web3j;
+    Wallet          wallet;
+    ALogger         logger;
+    ANetwork        network; // Ethereum / Polygon / Binance Smart Chain
     ADataSaveHelper dataSaveHelper;
-    ALogger logger;
 
     // Constructor (with network specified)
     public Web3AJ(
         ADataSaveHelper dataSaveHelper, 
         ALogger logger
     ) {
-        this.dataSaveHelper = dataSaveHelper;
-        this.logger = logger;
 
-        
+        super(dataSaveHelper, logger);
+
         String privateKey = dataSaveHelper.getPreference("privateKey", null);
 
         if (privateKey != null){
@@ -74,36 +73,17 @@ public class Web3AJ {
             dataSaveHelper.setPreference("privateKey", this.wallet.getPrivateKey());
         }
 
-        // commonConstructor(dataSaveHelper,logger);
     }
 
-    // private void commonConstructor(
-    //     ADataSaveHelper dataSaveHelper, 
-    //     ALogger logger
-    // ){
-    //     this.dataSaveHelper = dataSaveHelper;
-    //     this.logger = logger;
-    // }
-    
     public String getXData(){
-        // String xdata = dataSaveHelper.getPreference("xdata", null);
-
-        // if (xdata != null){
-        //     return xdata;
-        // }
 
         String uuid = UUID.randomUUID().toString();
         long timestamp = Instant.now().toEpochMilli();
         String xdata = uuid + ":" + timestamp;
-        // dataSaveHelper.setPreference("xdata", xdata);
         return xdata;
     }
 
     public String getXSign(String data){
-        // String xsign = dataSaveHelper.getPreference("xsign", null);
-        // if (xdata != null){
-        //     return xdata;
-        // }
         return signMessage(data);
     }
 

@@ -14,15 +14,16 @@ import com.Web3ServiceBase.ALogger;
 
 public class Utils {
 
-    public static CloudFunctions CloudFunctions;
-    public static Contracts Contracts;
+    public static Contracts Contracts = new Contracts();
 
     static String PAYMENT_DEEPLINK_OK = "https://success-java.vercel.app/";
     static String PAYMENT_DEEPLINK_NOK = "https://failure-java.vercel.app/";
 
     static String redirectURL = "https://redirect-generation.vercel.app?redirect=";
 
-    public void newCloudFunctions(ALogger logger) {
+    public static CloudFunctions CloudFunctions;
+
+    public static void newCloudFunctions(ALogger logger) {
         CloudFunctions = new CloudFunctions(logger);
     }
 

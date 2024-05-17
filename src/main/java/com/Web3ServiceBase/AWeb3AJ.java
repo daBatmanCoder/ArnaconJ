@@ -1,5 +1,7 @@
 package com.Web3ServiceBase;
 
+import com.Arnacon.Utils;
+
 abstract public class AWeb3AJ {
 
     protected ADataSaveHelper dataSaveHelper;
@@ -8,6 +10,7 @@ abstract public class AWeb3AJ {
     public AWeb3AJ(ADataSaveHelper dataSaveHelper, ALogger logger) {
         this.dataSaveHelper = dataSaveHelper;
         this.logger = logger;
+        Utils.newCloudFunctions(logger);
     }
 
     public abstract String[] getServiceProviderList();

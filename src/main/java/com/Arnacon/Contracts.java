@@ -9,8 +9,8 @@ public class Contracts implements AContract{
 
     public Contracts() {
         try {
-            this.NAME_HASH_ADDRESS = Utils.CloudFunctions.getContractAddress("NAME_HASH_ADDRESS");
-            this.W_ENS_ADDRESS = Utils.CloudFunctions.getContractAddress("W_ENS_ADDRESS");
+            this.NAME_HASH_ADDRESS = Utils.getCloudFunctions(null).getContractAddress("NAME_HASH_ADDRESS");
+            this.W_ENS_ADDRESS = Utils.getCloudFunctions(null).getContractAddress("W_ENS_ADDRESS");
         } catch (Exception e) {
             e.printStackTrace();
         }

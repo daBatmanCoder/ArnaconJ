@@ -30,8 +30,9 @@ public class CloudFunctions {
     public  String send_stripe_url;
 
     public CloudFunctions(ALogger logger) {
-        this.logger = logger;
 
+        this.logger = logger;
+        
         String urls = requestGetFromCloud(MASTER_URL, false, logger);
         JSONObject urlsObject = new JSONObject(urls);
 

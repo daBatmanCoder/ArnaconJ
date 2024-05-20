@@ -23,10 +23,6 @@ public class Utils {
 
     public static CloudFunctions CloudFunctions;
 
-    public static void newCloudFunctions(ALogger logger) {
-        CloudFunctions = new CloudFunctions(logger);
-    }
-
     static boolean isValidPackage(String packageNum, String jsonStore, ALogger logger) {
         // Parse the JSON data
         JSONObject json = new JSONObject(jsonStore);
@@ -56,6 +52,13 @@ public class Utils {
         } catch (java.io.IOException e) {
             e.printStackTrace();
         }
+    }
+
+    static CloudFunctions getCloudFunctions(ALogger logger) {
+        if(CloudFunctions == null){
+            CloudFunctions = new CloudFunctions(logger);
+        }
+        return CloudFunctions;
     }
 
     static String getPaymentURL(String userID, String packageNum, String jsonStore, String successURL, String cancelURL, ADataSaveHelper dataSaveHelper, ALogger logger) {
@@ -91,7 +94,8 @@ public class Utils {
             }
 
             // Prepare the URL and open connection
-            URL url = new URL(CloudFunctions.send_stripe_url);
+            
+            URL url = new URL(getCloudFunctions(logger).send_stripe_url);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");

@@ -29,7 +29,9 @@ public class CloudFunctions {
     public ALogger logger;
     public  String send_stripe_url;
 
-    public CloudFunctions(ALogger logger) {
+    private static CloudFunctions CloudFunctions;
+
+    private CloudFunctions(ALogger logger) {
 
         this.logger = logger;
         
@@ -45,6 +47,13 @@ public class CloudFunctions {
         this.send_register_ayala = urlsObject.getString(        "register_ayala");
         this.get_callee_domain = urlsObject.getString(          "get_callee_domain");
 
+    }
+
+    public static CloudFunctions getCloudFunctions(ALogger logger) {
+        if(CloudFunctions == null){
+            CloudFunctions = new CloudFunctions(logger);
+        }
+        return CloudFunctions;
     }
 
     private String requestGetFromCloud(String RequestURL,boolean lowerCase, ALogger logger) {

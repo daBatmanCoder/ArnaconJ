@@ -21,7 +21,14 @@ public class Utils {
 
     static String redirectURL = "https://redirect-generation.vercel.app?redirect=";
 
-    public static CloudFunctions CloudFunctions;
+    private static CloudFunctions CloudFunctionsIn; // Singleton
+
+    public static CloudFunctions getCloudFunctions(ALogger logger) { // Only once
+        if(CloudFunctionsIn == null){
+            CloudFunctionsIn = CloudFunctions.getCloudFunctions(logger);
+        }
+        return CloudFunctionsIn;
+    }
 
     static boolean isValidPackage(String packageNum, String jsonStore, ALogger logger) {
         // Parse the JSON data
@@ -52,13 +59,6 @@ public class Utils {
         } catch (java.io.IOException e) {
             e.printStackTrace();
         }
-    }
-
-    static CloudFunctions getCloudFunctions(ALogger logger) {
-        if(CloudFunctions == null){
-            CloudFunctions = new CloudFunctions(logger);
-        }
-        return CloudFunctions;
     }
 
     static String getPaymentURL(String userID, String packageNum, String jsonStore, String successURL, String cancelURL, ADataSaveHelper dataSaveHelper, ALogger logger) {

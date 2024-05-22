@@ -14,20 +14,27 @@ import com.Web3ServiceBase.ALogger;
 
 public class Utils {
 
-    public static Contracts Contracts = new Contracts();
+    private static CloudFunctions CloudFunctionsIn; // Singleton
+    private static Contracts ContractsInst; // Singleton
 
     static String PAYMENT_DEEPLINK_OK = "https://success-java.vercel.app/";
     static String PAYMENT_DEEPLINK_NOK = "https://failure-java.vercel.app/";
 
     static String redirectURL = "https://redirect-generation.vercel.app?redirect=";
 
-    private static CloudFunctions CloudFunctionsIn; // Singleton
 
     public static CloudFunctions getCloudFunctions(ALogger logger) { // Only once
         if(CloudFunctionsIn == null){
             CloudFunctionsIn = CloudFunctions.getCloudFunctions(logger);
         }
         return CloudFunctionsIn;
+    }
+
+    public static Contracts getContracts(ALogger logger) {
+        if (ContractsInst == null) {
+            ContractsInst = Contracts.getContracts(logger);
+        }
+        return ContractsInst;
     }
 
     static boolean isValidPackage(String packageNum, String jsonStore, ALogger logger) {

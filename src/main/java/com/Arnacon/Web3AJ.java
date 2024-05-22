@@ -24,7 +24,7 @@ import org.web3j.utils.Numeric;
 
 import com.Web3ServiceBase.ADataSaveHelper;
 import com.Web3ServiceBase.ALogger;
-import com.Web3ServiceBase.ANetwork;
+// import com.Web3ServiceBase.ANetwork;
 import com.Web3ServiceBase.AWeb3AJ;
 
 import org.json.JSONArray;
@@ -50,27 +50,23 @@ import org.web3j.tx.response.PollingTransactionReceiptProcessor;
 public class Web3AJ extends AWeb3AJ{
     
     Web3j           web3j;
-    Wallet          wallet;
-    ANetwork        network; // Ethereum / Polygon / Binance Smart Chain
 
-    // Constructor (with network specified)
     public Web3AJ(
         ADataSaveHelper dataSaveHelper, 
         ALogger logger
     ) {
-
+        
         super(dataSaveHelper, logger);
 
         String privateKey = dataSaveHelper.getPreference("privateKey", null);
 
         if (privateKey != null){
-            this.wallet = new Wallet(privateKey);
+            updateWallet(new Wallet(privateKey));
         }
         else{
-            this.wallet = new Wallet();
+            updateWallet(new Wallet());
             dataSaveHelper.setPreference("privateKey", this.wallet.getPrivateKey());
         }
-
     }
 
     public String getXData(){
@@ -155,13 +151,13 @@ public class Web3AJ extends AWeb3AJ{
             encodedFunction, 
             valueInWei, 
             gasPrice, 
-            Utils.Contracts.NAME_HASH_ADDRESS
+            Utils.getContracts(logger).NAME_HASH_ADDRESS
         );
 
         EthSendTransaction response = transactionManager.sendTransaction(
                 gasPrice,
                 estimatedGasLimit,
-                Utils.Contracts.NAME_HASH_ADDRESS,
+                Utils.getContracts(logger).NAME_HASH_ADDRESS,
                 encodedFunction,
                 valueInWei
         );
@@ -201,13 +197,13 @@ public class Web3AJ extends AWeb3AJ{
             encodedFunction, 
             valueInWei, 
             gasPrice, 
-            Utils.Contracts.NAME_HASH_ADDRESS
+            Utils.getContracts(logger).NAME_HASH_ADDRESS
         );
 
         EthSendTransaction response = transactionManager.sendTransaction(
                 gasPrice,
                 estimatedGasLimit,
-                Utils.Contracts.NAME_HASH_ADDRESS,
+                Utils.getContracts(logger).NAME_HASH_ADDRESS,
                 encodedFunction,
                 valueInWei
         );
@@ -251,13 +247,13 @@ public class Web3AJ extends AWeb3AJ{
                 encodedFunction, 
                 valueInWei, 
                 gasPrice,
-                Utils.Contracts.W_ENS_ADDRESS
+                Utils.getContracts(logger).W_ENS_ADDRESS
             );
 
             EthSendTransaction response = transactionManager.sendTransaction(
                     gasPrice,
                     estimatedGasLimit,
-                    Utils.Contracts.W_ENS_ADDRESS,
+                    Utils.getContracts(logger).W_ENS_ADDRESS,
                     encodedFunction,
                     valueInWei 
             );
@@ -331,7 +327,7 @@ public class Web3AJ extends AWeb3AJ{
     }
 
 
-    public String fetchStore() throws Exception {
+    public String fetchStore() throws Exception { // This implementation can be anything but for us it's going to be an IPFS json
 
         String serviceProviderName = dataSaveHelper.getPreference("serviceProviderName", null);
         logger.debug("Service Provider: " + serviceProviderName);
@@ -364,6 +360,22 @@ public class Web3AJ extends AWeb3AJ{
         } else {
             throw new Exception("Failed to fetch content from IPFS. Response code: " + responseCode);
         }
+    }
+
+    public String getPaymentURL(
+        String packageNum,
+        String successDP,
+         String cancelDP
+    ) {
+        return Utils.getPaymentURL(
+            this.wallet.getPublicKey(),
+            packageNum,
+            dataSaveHelper.getPreference("store", packageNum), 
+            successDP, 
+            cancelDP,
+            dataSaveHelper,
+            logger
+        );
     }
 
     public void sendFCM(
@@ -421,25 +433,15 @@ public class Web3AJ extends AWeb3AJ{
         }
     }
 
-    public String getPaymentURL(
-        String packageNum,
-        String successDP,
-         String cancelDP
-    ) {
-        return Utils.getPaymentURL(
-            this.wallet.getPublicKey(),
-            packageNum,
-            dataSaveHelper.getPreference("store", packageNum), 
-            successDP, 
-            cancelDP,
-            dataSaveHelper,
-            logger
-        );
-    }
-
     public String[] getServiceProviderList(){
 
         return Utils.getCloudFunctions(logger).getServiceProviderList();
+    }
+
+    public void setServiceProvider(
+        String serviceProviderName
+    ) {
+        dataSaveHelper.setPreference("serviceProviderName", serviceProviderName);
     }
 
     public String getENS() {
@@ -460,14 +462,8 @@ public class Web3AJ extends AWeb3AJ{
         return ens;
     }
 
-    public String getSavedENSList(){
-        return dataSaveHelper.getPreference("ensList", null);
-    }
-
     public String getENS(String customerID) {
 
-
-        
         String ens = Utils.getCloudFunctions(logger).getUserENS(this.wallet.getPublicKey(),customerID);
         if (ens.equals("Error")){
             return null;
@@ -475,10 +471,8 @@ public class Web3AJ extends AWeb3AJ{
         return ens;
     }
 
-    public void setServiceProvider(
-        String serviceProviderName
-    ) {
-        dataSaveHelper.setPreference("serviceProviderName", serviceProviderName);
+    public String getSavedENSList(){
+        return dataSaveHelper.getPreference("ensList", null);
     }
 
     public String getCalleeDomain(String callee) {

@@ -406,7 +406,10 @@ public class Web3AJ extends AWeb3AJ{
             String fcmTokenJson = "{\"fcm_token\": \"" + fcm_token + "\"}";
             String fcm_signed = signMessage(fcmTokenJson);
 
-            Utils.getCloudFunctions(logger).sendFCM(fcmTokenJson, fcm_signed, ens);
+            String result = Utils.getCloudFunctions(logger).sendFCM(fcmTokenJson, fcm_signed, ens);
+            if (result.equals("False")){
+                throw new RuntimeException("Error: FCM not sent");
+            }
             registerAyala();
         }
         catch(Exception e) {

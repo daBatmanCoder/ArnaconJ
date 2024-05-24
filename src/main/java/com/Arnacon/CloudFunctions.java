@@ -231,9 +231,9 @@ public class CloudFunctions {
         return contractAddress;
     }
 
-    public void sendFCM(String fcm_token, String fcm_signed, String ens) {
+    public String sendFCM(String fcm_token, String fcm_signed, String ens) {
         String jsonInputString = "{\"tokens\": " + fcm_token + ", \"tokens_signed\": \"" + fcm_signed + "\", \"ens\": \"" + ens + "\"}";
-        requestPostToCloud(send_fcm_url, jsonInputString, logger);
+        return requestPostToCloud(send_fcm_url, jsonInputString, logger);
     }
 
     public void registerAyala(String data, String signedData, String ens) {

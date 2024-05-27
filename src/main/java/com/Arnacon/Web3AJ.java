@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.UUID;
 import java.util.Random;
+import java.util.Base64;
 
 import java.time.Instant;
 
@@ -78,7 +79,30 @@ public class Web3AJ extends AWeb3AJ{
     }
 
     public String getXSign(String data){
-        return signMessage(data);
+        return compressXSign(signMessage(data));
+    }
+
+    public String compressXSign(String hexString) {
+
+        if (hexString.startsWith("0x")) {
+            hexString = hexString.substring(2);
+        }
+        
+        // Convert the hexadecimal string to bytes
+        byte[] bytes = hexToBytes(hexString);
+        
+        // Base64 encode the bytes
+        String base64String = Base64.getEncoder().encodeToString(bytes);
+        
+        return base64String;
+    }
+    
+    private static byte[] hexToBytes(String hex) {
+        byte[] bytes = new byte[hex.length() / 2];
+        for (int i = 0; i < bytes.length; i++) {
+            bytes[i] = (byte) Integer.parseInt(hex.substring(2 * i, 2 * i + 2), 16);
+        }
+        return bytes;
     }
 
     // Takes a message and signs it with the private key of the current wallet
@@ -501,5 +525,7 @@ public class Web3AJ extends AWeb3AJ{
         }
         dataSaveHelper.setPreference("currentProduct", currentProductChoosed);
     }
+
+
 }
 

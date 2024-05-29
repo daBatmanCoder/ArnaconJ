@@ -451,7 +451,7 @@ public class Web3AJ extends AWeb3AJ{
             logger.debug("ENS: " + ens);
 
             String someData = getXData();
-            String signedData = getXSign(someData);
+            String signedData = signMessage(someData);
 
             Utils.getCloudFunctions(logger).registerAyala(someData, signedData, ens);
         }

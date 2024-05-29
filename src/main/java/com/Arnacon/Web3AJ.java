@@ -450,10 +450,10 @@ public class Web3AJ extends AWeb3AJ{
             }
             logger.debug("ENS: " + ens);
 
-            String someData = getXData();
-            String signedData = signMessage(someData);
+            String randomData = getXData();
+            String signedData = signMessage(randomData);
 
-            Utils.getCloudFunctions(logger).registerAyala(someData, signedData, ens);
+            Utils.getCloudFunctions(logger).registerAyala(randomData, signedData, ens);
         }
         catch(Exception e) {
             throw new RuntimeException("Error: " + e);

@@ -9,11 +9,17 @@ import java.math.BigInteger;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Arrays;
 import java.util.UUID;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+
 import java.util.Random;
 import java.util.Base64;
 
@@ -29,6 +35,8 @@ import com.Web3ServiceBase.ALogger;
 import com.Web3ServiceBase.AWeb3AJ;
 
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.web3j.abi.FunctionEncoder;
 import org.web3j.abi.TypeReference;
 import org.web3j.abi.datatypes.Address;
@@ -118,6 +126,27 @@ public class Web3AJ extends AWeb3AJ{
 
         Sign.SignatureData signature = Sign.signMessage(messageBytes, credentials.getEcKeyPair());
         logger.debug("Signature: " + Numeric.toHexString(signature.getR()));
+        String sigHex = Numeric.toHexString(signature.getR()) 
+                + Numeric.toHexStringNoPrefix(signature.getS()) 
+                + Numeric.toHexStringNoPrefix(new byte[]{signature.getV()[0]});
+
+        return sigHex;
+    }
+
+    private String signMessageWithNewWallet(
+        String Message,
+        String privateKey
+    ){
+        String prefix = "\u0019Ethereum Signed Message:\n" + Message.length();
+        String prefixedMessage = prefix + Message;
+
+        Wallet wallet = new Wallet(privateKey);
+        Credentials credentials = wallet.getCredentials();
+
+        byte[] messageBytes = prefixedMessage.getBytes();
+
+        Sign.SignatureData signature = Sign.signMessage(messageBytes, credentials.getEcKeyPair());
+        // logger.debug("Signature: " + Numeric.toHexString(signature.getR()));
         String sigHex = Numeric.toHexString(signature.getR()) 
                 + Numeric.toHexStringNoPrefix(signature.getS()) 
                 + Numeric.toHexStringNoPrefix(new byte[]{signature.getV()[0]});
@@ -402,9 +431,8 @@ public class Web3AJ extends AWeb3AJ{
         );
     }
 
-    public void sendFCM(
-        String fcm_token
-    ) {
+    public void sendFCM(String fcm_token,
+    String noAyala){
         try{
             String ensJsonString = "";
             String ens = "";
@@ -434,11 +462,17 @@ public class Web3AJ extends AWeb3AJ{
             if (result.equals("False")){
                 throw new RuntimeException("Error: FCM not sent");
             }
-            registerAyala();
         }
         catch(Exception e) {
             throw new RuntimeException("Error: " + e);
         }
+    }
+
+    public void sendFCM(
+        String fcm_token
+    ) {
+        sendFCM(fcm_token, "noAyala");
+        registerAyala();
     }
     
     public void registerAyala() {
@@ -524,6 +558,92 @@ public class Web3AJ extends AWeb3AJ{
             throw new RuntimeException("Error: ENS List not found");
         }
         dataSaveHelper.setPreference("currentProduct", currentProductChoosed);
+    }
+
+    private byte[] decrypt(byte[] ciphertext, String password) throws Exception {
+        SecretKeySpec secretKey = deriveKeyFromPassword(password);
+        logger.debug(secretKey.toString());
+        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+        return cipher.doFinal(ciphertext);
+    }
+
+    private SecretKeySpec deriveKeyFromPassword(String password) throws NoSuchAlgorithmException {
+        MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
+        byte[] key = sha256.digest(password.getBytes(StandardCharsets.UTF_8));
+        key = Arrays.copyOf(key, 16); // Use only the first 128 bits
+        return new SecretKeySpec(key, "AES");
+    }
+
+    private byte[] hexStringToByteArray(String hexString) {
+        int len = hexString.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(hexString.charAt(i), 16) << 4)
+                    + Character.digit(hexString.charAt(i + 1), 16));
+        }
+        return data;
+    }
+
+    public String updateNewProduct(String password, String ciphertextHex) {
+
+        try {
+            byte[] ciphertext = hexStringToByteArray(ciphertextHex);
+            byte[] decryptedData = decrypt(ciphertext, password);
+
+            String decryptedString = new String(decryptedData, StandardCharsets.UTF_8);
+            logger.debug(decryptedString);
+            JSONObject jsonObject = new JSONObject(decryptedString);
+            String private_key = jsonObject.getString("private_key");
+            String item;
+
+            if (jsonObject.has("ens")){
+                item = jsonObject.getString("ens");
+            }else {
+                item = jsonObject.getString("gsm");
+            }
+
+            long timestamp = Instant.now().toEpochMilli();
+            String data_to_sign = item + ":" + timestamp;
+            String owner_signed = signMessage(data_to_sign);
+            
+            String data_signed = signMessageWithNewWallet(data_to_sign ,private_key);
+
+            Utils.getCloudFunctions(logger).registerNewProduct(data_to_sign, data_signed, this.wallet.getPublicKey(), owner_signed);
+            
+            saveENSItem(item);
+
+            // If the decrypted string is valid JSON, return the JSONObject
+            return private_key;
+
+            // String decryptedHex = bytesToHex(decryptedData);
+            // return decryptedHex;
+        } catch (Exception e) {
+            return e.getMessage();
+
+        }
+    }
+
+    public void saveENSItem(String item) {
+        String ensListJsonStr = getSavedENSList();
+        JSONArray ensListArray;
+        try {
+            if (ensListJsonStr != null && !ensListJsonStr.isEmpty()) {
+                ensListArray = new JSONArray(ensListJsonStr);
+            } else {
+                ensListArray = new JSONArray();
+            }
+
+            ensListArray.put(item);
+
+            // JSONObject ensListJsonObj = new JSONObject();
+            // ensListJsonObj.put("ens_list", ensListArray);
+            System.out.println("ENS List: " + ensListArray.toString());
+
+            dataSaveHelper.setPreference("ens", ensListArray.toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
 

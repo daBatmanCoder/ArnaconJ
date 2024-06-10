@@ -77,10 +77,10 @@ To use this JAR in other projects on your local machine, you'll need to install 
 If you've already built the JAR with Maven, it should be correctly formatted. 
 To manually install it, use the following command:
 ```bash
-mvn install:install-file -Dfile=target/ArnaconSDK-1.0.7.jar -DgroupId=com.Arnacon -DartifactId=ArnaconSDK -Dversion=1.0.7 -Dpackaging=jar
+mvn install:install-file -Dfile=target/ArnaconSDK-1.0.8.jar -DgroupId=com.Arnacon -DartifactId=ArnaconSDK -Dversion=1.0.8 -Dpackaging=jar
 ```
 
-Ensure to replace target/ArnaconSDK-1.0.7.jar with the actual path to your generated JAR file.
+Ensure to replace target/ArnaconSDK-1.0.8.jar with the actual path to your generated JAR file.
 
 2. Include Your JAR as a Dependency in Other Projects
 
@@ -89,7 +89,7 @@ With your JAR installed in your local Maven repository, you can include it as a 
 <dependency>
     <groupId>com.Arnacon</groupId>
     <artifactId>ArnaconSDK</artifactId>
-    <version>1.0.7</version>
+    <version>1.0.8</version>
 </dependency>
 ```
 
@@ -389,6 +389,11 @@ public String getCalleeDomain(String callee)
 ```
 - Retrieved the relevant callee domain for the sip invite 
 
+```java
+public String updateNewProduct(String password, String ciphertextHex) 
+```
+- Gets the encrypted String and password of encryption, decypher it, recgonizes which product is it and then update accordingly, aswell the ensList to be loaded in the app
+
 
 ***
 ***  
@@ -418,7 +423,9 @@ The `InitAppWeb2` md file is provided as a conceptual example to illustrate how 
         Web3Service.setServiceProvider(serviceProviders[0]);
         ```
 
-2. **Fetch Store** 
+
+
+2. **Fetch Store**  # Can be bypassed (?)
 
     - Retrieves content from IPFS using the shop CID and displays the content.
 
@@ -426,7 +433,7 @@ The `InitAppWeb2` md file is provided as a conceptual example to illustrate how 
         String ipfsContent = Web3Service.fetchStore();
         ```
 
-3. **Payment URL Generation**
+3. **Payment URL Generation** # Can be bypassed (?)
 
     - After user selection (packageNum) we send the selection to get the payment URL - `DEEPLINK`
 
@@ -446,16 +453,38 @@ The `InitAppWeb2` md file is provided as a conceptual example to illustrate how 
 (Remark) Between those steps there should be a waiting time in order to complete the registration of the user and be able to retrieve the ENS.
 ***
 
+**** 
 
-4. **FCM Token sending**
+**OR** 
+
+2. **Get From remote method**
+  
+  We can bypass stages 2-5 if you're loading a product bought in a remote store such that, that product needs to follow the instructions that will be in the future listed here,
+  the necessary parameters are-
+  1. encrypted AES string
+  2. password of that encrypted string.
+
+  in the string needs to be 1. item type- (supported gsm/ens) 2. private_key of that ens_gsm.
+
+
+3. We can continue with 4 as normal- 2 here is bypassing 2+3 from the previous version
+
+**** 
+
+4. **FCM Token sending** # Can be bypassed (?)
 
     - Sending the fcm_token to update in the server side for future notification
 
         ```java
-        Web3Service.sendFCM(fcm_token);
+        Web3Service.sendFCM(fcm_token); // Old version to be listed in Ayala
+
+        OR
+
+        Web3Sservice.sendFCM(fcm_token,"NOAyala"); // If you don't want to be register in the ayala --> new methods
         ```
 
-5. (+) **SIP Register method**
+
+4.  **SIP Register method** /
 
     - In order to register to a sip server(kamailio), we'll need to generate a X-Data- `uuid:timestamp` where `uuid` - is a unique universal id and `timestamp` is the current timestamp in miliseconds- meaning this concat is unique and will be used only once every user register, then we send it to the getXSign with the data just generated, and then we can make the request to the sip server using those 2 as headers- `X-Data` and `X-Sign`
 
@@ -463,8 +492,7 @@ The `InitAppWeb2` md file is provided as a conceptual example to illustrate how 
         String xdata = Web3Service.getXData();
         String xsign = Web3Service.getXSign(xdata);
         ```
-
-
+  
 ### Important Considerations
 
 - **Security**: Always ensure sensitive operations, especially those involving private keys and signatures, are handled securely. Avoid exposing private keys in your application code.

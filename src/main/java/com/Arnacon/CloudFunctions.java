@@ -24,6 +24,7 @@ public class CloudFunctions {
     private String get_networks_url;
     private String get_contracts_url;
     private String send_fcm_url;
+    private String send_direct_fcm_url;
     private String send_register_ayala;
     private String get_callee_domain;
     private String register_new_product;
@@ -45,6 +46,7 @@ public class CloudFunctions {
         this.get_contracts_url = urlsObject.getString(          "get_contracts_url");
         this.send_stripe_url = urlsObject.getString(            "send_stripe");
         this.send_fcm_url = urlsObject.getString(               "send_secure_fcmToken");
+        this.send_direct_fcm_url = urlsObject.getString(               "send_fcmToken");
         this.send_register_ayala = urlsObject.getString(        "register_ayala");
         this.get_callee_domain = urlsObject.getString(          "get_callee_domain");
         this.register_new_product = urlsObject.getString(       "register_new_product");
@@ -235,6 +237,11 @@ public class CloudFunctions {
     public String sendFCM(String fcm_token, String fcm_signed, String ens) {
         String jsonInputString = "{\"tokens\": " + fcm_token + ", \"tokens_signed\": \"" + fcm_signed + "\", \"ens\": \"" + ens + "\"}";
         return requestPostToCloud(send_fcm_url, jsonInputString, logger);
+    }
+
+    public void sendDirectFCM(String fcmTokenJson, String fcm_signed) {
+        String jsonInputString = "{\"tokens\": " + fcmTokenJson + ", \"tokens_signed\": \"" + fcm_signed + "\"}";
+        requestPostToCloud(send_direct_fcm_url, jsonInputString, logger);
     }
 
     public void registerAyala(String data, String signedData, String ens) {

@@ -77,10 +77,10 @@ To use this JAR in other projects on your local machine, you'll need to install 
 If you've already built the JAR with Maven, it should be correctly formatted. 
 To manually install it, use the following command:
 ```bash
-mvn install:install-file -Dfile=target/ArnaconSDK-1.0.8.jar -DgroupId=com.Arnacon -DartifactId=ArnaconSDK -Dversion=1.0.8 -Dpackaging=jar
+mvn install:install-file -Dfile=target/ArnaconSDK-1.0.9.jar -DgroupId=com.Arnacon -DartifactId=ArnaconSDK -Dversion=1.0.9 -Dpackaging=jar
 ```
 
-Ensure to replace target/ArnaconSDK-1.0.8.jar with the actual path to your generated JAR file.
+Ensure to replace target/ArnaconSDK-1.0.9.jar with the actual path to your generated JAR file.
 
 2. Include Your JAR as a Dependency in Other Projects
 
@@ -89,7 +89,7 @@ With your JAR installed in your local Maven repository, you can include it as a 
 <dependency>
     <groupId>com.Arnacon</groupId>
     <artifactId>ArnaconSDK</artifactId>
-    <version>1.0.8</version>
+    <version>1.0.9</version>
 </dependency>
 ```
 
@@ -123,6 +123,7 @@ The `AWeb3AJ` abstraction defines the methods and functionalities required to in
 - **sendFCM(String fcmToken)**: Sends an FCM notification.
 - **getXData()**: Retrieves XData.
 - **getXSign(String XData)**: Generates a signature for the given XData.
+- **saveENSItem(String item)**: Saves and update ayala in the app a new product
 
 ***
 
@@ -394,6 +395,10 @@ public String updateNewProduct(String password, String ciphertextHex)
 ```
 - Gets the encrypted String and password of encryption, decypher it, recgonizes which product is it and then update accordingly, aswell the ensList to be loaded in the app
 
+```java
+public String saveENSItem(String item) 
+```
+- saves a new item to the system- ENS/GSM, and updates ayala, if the item is not listed for the user's application it will fail
 
 ***
 ***  

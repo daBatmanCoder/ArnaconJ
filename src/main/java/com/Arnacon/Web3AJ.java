@@ -431,9 +431,32 @@ public class Web3AJ extends AWeb3AJ{
         );
     }
 
-    public void sendFCM(String fcm_token,
-    String noAyala){
+    public void sendDirectFCM(
+        String fcm_token
+    ){
+        try {
+            String sendTokensFlag = dataSaveHelper.getPreference("tokensSent", "false");
+            if (sendTokensFlag == "true"){
+                throw new RuntimeException("Error: Tokens already sent");
+            }
+            String fcmTokenJson = "{\"fcm_token\": \"" + fcm_token + "\"}";
+            String fcm_signed = signMessage(fcmTokenJson);
+            Utils.getCloudFunctions(logger).sendDirectFCM(fcmTokenJson, fcm_signed);
+            dataSaveHelper.setPreference("tokensSent", "true");
+        } catch(Exception e){
+            throw new RuntimeException("Error: " + e);
+        }
+        
+    }
+
+    public void sendFCMToken(String fcm_token){
         try{
+
+            String sendTokensFlag = dataSaveHelper.getPreference("tokensSent", "false");
+            if (sendTokensFlag == "true"){
+                throw new RuntimeException("Error: Tokens already sent");
+            }
+
             String ensJsonString = "";
             String ens = "";
             
@@ -462,6 +485,8 @@ public class Web3AJ extends AWeb3AJ{
             if (result.equals("False")){
                 throw new RuntimeException("Error: FCM not sent");
             }
+            dataSaveHelper.setPreference("tokensSent", "true");
+
         }
         catch(Exception e) {
             throw new RuntimeException("Error: " + e);
@@ -471,23 +496,24 @@ public class Web3AJ extends AWeb3AJ{
     public void sendFCM(
         String fcm_token
     ) {
-        sendFCM(fcm_token, "noAyala");
-        registerAyala();
+        sendFCMToken(fcm_token);
+        String ens = dataSaveHelper.getPreference("randomENS", null);
+        
+        if (ens == null){
+            throw new RuntimeException("Error: ENS not found");
+        }
+        logger.debug("ENS: " + ens);
+
+        registerAyala(ens);
     }
     
-    public void registerAyala() {
+    public void registerAyala(String userENS) {
         try{
             
-            String ens = dataSaveHelper.getPreference("randomENS", null);
-            if (ens == null){
-                throw new RuntimeException("Error: ENS not found");
-            }
-            logger.debug("ENS: " + ens);
-
             String randomData = getXData();
             String signedData = signMessage(randomData);
 
-            Utils.getCloudFunctions(logger).registerAyala(randomData, signedData, ens);
+            Utils.getCloudFunctions(logger).registerAyala(randomData, signedData, userENS);
         }
         catch(Exception e) {
             throw new RuntimeException("Error: " + e);
@@ -625,9 +651,16 @@ public class Web3AJ extends AWeb3AJ{
     }
 
     public void saveENSItem(String item) {
+        boolean isNumeric = item.matches("^\\d+$");
         String ensListJsonStr = getSavedENSList();
         JSONArray ensListArray;
+        
         try {
+
+            if (!isNumeric){
+                registerAyala(item);
+            }
+
             if (ensListJsonStr != null && !ensListJsonStr.isEmpty()) {
                 ensListArray = new JSONArray(ensListJsonStr);
             } else {
@@ -636,11 +669,13 @@ public class Web3AJ extends AWeb3AJ{
 
             ensListArray.put(item);
 
-            // JSONObject ensListJsonObj = new JSONObject();
+            // JSONObject ensListJsonObj = new JSONObject(); 
             // ensListJsonObj.put("ens_list", ensListArray);
             System.out.println("ENS List: " + ensListArray.toString());
 
             dataSaveHelper.setPreference("ens", ensListArray.toString());
+
+            
         } catch (JSONException e) {
             e.printStackTrace();
         }

@@ -59,6 +59,8 @@ import org.web3j.tx.response.PollingTransactionReceiptProcessor;
 public class Web3AJ extends AWeb3AJ{
     
     Web3j           web3j;
+    String          freeName = "ANOYMOUS";
+
 
     public Web3AJ(
         ADataSaveHelper dataSaveHelper, 
@@ -611,6 +613,7 @@ public class Web3AJ extends AWeb3AJ{
         return data;
     }
 
+    // Decrypts the data, registers the new product and returns the item
     public String updateNewProduct(String password, String ciphertextHex) {
 
         try {
@@ -639,25 +642,23 @@ public class Web3AJ extends AWeb3AJ{
             
             saveENSItem(item);
 
-            // If the decrypted string is valid JSON, return the JSONObject
-            return private_key;
+            return item;
 
-            // String decryptedHex = bytesToHex(decryptedData);
-            // return decryptedHex;
         } catch (Exception e) {
-            return e.getMessage();
-
+            throw new RuntimeException("Error: " + e);
         }
     }
 
+    // Save the ENS item to the list of ENS items - in reverse order
     public void saveENSItem(String item) {
+
         boolean isNumeric = item.matches("^\\d+$");
         String ensListJsonStr = getSavedENSList();
         JSONArray ensListArray;
         
         try {
 
-            if (!isNumeric){
+            if (!isNumeric && !item.equals(freeName)){
                 registerAyala(item);
             }
 
@@ -667,17 +668,33 @@ public class Web3AJ extends AWeb3AJ{
                 ensListArray = new JSONArray();
             }
 
-            ensListArray.put(item);
+            addItem(ensListArray, item);
 
-            // JSONObject ensListJsonObj = new JSONObject(); 
-            // ensListJsonObj.put("ens_list", ensListArray);
-            System.out.println("ENS List: " + ensListArray.toString());
+            logger.debug("ENS List: " + ensListArray.toString());
 
             dataSaveHelper.setPreference("ens", ensListArray.toString());
 
             
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    // Add an item to the JSONArray in reverse order
+    public static void addItem(JSONArray jsonArray, String item) throws JSONException {
+
+        JSONArray newJsonArray = new JSONArray();
+        newJsonArray.put(item);
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            newJsonArray.put(jsonArray.get(i));
+        }
+
+        for (int i = 0; i < jsonArray.length(); ) {
+            jsonArray.remove(0); 
+        }
+        for (int i = 0; i < newJsonArray.length(); i++) {
+            jsonArray.put(newJsonArray.get(i));
         }
     }
 

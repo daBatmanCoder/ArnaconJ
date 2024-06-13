@@ -680,6 +680,14 @@ public class Web3AJ extends AWeb3AJ{
         }
     }
 
+    public void getFreeProduct(){
+        String alreadyCalled = dataSaveHelper.getPreference("free", "nope");
+        if (alreadyCalled.equals("nope")){
+            saveENSItem(freeName);
+            dataSaveHelper.setPreference("free", freeName);
+        }
+    }
+
     // Add an item to the JSONArray in reverse order
     public static void addItem(JSONArray jsonArray, String item) throws JSONException {
 

@@ -668,6 +668,18 @@ public class Web3AJ extends AWeb3AJ{
                 ensListArray = new JSONArray();
             }
 
+            if(item.equals(freeName)){
+                String alreadyCalled = dataSaveHelper.getPreference("free", "nope");
+                if (alreadyCalled.equals("nope")){
+                    item = freeName;
+                    dataSaveHelper.setPreference("free", freeName);
+                }
+                else {
+                    logger.debug("Already have a free product.");
+                    return;
+                }
+            } 
+
             addItem(ensListArray, item);
 
             logger.debug("ENS List: " + ensListArray.toString());
@@ -681,11 +693,7 @@ public class Web3AJ extends AWeb3AJ{
     }
 
     public void getFreeProduct(){
-        String alreadyCalled = dataSaveHelper.getPreference("free", "nope");
-        if (alreadyCalled.equals("nope")){
-            saveENSItem(freeName);
-            dataSaveHelper.setPreference("free", freeName);
-        }
+        saveENSItem(freeName);
     }
 
     // Add an item to the JSONArray in reverse order

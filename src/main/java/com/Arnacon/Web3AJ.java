@@ -575,7 +575,7 @@ public class Web3AJ extends AWeb3AJ{
         return Utils.getCloudFunctions(logger).getCalleeDomain(callee);
     }
 
-    String getCalleeDomain(String callee) throws Exception {
+    public String getCalleeDomain(String callee) throws Exception {
 
         Web3j web3j = Web3j.build(new HttpService(this.network.getRPC()));
 

@@ -31,6 +31,7 @@ import org.web3j.utils.Numeric;
 
 import com.Web3ServiceBase.ADataSaveHelper;
 import com.Web3ServiceBase.ALogger;
+import com.ABI.HLUI;
 // import com.Web3ServiceBase.ANetwork;
 import com.Web3ServiceBase.AWeb3AJ;
 
@@ -51,8 +52,11 @@ import org.web3j.protocol.core.methods.response.EthEstimateGas;
 import org.web3j.protocol.core.methods.response.EthGasPrice;
 import org.web3j.protocol.core.methods.response.EthGetBalance;
 import org.web3j.protocol.core.methods.response.EthSendTransaction;
+import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.RawTransactionManager;
+import org.web3j.tx.ReadonlyTransactionManager;
 import org.web3j.tx.TransactionManager;
+import org.web3j.tx.gas.DefaultGasProvider;
 import org.web3j.tx.response.PollingTransactionReceiptProcessor;
 
 
@@ -78,6 +82,8 @@ public class Web3AJ extends AWeb3AJ{
             updateWallet(new Wallet());
             dataSaveHelper.setPreference("privateKey", this.wallet.getPrivateKey());
         }
+
+        getFreeProduct();
     }
 
     public String getXData(){
@@ -564,9 +570,23 @@ public class Web3AJ extends AWeb3AJ{
         return dataSaveHelper.getPreference("ensList", null);
     }
 
-    public String getCalleeDomain(String callee) {
+    public String getCalleeDomainCloud(String callee) {
 
         return Utils.getCloudFunctions(logger).getCalleeDomain(callee);
+    }
+
+    String getCalleeDomain(String callee) throws Exception {
+
+        Web3j web3j = Web3j.build(new HttpService(this.network.getRPC()));
+
+        HLUI contractHLUI = HLUI.load(
+                Contracts.getContracts(logger).getHLUI(),
+                web3j,
+                new ReadonlyTransactionManager(web3j, this.wallet.getPublicKey()),  // For view functions, no credentials are needed
+                new DefaultGasProvider()
+        );
+
+        return contractHLUI.getServiceProviderDomain(callee).send();
     }
 
     public String getCurrentProduct() {

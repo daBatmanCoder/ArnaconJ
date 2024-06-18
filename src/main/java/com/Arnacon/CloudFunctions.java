@@ -227,7 +227,6 @@ public class CloudFunctions {
     public String getContractAddress(String contractName) {
 
         String result = requestGetFromCloud(get_contracts_url, false, logger);
-
         JSONObject config = new JSONObject(result);
         String contractAddress = config.getString(contractName);
 

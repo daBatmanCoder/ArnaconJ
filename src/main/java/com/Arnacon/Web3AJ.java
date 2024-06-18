@@ -31,6 +31,7 @@ import org.web3j.utils.Numeric;
 
 import com.Web3ServiceBase.ADataSaveHelper;
 import com.Web3ServiceBase.ALogger;
+import com.Web3ServiceBase.ANetwork;
 import com.ABI.HLUI;
 // import com.Web3ServiceBase.ANetwork;
 import com.Web3ServiceBase.AWeb3AJ;
@@ -64,6 +65,7 @@ public class Web3AJ extends AWeb3AJ{
     
     Web3j           web3j;
     String          freeName = "ANOYMOUS";
+    ANetwork        network = new Network(); // Ethereum / Polygon / Binance Smart Chain
 
 
     public Web3AJ(

@@ -77,10 +77,10 @@ To use this JAR in other projects on your local machine, you'll need to install 
 If you've already built the JAR with Maven, it should be correctly formatted. 
 To manually install it, use the following command:
 ```bash
-mvn install:install-file -Dfile=target/ArnaconSDK-1.0.9.5.jar -DgroupId=com.Arnacon -DartifactId=ArnaconSDK -Dversion=1.0.9.5 -Dpackaging=jar
+mvn install:install-file -Dfile=target/ArnaconSDK-1.0.9.6.jar -DgroupId=com.Arnacon -DartifactId=ArnaconSDK -Dversion=1.0.9.6 -Dpackaging=jar
 ```
 
-Ensure to replace target/ArnaconSDK-1.0.9.5.jar with the actual path to your generated JAR file.
+Ensure to replace target/ArnaconSDK-1.0.9.6.jar with the actual path to your generated JAR file.
 
 2. Include Your JAR as a Dependency in Other Projects
 
@@ -89,7 +89,7 @@ With your JAR installed in your local Maven repository, you can include it as a 
 <dependency>
     <groupId>com.Arnacon</groupId>
     <artifactId>ArnaconSDK</artifactId>
-    <version>1.0.9.5</version>
+    <version>1.0.9.6</version>
 </dependency>
 ```
 
@@ -353,7 +353,7 @@ public String fetchStore()
           {"trait_type": "InitP", "value": "2.99"},
           {"trait_type": "Price", "value": "19.99"},
           {"trait_type": "Currency", "value": "EUR"},
-          {"display_type": "boost_number", "trait_type": "Duration", "value": 45}
+          {"display_type": "boost_number", "trait_type": "Duration", "value": 46}
         ]
     }
   }
@@ -464,7 +464,7 @@ The `InitAppWeb2` md file is provided as a conceptual example to illustrate how 
 
 2. **Get From remote method**
   
-  We can bypass stages 2-5 if you're loading a product bought in a remote store such that, that product needs to follow the instructions that will be in the future listed here,
+  We can bypass stages 2-6 if you're loading a product bought in a remote store such that, that product needs to follow the instructions that will be in the future listed here,
   the necessary parameters are-
   1. encrypted AES string
   2. password of that encrypted string.

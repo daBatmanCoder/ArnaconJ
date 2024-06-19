@@ -702,9 +702,7 @@ public class Web3AJ extends AWeb3AJ{
                 }
             } 
 
-            addItem(ensListArray, item);
-
-            logger.debug("ENS List: " + ensListArray.toString());
+            Utils.addItem(ensListArray, item);
 
             dataSaveHelper.setPreference("ens", ensListArray.toString());
 
@@ -717,25 +715,6 @@ public class Web3AJ extends AWeb3AJ{
     public void getFreeProduct(){
         saveENSItem(freeName);
     }
-
-    // Add an item to the JSONArray in reverse order
-    public static void addItem(JSONArray jsonArray, String item) throws JSONException {
-
-        JSONArray newJsonArray = new JSONArray();
-        newJsonArray.put(item);
-
-        for (int i = 0; i < jsonArray.length(); i++) {
-            newJsonArray.put(jsonArray.get(i));
-        }
-
-        for (int i = 0; i < jsonArray.length(); ) {
-            jsonArray.remove(0); 
-        }
-        for (int i = 0; i < newJsonArray.length(); i++) {
-            jsonArray.put(newJsonArray.get(i));
-        }
-    }
-
 
 }
 

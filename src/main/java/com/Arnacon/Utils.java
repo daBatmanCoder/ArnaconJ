@@ -6,6 +6,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject; // Make sure to include the JSON library in your project
 
 import com.Web3ServiceBase.ADataSaveHelper;
@@ -146,5 +147,23 @@ public class Utils {
         }
 
         return null;
+    }
+
+    // Add an item to the JSONArray in reverse order
+    static void addItem(JSONArray jsonArray, String item) throws JSONException {
+
+        JSONArray newJsonArray = new JSONArray();
+        newJsonArray.put(item);
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+            newJsonArray.put(jsonArray.get(i));
+        }
+
+        for (int i = 0; i < jsonArray.length(); ) {
+            jsonArray.remove(0); 
+        }
+        for (int i = 0; i < newJsonArray.length(); i++) {
+            jsonArray.put(newJsonArray.get(i));
+        }
     }
 }

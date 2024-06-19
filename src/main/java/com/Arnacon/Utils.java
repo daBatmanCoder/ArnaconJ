@@ -33,6 +33,7 @@ public class Utils {
 
     public static Contracts getContracts(ALogger logger) {
         if (ContractsInst == null) {
+            logger.debug("InCloudFunctions");
             ContractsInst = Contracts.getContracts(logger);
         }
         return ContractsInst;

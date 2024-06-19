@@ -65,7 +65,7 @@ public class Web3AJ extends AWeb3AJ{
     
     Web3j           web3j;
     String          freeName = "ANOYMOUS";
-    ANetwork        network = new Network(); // Ethereum / Polygon / Binance Smart Chain
+    ANetwork        network; // Ethereum / Polygon / Binance Smart Chain
 
 
     public Web3AJ(
@@ -74,7 +74,8 @@ public class Web3AJ extends AWeb3AJ{
     ) {
         
         super(dataSaveHelper, logger);
-
+        network = new Network(logger);
+        
         String privateKey = dataSaveHelper.getPreference("privateKey", null);
 
         if (privateKey != null){
@@ -579,6 +580,10 @@ public class Web3AJ extends AWeb3AJ{
 
     public String getCalleeDomain(String callee) throws Exception {
 
+        if (callee.matches("\\d+")) {
+            return getCalleeDomainGSM(callee);
+        } 
+
         Web3j web3j = Web3j.build(new HttpService(this.network.getRPC()));
 
         HLUI contractHLUI = HLUI.load(
@@ -589,6 +594,15 @@ public class Web3AJ extends AWeb3AJ{
         );
 
         return contractHLUI.getServiceProviderDomain(callee).send();
+    }
+
+    private String getCalleeDomainGSM(String gsm) {
+
+        String serviceProviderOfGsm = dataSaveHelper.getPreference(gsm, null);
+        if (serviceProviderOfGsm == null){
+            throw new RuntimeException("Error: GSM not found");
+        }
+        return serviceProviderOfGsm;
     }
 
     public String getCurrentProduct() {
@@ -647,15 +661,20 @@ public class Web3AJ extends AWeb3AJ{
             JSONObject jsonObject = new JSONObject(decryptedString);
             String private_key = jsonObject.getString("private_key");
             String item;
+            String data_to_sign;
+            long timestamp = Instant.now().toEpochMilli();
 
             if (jsonObject.has("ens")){
                 item = jsonObject.getString("ens");
+                data_to_sign = item + ":" + timestamp;
+
             }else {
                 item = jsonObject.getString("gsm");
+                String serviceProviderOfGsm = jsonObject.getString("SP");
+                data_to_sign = item + ":" + serviceProviderOfGsm + ":" + timestamp;
+                dataSaveHelper.setPreference(item, serviceProviderOfGsm);
             }
 
-            long timestamp = Instant.now().toEpochMilli();
-            String data_to_sign = item + ":" + timestamp;
             String owner_signed = signMessage(data_to_sign);
             
             String data_signed = signMessageWithNewWallet(data_to_sign ,private_key);

@@ -592,6 +592,10 @@ public class Web3AJ extends AWeb3AJ{
         return contractHLUI.getServiceProviderDomain(callee).send();
     }
 
+    public void setGSMDomain(String gsm, String domain){
+        dataSaveHelper.setPreference(gsm, domain);
+    }
+
     public String getGSMDomain(String gsm) {
 
         if (!gsm.matches("\\d+")) {

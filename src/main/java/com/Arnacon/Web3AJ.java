@@ -727,7 +727,7 @@ public class Web3AJ extends AWeb3AJ{
 
             Utils.addItem(ensListArray, item);
 
-            dataSaveHelper.setPreference("ens", ensListArray.toString());
+            dataSaveHelper.setPreference("ensList", ensListArray.toString());
 
             
         } catch (JSONException e) {

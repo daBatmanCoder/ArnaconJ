@@ -77,10 +77,10 @@ To use this JAR in other projects on your local machine, you'll need to install 
 If you've already built the JAR with Maven, it should be correctly formatted. 
 To manually install it, use the following command:
 ```bash
-mvn install:install-file -Dfile=target/ArnaconSDK-1.0.10.5.jar -DgroupId=com.Arnacon -DartifactId=ArnaconSDK -Dversion=1.0.10.5 -Dpackaging=jar
+mvn install:install-file -Dfile=target/ArnaconSDK-1.0.10.6.jar -DgroupId=com.Arnacon -DartifactId=ArnaconSDK -Dversion=1.0.10.6 -Dpackaging=jar
 ```
 
-Ensure to replace target/ArnaconSDK-1.0.10.5.jar with the actual path to your generated JAR file.
+Ensure to replace target/ArnaconSDK-1.0.10.6.jar with the actual path to your generated JAR file.
 
 2. Include Your JAR as a Dependency in Other Projects
 
@@ -89,7 +89,7 @@ With your JAR installed in your local Maven repository, you can include it as a 
 <dependency>
     <groupId>com.Arnacon</groupId>
     <artifactId>ArnaconSDK</artifactId>
-    <version>1.0.10.5</version>
+    <version>1.0.10.6</version>
 </dependency>
 ```
 

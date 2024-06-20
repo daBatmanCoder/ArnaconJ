@@ -589,10 +589,24 @@ public class Web3AJ extends AWeb3AJ{
                 new DefaultGasProvider()
         );
 
-        return contractHLUI.getServiceProviderDomain(callee).send();
+        String domain;
+
+        try{
+            domain = contractHLUI.getServiceProviderDomain(callee).send();
+        } catch (Exception e){
+            throw new RuntimeException("Error: " + e);
+        }
+
+        return domain;
     }
 
     public void setGSMDomain(String gsm, String domain){
+        String gsmValue = dataSaveHelper.getPreference(gsm, "rickrolled");
+
+        if (!gsmValue.equals("rickrolled")){
+            throw new RuntimeException("GSM Already setted up.");
+        }
+
         dataSaveHelper.setPreference(gsm, domain);
     }
 
@@ -735,7 +749,7 @@ public class Web3AJ extends AWeb3AJ{
         }
     }
 
-    public void getFreeProduct(){
+    private void getFreeProduct(){
         saveENSItem(freeName);
     }
 

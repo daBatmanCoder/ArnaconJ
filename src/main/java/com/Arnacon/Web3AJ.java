@@ -64,7 +64,7 @@ import org.web3j.tx.response.PollingTransactionReceiptProcessor;
 public class Web3AJ extends AWeb3AJ{
     
     Web3j           web3j;
-    String          freeName = "ANOYMOUS";
+    String          freeName = "ANONYMOUS";
     ANetwork        network; // Ethereum / Polygon / Binance Smart Chain
 
 

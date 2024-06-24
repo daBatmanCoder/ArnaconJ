@@ -113,7 +113,7 @@ public class CloudFunctions {
             URL obj = new URL(RequestURL);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
             con.setRequestMethod("POST");
-            con.setRequestProperty("Content-Type", "application/json; utf-8");
+            con.setRequestProperty("Content-Type", "application/json; UTF-8");
             con.setRequestProperty("Accept", "application/json");
             con.setDoOutput(true);
 

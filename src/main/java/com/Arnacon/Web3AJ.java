@@ -697,10 +697,18 @@ public class Web3AJ extends AWeb3AJ{
             String private_key = jsonObject.getString("private_key");
             String item;
             String data_to_sign;
+            Boolean isCellENS = false;
+            String serviceProviderOfENS = "";
             long timestamp = Instant.now().toEpochMilli();
 
             if (jsonObject.has("ens")){
                 item = jsonObject.getString("ens");
+                if (jsonObject.has("sp")){
+                    isCellENS = true;
+                    logger.debug("ajshdjasdkasdhjakshdka");
+                    serviceProviderOfENS = jsonObject.getString("sp");
+                }
+
                 data_to_sign = item + ":" + timestamp;
 
             }else {
@@ -716,7 +724,11 @@ public class Web3AJ extends AWeb3AJ{
 
             Utils.getCloudFunctions(logger).registerNewProduct(data_to_sign, data_signed, this.wallet.getPublicKey(), owner_signed);
             
-            saveENSItem(item);
+            if (isCellENS){
+                saveENSItem(item, serviceProviderOfENS);
+            } else{
+                saveENSItem(item);
+            }
 
             return item;
 

@@ -118,7 +118,7 @@ public class CloudFunctions {
             con.setDoOutput(true);
 
             try (OutputStream os = con.getOutputStream()) {
-                byte[] input = jsonInputString.getBytes("utf-8");
+                byte[] input = jsonInputString.getBytes("UTF-8");
                 os.write(input, 0, input.length);
             }
 
@@ -127,7 +127,7 @@ public class CloudFunctions {
                 try (BufferedReader br = new BufferedReader(
                     new InputStreamReader(
                         con.getInputStream(), 
-                        "utf-8")
+                        "UTF-8")
                         )
                     ) {
                     StringBuilder response = new StringBuilder();
@@ -245,7 +245,6 @@ public class CloudFunctions {
 
     public void registerAyala(String data, String signedData, String ens) {
         String jsonInputString = "{\"data\": \"" + data + "\", \"signedData\": \"" + signedData + "\", \"ens\": \"" + ens + "\"}";
-        System.out.println(jsonInputString);
         requestPostToCloud(send_register_ayala, jsonInputString, logger);
     }
 

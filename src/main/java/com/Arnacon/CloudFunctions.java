@@ -110,13 +110,15 @@ public class CloudFunctions {
         String result = "";
 
         try {
+            @SuppressWarnings("deprecation")
             URL obj = new URL(RequestURL);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
             con.setRequestMethod("POST");
-            con.setRequestProperty("Content-Type", "application/json; UTF-8");
+            con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
             con.setRequestProperty("Accept", "application/json");
             con.setDoOutput(true);
-
+            
             try (OutputStream os = con.getOutputStream()) {
                 byte[] input = jsonInputString.getBytes("UTF-8");
                 os.write(input, 0, input.length);
@@ -143,13 +145,10 @@ public class CloudFunctions {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        
-        if (result.equals("Error")){
-            result = "";
-        }
 
         return result;
     }
+
 
     public String[] getServiceProviderList(){
 

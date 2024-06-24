@@ -124,6 +124,10 @@ public class Web3AJ extends AWeb3AJ{
         return bytes;
     }
 
+    public String getPublicKey(){
+        return this.wallet.getPublicKey();
+    }
+
     // Takes a message and signs it with the private key of the current wallet
     public String signMessage(
         String Message

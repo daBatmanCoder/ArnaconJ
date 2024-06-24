@@ -535,6 +535,19 @@ public class Web3AJ extends AWeb3AJ{
         }
     }
 
+    public void registerAyala(String userENS, String serviceProviderName) {
+        try{
+
+            String someData = getXData();
+            String signedData = signMessage(someData);
+            
+            Utils.getCloudFunctions(logger).registerAyala(someData, signedData, userENS, serviceProviderName);
+        }
+        catch(Exception e) {
+            throw new RuntimeException("Error: " + e);
+        }
+    }
+
     public String[] getServiceProviderList(){
 
         return Utils.getCloudFunctions(logger).getServiceProviderList();
@@ -723,6 +736,46 @@ public class Web3AJ extends AWeb3AJ{
 
             if (!isNumeric && !item.equals(freeName)){
                 registerAyala(item);
+            }
+
+            if (ensListJsonStr != null && !ensListJsonStr.isEmpty()) {
+                ensListArray = new JSONArray(ensListJsonStr);
+            } else {
+                ensListArray = new JSONArray();
+            }
+
+            if(item.equals(freeName)){
+                String alreadyCalled = dataSaveHelper.getPreference("free", "nope");
+                if (alreadyCalled.equals("nope")){
+                    item = freeName;
+                    dataSaveHelper.setPreference("free", freeName);
+                }
+                else {
+                    logger.debug("Already have a free product.");
+                    return;
+                }
+            } 
+
+            Utils.addItem(ensListArray, item);
+
+            dataSaveHelper.setPreference("ensList", ensListArray.toString());
+
+            
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveENSItem(String item, String serviceProviderName) {
+
+        boolean isNumeric = item.matches("^\\d+$");
+        String ensListJsonStr = getSavedENSList();
+        JSONArray ensListArray;
+        
+        try {
+
+            if (!isNumeric && !item.equals(freeName)){
+                registerAyala(item, serviceProviderName);
             }
 
             if (ensListJsonStr != null && !ensListJsonStr.isEmpty()) {

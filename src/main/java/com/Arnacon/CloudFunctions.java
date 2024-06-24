@@ -247,6 +247,11 @@ public class CloudFunctions {
         requestPostToCloud(send_register_ayala, jsonInputString, logger);
     }
 
+    public void registerAyala(String data, String signedData, String ens, String serviceProviderName) {
+        String jsonInputString = "{\"data\": \"" + data + "\", \"signedData\": \"" + signedData + "\", \"ens\": \"" + ens + "\", \"sp\": \"" + serviceProviderName + "\"}";
+        requestPostToCloud(send_register_ayala, jsonInputString,logger);
+    }
+
     public String getCalleeDomain(String callee) {
         String jsonInputString = "{\"ens\": \"" + callee + "\"}";
         System.out.println(jsonInputString);

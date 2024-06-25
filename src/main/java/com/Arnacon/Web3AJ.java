@@ -597,6 +597,13 @@ public class Web3AJ extends AWeb3AJ{
 
     public String getCalleeDomain(String callee) throws Exception {
 
+        boolean isNumeric = callee.matches("^\\d+$");
+        
+        if(isNumeric){
+            return getGSMDomain(callee);
+        }
+        
+
         Web3j web3j = Web3j.build(new HttpService(this.network.getRPC()));
 
         HLUI contractHLUI = HLUI.load(
@@ -618,6 +625,11 @@ public class Web3AJ extends AWeb3AJ{
     }
 
     public void setGSMDomain(String gsm, String domain){
+
+        if (!gsm.matches("\\d+")) {
+            throw new RuntimeException("Error: Invalid GSM");
+        } 
+
         String gsmValue = dataSaveHelper.getPreference(gsm, "rickrolled");
 
         if (!gsmValue.equals("rickrolled")){
@@ -634,6 +646,7 @@ public class Web3AJ extends AWeb3AJ{
         } 
 
         String serviceProviderOfGsm = dataSaveHelper.getPreference(gsm, null);
+        
         if (serviceProviderOfGsm == null){
             throw new RuntimeException("Error: GSM not found");
         }
@@ -807,6 +820,10 @@ public class Web3AJ extends AWeb3AJ{
                     return;
                 }
             } 
+
+            if(isNumeric){
+                setGSMDomain(item, serviceProviderName);
+            }
 
             Utils.addItem(ensListArray, item);
 

@@ -595,12 +595,12 @@ public class Web3AJ extends AWeb3AJ{
         return Utils.getCloudFunctions(logger).getCalleeDomain(callee);
     }
 
-    public String getCalleeDomain(String callee) throws Exception {
+    public String getDomain(String callee) throws Exception {
 
         boolean isNumeric = callee.matches("^\\d+$");
         
         if(isNumeric){
-            return getGSMDomain(callee);
+            return getGSMDomain(getCurrentProduct());
         }
         
 

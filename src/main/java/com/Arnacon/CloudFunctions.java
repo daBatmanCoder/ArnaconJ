@@ -110,7 +110,6 @@ public class CloudFunctions {
         String result = "";
 
         try {
-            @SuppressWarnings("deprecation")
             URL obj = new URL(RequestURL);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -254,13 +253,11 @@ public class CloudFunctions {
 
     public String getCalleeDomain(String callee) {
         String jsonInputString = "{\"ens\": \"" + callee + "\"}";
-        System.out.println(jsonInputString);
         return requestPostToCloud(get_callee_domain, jsonInputString, logger);
     }
 
     public void registerNewProduct(String data_to_sign, String data_signed, String publicKey, String owner_sign) {
         String jsonInputString = "{\"data\": \"" + data_to_sign + "\", \"data_signed\": \"" + data_signed + "\", \"address\": \"" + publicKey + "\", \"owner_sign\": \"" + owner_sign + "\"}";
-        logger.debug("jsonInputString: " + jsonInputString);
         requestPostToCloud(register_new_product, jsonInputString, logger);
     }
 }

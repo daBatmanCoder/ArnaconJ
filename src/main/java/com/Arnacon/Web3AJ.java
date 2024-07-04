@@ -599,7 +599,7 @@ public class Web3AJ extends AWeb3AJ{
 
         boolean isNumeric = callee.matches("^\\d+$");
         
-        if(isNumeric){
+        if(isNumeric || callee.startsWith("*")){
             return getGSMDomain(getCurrentProduct());
         }
         

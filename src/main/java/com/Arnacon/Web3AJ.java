@@ -597,9 +597,11 @@ public class Web3AJ extends AWeb3AJ{
 
     public String getDomain(String callee) throws Exception {
 
-        boolean isNumeric = callee.matches("^\\d+$");
-        
-        if(isNumeric || callee.startsWith("*")){
+        boolean isNumeric = callee.matches("^\\+?\\d+$");
+        boolean isAsterix = callee.matches("^[*#]\\d+$");
+
+
+        if(isNumeric || isAsterix){
             return getGSMDomain(getCurrentProduct());
         }
         

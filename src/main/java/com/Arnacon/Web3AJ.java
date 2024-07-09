@@ -565,9 +565,6 @@ public class Web3AJ extends AWeb3AJ {
 
     public String getDomain(String item) throws Exception {
 
-        if (item == freeName){
-            return freeName;
-        }
 
         if (item == getCurrentProduct()) {
             return getCurrentItemDomain();
@@ -616,6 +613,10 @@ public class Web3AJ extends AWeb3AJ {
     }
 
     public String getItemDomain(String item) {
+
+        if (item == freeName){
+            return "CHECKCHECKKINGYOAV";
+        }
 
         String serviceProviderOfItem = dataSaveHelper.getPreference(item, "rickrolled");
 
@@ -744,10 +745,10 @@ public class Web3AJ extends AWeb3AJ {
             }
 
             if (item.equals(freeName)) {
-                String alreadyCalled = dataSaveHelper.getPreference("free", "nope");
+                String alreadyCalled = dataSaveHelper.getPreference(freeName, "nope");
                 if (alreadyCalled.equals("nope")) {
                     item = freeName;
-                    dataSaveHelper.setPreference("free", freeName);
+                    dataSaveHelper.setPreference(freeName, freeName);
                 } else {
                     logger.debug("Already have a free product.");
                     return;
@@ -782,10 +783,10 @@ public class Web3AJ extends AWeb3AJ {
             }
 
             if (item.equals(freeName)) {
-                String alreadyCalled = dataSaveHelper.getPreference("free", "nope");
+                String alreadyCalled = dataSaveHelper.getPreference(freeName, "nope");
                 if (alreadyCalled.equals("nope")) {
                     item = freeName;
-                    dataSaveHelper.setPreference("free", freeName);
+                    dataSaveHelper.setPreference(freeName, freeName);
                 } else {
                     logger.debug("Already have a free product.");
                     return;

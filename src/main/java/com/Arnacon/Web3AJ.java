@@ -219,13 +219,13 @@ public class Web3AJ extends AWeb3AJ{
             encodedFunction, 
             valueInWei, 
             gasPrice, 
-            Utils.getContracts(logger).NAME_HASH_ADDRESS
+            Utils.getContracts(logger).getNameHashAddress()
         );
 
         EthSendTransaction response = transactionManager.sendTransaction(
                 gasPrice,
                 estimatedGasLimit,
-                Utils.getContracts(logger).NAME_HASH_ADDRESS,
+                Utils.getContracts(logger).getNameHashAddress(),
                 encodedFunction,
                 valueInWei
         );
@@ -265,13 +265,13 @@ public class Web3AJ extends AWeb3AJ{
             encodedFunction, 
             valueInWei, 
             gasPrice, 
-            Utils.getContracts(logger).NAME_HASH_ADDRESS
+            Utils.getContracts(logger).getNameHashAddress()
         );
 
         EthSendTransaction response = transactionManager.sendTransaction(
                 gasPrice,
                 estimatedGasLimit,
-                Utils.getContracts(logger).NAME_HASH_ADDRESS,
+                Utils.getContracts(logger).getNameHashAddress(),
                 encodedFunction,
                 valueInWei
         );
@@ -315,13 +315,13 @@ public class Web3AJ extends AWeb3AJ{
                 encodedFunction, 
                 valueInWei, 
                 gasPrice,
-                Utils.getContracts(logger).W_ENS_ADDRESS
+                Utils.getContracts(logger).getWENSAddress()
             );
 
             EthSendTransaction response = transactionManager.sendTransaction(
                     gasPrice,
                     estimatedGasLimit,
-                    Utils.getContracts(logger).W_ENS_ADDRESS,
+                    Utils.getContracts(logger).getWENSAddress(),
                     encodedFunction,
                     valueInWei 
             );

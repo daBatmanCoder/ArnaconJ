@@ -17,53 +17,62 @@ import io.reactivex.annotations.Nullable;
 
 public class CloudFunctions {
 
-    private String MASTER_URL = "https://us-central1-arnacon-nl.cloudfunctions.net/Functions";
+    private static final    String          MASTER_URL = Config.getDefaultFunctionsURL();
+    private static volatile CloudFunctions  CloudFunctions; 
 
-    private String ens_url;
-    private String get_service_provider_url;
-    private String get_networks_url;
-    private String get_contracts_url;
-    private String send_fcm_url;
-    private String send_direct_fcm_url;
-    private String send_register_ayala;
-    private String get_callee_domain;
-    private String register_new_product;
-    public ALogger logger;
-    public  String send_stripe_url;
-
-    private static CloudFunctions CloudFunctions;
+    // Immutable service URLs
+    private final String    ensUrl;
+    private final String    getServiceProviderUrl;
+    private final String    getNetworksUrl;
+    private final String    getContractsUrl;
+    private final String    sendFcmUrl;
+    private final String    sendDirectFcmUrl;
+    private final String    sendRegisterAyalaUrl;
+    private final String    getCalleeDomainUrl;
+    private final String    registerNewProductUrl;
+    public  final String    sendStripeUrl;
+    private final ALogger   logger;
 
     private CloudFunctions(ALogger logger) {
 
-        this.logger = logger;
+        this.logger                     = logger;
         
-        String urls = requestGetFromCloud(MASTER_URL, false, logger);
-        JSONObject urlsObject = new JSONObject(urls);
+        String     urls                 = requestGetFromCloud(MASTER_URL, false);
+        JSONObject urlsObject           = new JSONObject(urls);
 
-        this.ens_url = urlsObject.getString(                    "ens_url");
-        this.get_service_provider_url = urlsObject.getString(   "get_service_provider_url");
-        this.get_networks_url = urlsObject.getString(           "get_networks_url");
-        this.get_contracts_url = urlsObject.getString(          "get_contracts_url");
-        this.send_stripe_url = urlsObject.getString(            "send_stripe");
-        this.send_fcm_url = urlsObject.getString(               "send_secure_fcmToken");
-        this.send_direct_fcm_url = urlsObject.getString(               "send_fcmToken");
-        this.send_register_ayala = urlsObject.getString(        "register_ayala");
-        this.get_callee_domain = urlsObject.getString(          "get_callee_domain");
-        this.register_new_product = urlsObject.getString(       "register_new_product");
+        this.ensUrl                     = urlsObject.getString("ens_url");
+        this.getServiceProviderUrl      = urlsObject.getString("get_service_provider_url");
+        this.getNetworksUrl             = urlsObject.getString("get_networks_url");
+        this.getContractsUrl            = urlsObject.getString("get_contracts_url");
+        this.sendStripeUrl              = urlsObject.getString("send_stripe");
+        this.sendFcmUrl                 = urlsObject.getString("send_secure_fcmToken");
+        this.sendDirectFcmUrl           = urlsObject.getString("send_fcmToken");
+        this.sendRegisterAyalaUrl       = urlsObject.getString("register_ayala");
+        this.getCalleeDomainUrl         = urlsObject.getString("get_callee_domain");
+        this.registerNewProductUrl      = urlsObject.getString("register_new_product");
     }
 
-    public static CloudFunctions getCloudFunctions(ALogger logger) {
+
+    public static CloudFunctions getCloudFunctions( 
+        ALogger logger
+    ) {
+
         if(CloudFunctions == null){
             CloudFunctions = new CloudFunctions(logger);
         }
+
         return CloudFunctions;
     }
 
-    private String requestGetFromCloud(String RequestURL,boolean lowerCase, ALogger logger) {
+    private String requestGetFromCloud(
+        String RequestURL,
+        boolean lowerCase
+    ) {
 
         String result = "";
 
         try {
+            
             URL url = new URL(RequestURL);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("GET");
@@ -105,7 +114,10 @@ public class CloudFunctions {
 
     }
 
-    private String requestPostToCloud(String RequestURL, String jsonInputString, ALogger logger) {
+    private String requestPostToCloud(
+        String RequestURL, 
+        String jsonInputString
+    ) {
 
         String result = "";
 
@@ -152,13 +164,14 @@ public class CloudFunctions {
     public String[] getServiceProviderList(){
 
         String serviceProviders = requestGetFromCloud(
-            get_service_provider_url, 
-            false,
-            logger
+            getServiceProviderUrl, 
+            false
         );
+
         JSONObject serviceProvidersObject = new JSONObject(serviceProviders);
         String[] serviceProvidersArray = new String[serviceProvidersObject.length()];
         int i = 0;
+
         for (String key : serviceProvidersObject.keySet()) {
             JSONObject serviceProviderObject = serviceProvidersObject.getJSONObject(key);
 
@@ -169,8 +182,12 @@ public class CloudFunctions {
         return serviceProvidersArray;
     }
      
-    public String getUserENS(String userAddress, @Nullable String customerId) {
+    public String getUserENS(
+        String userAddress, 
+        @Nullable String customerId
+    ) {
         try {
+
             // Start constructing the JSON input string with the user address
             StringBuilder jsonBuilder = new StringBuilder("{\"user_address\": \"" + URLEncoder.encode(userAddress, "UTF-8") + "\"");
     
@@ -183,19 +200,21 @@ public class CloudFunctions {
             jsonBuilder.append("}");
     
             // Send the POST request with the constructed JSON input string
-            return requestPostToCloud(ens_url, jsonBuilder.toString(), logger);
+            return requestPostToCloud(ensUrl, jsonBuilder.toString());
+
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
             return "Error";
         }
     }
 
-    public String getShopCID(String serviceProvider) {
+    public String getShopCID(
+        String serviceProvider
+    ) {
 
         String result = requestGetFromCloud(
-            get_service_provider_url, 
-            false,
-            logger
+            getServiceProviderUrl, 
+            false
         );
         
         JSONObject jsonObject = new JSONObject(result);
@@ -210,9 +229,11 @@ public class CloudFunctions {
         return result;
     }
 
-    public JSONObject getNetwork(String InetworkName) {
+    public JSONObject getNetwork(
+        String InetworkName
+    ) {
 
-        String result = requestGetFromCloud(get_networks_url, true, logger);
+        String result = requestGetFromCloud(getNetworksUrl, true);
 
         String networkName = InetworkName.toLowerCase();
 
@@ -222,42 +243,73 @@ public class CloudFunctions {
         return networkConfig;
     }
 
-    public String getContractAddress(String contractName) {
+    public String getContractAddress(
+        String contractName
+    ) {
 
-        String result = requestGetFromCloud(get_contracts_url, false, logger);
+        String result = requestGetFromCloud(getContractsUrl, false);
         JSONObject config = new JSONObject(result);
         String contractAddress = config.getString(contractName);
 
         return contractAddress;
     }
 
-    public String sendFCM(String fcm_token, String fcm_signed, String ens) {
+    public String sendFCM(
+        String fcm_token, 
+        String fcm_signed, 
+        String ens
+    ) {
+
         String jsonInputString = "{\"tokens\": " + fcm_token + ", \"tokens_signed\": \"" + fcm_signed + "\", \"ens\": \"" + ens + "\"}";
-        return requestPostToCloud(send_fcm_url, jsonInputString, logger);
+        return requestPostToCloud(sendFcmUrl, jsonInputString);
     }
 
-    public void sendDirectFCM(String fcmTokenJson, String fcm_signed) {
+    public void sendDirectFCM(
+        String fcmTokenJson, 
+        String fcm_signed
+    ) {
+
         String jsonInputString = "{\"tokens\": " + fcmTokenJson + ", \"tokens_signed\": \"" + fcm_signed + "\"}";
-        requestPostToCloud(send_direct_fcm_url, jsonInputString, logger);
+        requestPostToCloud(sendDirectFcmUrl, jsonInputString);
     }
 
-    public void registerAyala(String data, String signedData, String ens) {
+    public void registerAyala(
+        String data, 
+        String signedData, 
+        String ens
+    ) {
+
         String jsonInputString = "{\"data\": \"" + data + "\", \"signedData\": \"" + signedData + "\", \"ens\": \"" + ens + "\"}";
-        requestPostToCloud(send_register_ayala, jsonInputString, logger);
+        requestPostToCloud(sendRegisterAyalaUrl, jsonInputString);
     }
 
-    public void registerAyala(String data, String signedData, String ens, String serviceProviderName) {
+    public void registerAyala(
+        String data, 
+        String signedData, 
+        String ens, 
+        String serviceProviderName
+    ) {
+
         String jsonInputString = "{\"data\": \"" + data + "\", \"signedData\": \"" + signedData + "\", \"ens\": \"" + ens + "\", \"sp\": \"" + serviceProviderName + "\"}";
-        requestPostToCloud(send_register_ayala, jsonInputString,logger);
+        requestPostToCloud(sendRegisterAyalaUrl, jsonInputString);
     }
 
-    public String getCalleeDomain(String callee) {
+    public String getCalleeDomain(
+        String callee
+    ) {
+
         String jsonInputString = "{\"ens\": \"" + callee + "\"}";
-        return requestPostToCloud(get_callee_domain, jsonInputString, logger);
+        return requestPostToCloud(getCalleeDomainUrl, jsonInputString);
     }
 
-    public void registerNewProduct(String data_to_sign, String data_signed, String publicKey, String owner_sign) {
+    public void registerNewProduct(
+        String data_to_sign, 
+        String data_signed, 
+        String publicKey, 
+        String owner_sign
+    ) {
+
         String jsonInputString = "{\"data\": \"" + data_to_sign + "\", \"data_signed\": \"" + data_signed + "\", \"address\": \"" + publicKey + "\", \"owner_sign\": \"" + owner_sign + "\"}";
-        requestPostToCloud(register_new_product, jsonInputString, logger);
+        requestPostToCloud(registerNewProductUrl, jsonInputString);
     }
 }

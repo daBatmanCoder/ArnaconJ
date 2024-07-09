@@ -4,6 +4,7 @@ com/ABI/HLUI$OwnershipTransferredEventResponse.class
 com/ABI/HLUI$1.class
 com/Arnacon/Network.class
 com/Web3ServiceBase/ANetwork.class
+com/Arnacon/Config.class
 com/ABI/HLUI$5.class
 com/ABI/HLUI.class
 com/Arnacon/CloudFunctions.class

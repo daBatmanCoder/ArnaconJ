@@ -9,14 +9,14 @@ import org.web3j.utils.Numeric;
 
 public class Wallet {
 
-    String mnemonic;
-    String privateKey;
+    private String mnemonic;
+    private String privateKey;
 
     private static final int[] DERIVATION_PATH = {44 | Bip32ECKeyPair.HARDENED_BIT, 60 | Bip32ECKeyPair.HARDENED_BIT, 0 | Bip32ECKeyPair.HARDENED_BIT, 0, 0};
 
     // Constructor with no private key
     public Wallet() {
-        this.mnemonic = generateMnemonic();
+        this.mnemonic   = generateMnemonic();
         this.privateKey = getPrivateKeyFromMnemonic(this.mnemonic);
     }
 
@@ -24,7 +24,7 @@ public class Wallet {
     public Wallet(
         String privateKey
     ){
-        this.mnemonic = generateMnemonic(); // That's not right... 
+        this.mnemonic = generateMnemonic(); // That's not right... but we can't get the mnemonic...
         this.privateKey = privateKey;
     }
 

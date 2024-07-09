@@ -15,35 +15,48 @@ import com.Web3ServiceBase.ALogger;
 
 public class Utils {
 
-    private static CloudFunctions CloudFunctionsIn; // Singleton
-    private static Contracts ContractsInst; // Singleton
+    private static CloudFunctions   CloudFunctionsIn; // Singleton
+    private static Contracts        ContractsInst; // Singleton
 
-    static String PAYMENT_DEEPLINK_OK = "https://success-java.vercel.app/";
-    static String PAYMENT_DEEPLINK_NOK = "https://failure-java.vercel.app/";
+    // private final static String PAYMENT_DEEPLINK_OK   = Config.getPaymentDLOK();
+    // private final static String PAYMENT_DEEPLINK_NOK  = Config.getPaymentDLNotOK();
+    private final static String redirectURL           = Config.getRedirectURL();
 
-    static String redirectURL = "https://redirect-generation.vercel.app?redirect=";
 
+    public static CloudFunctions getCloudFunctions(
+        ALogger logger
+    ) { 
 
-    public static CloudFunctions getCloudFunctions(ALogger logger) { // Only once
         if(CloudFunctionsIn == null){
             CloudFunctionsIn = CloudFunctions.getCloudFunctions(logger);
         }
+
         return CloudFunctionsIn;
     }
 
-    public static Contracts getContracts(ALogger logger) {
+    public static Contracts getContracts(
+        ALogger logger
+    ) {
+
         if (ContractsInst == null) {
             logger.debug("InCloudFunctions");
             ContractsInst = Contracts.getContracts(logger);
         }
+
         return ContractsInst;
     }
 
-    static boolean isValidPackage(String packageNum, String jsonStore, ALogger logger) {
+    static boolean isValidPackage(
+        String packageNum, 
+        String jsonStore, 
+        ALogger logger
+    ) {
+
         // Parse the JSON data
         JSONObject json = new JSONObject(jsonStore);
         
         try {
+
             // Attempt to convert the user's input to an integer
             int packageNumber = Integer.parseInt(packageNum);
             
@@ -54,24 +67,41 @@ public class Utils {
                 logger.debug("Package number is not in the range of available packages.");
                 return false; // The input number does not correspond to any package index
             }
+
         } catch (NumberFormatException e) {
             logger.error("User input is not a valid number.", e);
             return false; // The input is not a valid number
         }
+
     }
 
 
-    static void openShop(String publicKey) {
-        String url = "https://arnacon-shop.vercel.app/?user_address=" + publicKey;
+    static void openShop(
+        String publicKey
+    ) {
+
+        String url = Config.getRedirectInShopURL() + publicKey;
+
         try {
             java.awt.Desktop.getDesktop().browse(java.net.URI.create(url));
         } catch (java.io.IOException e) {
             e.printStackTrace();
         }
+
     }
 
-    static String getPaymentURL(String userID, String packageNum, String jsonStore, String successURL, String cancelURL, ADataSaveHelper dataSaveHelper, ALogger logger) {
+    static String getPaymentURL(
+        String userID, 
+        String packageNum, 
+        String jsonStore, 
+        String successURL, 
+        String cancelURL, 
+        ADataSaveHelper dataSaveHelper, 
+        ALogger logger
+    ) {
+
         boolean isValid = Utils.isValidPackage(packageNum, jsonStore, logger);
+
         if (!isValid) {
             System.out.println("The package number is not valid.");
             return null;
@@ -104,7 +134,7 @@ public class Utils {
 
             // Prepare the URL and open connection
             
-            URL url = new URL(getCloudFunctions(logger).send_stripe_url);
+            URL url = new URL(getCloudFunctions(logger).sendStripeUrl);
             HttpURLConnection con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("POST");
             con.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
@@ -151,7 +181,10 @@ public class Utils {
     }
 
     // Add an item to the JSONArray in reverse order
-    static void addItem(JSONArray jsonArray, String item) throws JSONException {
+    static void addItem(
+        JSONArray jsonArray, 
+        String item
+    ) throws JSONException {
 
         JSONArray newJsonArray = new JSONArray();
         newJsonArray.put(item);
@@ -163,8 +196,10 @@ public class Utils {
         for (int i = 0; i < jsonArray.length(); ) {
             jsonArray.remove(0); 
         }
+
         for (int i = 0; i < newJsonArray.length(); i++) {
             jsonArray.put(newJsonArray.get(i));
         }
+
     }
 }

@@ -33,8 +33,8 @@ abstract public class AWeb3AJ {
     public abstract String      getXData();
     public abstract String      getXSign(String XData);
 
-    public abstract void        saveENSItem(String item);
-    public abstract void        saveENSItem(String item, String serviceProviderName);
+    public abstract void        saveItem(String item);
+    public abstract void        saveItem(String item, String serviceProviderName);
     public abstract String      updateNewProduct(String password, String ciphertextHex);
 
 }

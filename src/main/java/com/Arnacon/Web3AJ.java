@@ -60,28 +60,24 @@ import org.web3j.tx.TransactionManager;
 import org.web3j.tx.gas.DefaultGasProvider;
 import org.web3j.tx.response.PollingTransactionReceiptProcessor;
 
+public class Web3AJ extends AWeb3AJ {
 
-public class Web3AJ extends AWeb3AJ{
-    
-    Web3j           web3j;
-    String          freeName = "ANONYMOUS";
-    ANetwork        network; // Ethereum / Polygon / Binance Smart Chain
-
+    Web3j web3j;
+    String freeName = "ANONYMOUS";
+    ANetwork network; // Ethereum / Polygon / Binance Smart Chain
 
     public Web3AJ(
-        ADataSaveHelper dataSaveHelper, 
-        ALogger logger
-    ) {
-        
+            ADataSaveHelper dataSaveHelper,
+            ALogger logger) {
+
         super(dataSaveHelper, logger);
         network = new Network(logger);
-        
+
         String privateKey = dataSaveHelper.getPreference("privateKey", null);
 
-        if (privateKey != null){
+        if (privateKey != null) {
             updateWallet(new Wallet(privateKey));
-        }
-        else{
+        } else {
             updateWallet(new Wallet());
             dataSaveHelper.setPreference("privateKey", this.wallet.getPrivateKey());
         }
@@ -89,7 +85,7 @@ public class Web3AJ extends AWeb3AJ{
         getFreeProduct();
     }
 
-    public String getXData(){
+    public String getXData() {
 
         String uuid = UUID.randomUUID().toString();
         long timestamp = Instant.now().toEpochMilli();
@@ -97,7 +93,7 @@ public class Web3AJ extends AWeb3AJ{
         return xdata;
     }
 
-    public String getXSign(String data){
+    public String getXSign(String data) {
         return compressXSign(signMessage(data));
     }
 
@@ -106,16 +102,16 @@ public class Web3AJ extends AWeb3AJ{
         if (hexString.startsWith("0x")) {
             hexString = hexString.substring(2);
         }
-        
+
         // Convert the hexadecimal string to bytes
         byte[] bytes = hexToBytes(hexString);
-        
+
         // Base64 encode the bytes
         String base64String = Base64.getEncoder().encodeToString(bytes);
-        
+
         return base64String;
     }
-    
+
     private static byte[] hexToBytes(String hex) {
         byte[] bytes = new byte[hex.length() / 2];
         for (int i = 0; i < bytes.length; i++) {
@@ -124,14 +120,13 @@ public class Web3AJ extends AWeb3AJ{
         return bytes;
     }
 
-    public String getPublicKey(){
+    public String getPublicKey() {
         return this.wallet.getPublicKey();
     }
 
     // Takes a message and signs it with the private key of the current wallet
     public String signMessage(
-        String Message
-    ){
+            String Message) {
         String prefix = "\u0019Ethereum Signed Message:\n" + Message.length();
         String prefixedMessage = prefix + Message;
 
@@ -141,17 +136,16 @@ public class Web3AJ extends AWeb3AJ{
 
         Sign.SignatureData signature = Sign.signMessage(messageBytes, credentials.getEcKeyPair());
         logger.debug("Signature: " + Numeric.toHexString(signature.getR()));
-        String sigHex = Numeric.toHexString(signature.getR()) 
-                + Numeric.toHexStringNoPrefix(signature.getS()) 
-                + Numeric.toHexStringNoPrefix(new byte[]{signature.getV()[0]});
+        String sigHex = Numeric.toHexString(signature.getR())
+                + Numeric.toHexStringNoPrefix(signature.getS())
+                + Numeric.toHexStringNoPrefix(new byte[] { signature.getV()[0] });
 
         return sigHex;
     }
 
     private String signMessageWithNewWallet(
-        String Message,
-        String privateKey
-    ){
+            String Message,
+            String privateKey) {
         String prefix = "\u0019Ethereum Signed Message:\n" + Message.length();
         String prefixedMessage = prefix + Message;
 
@@ -162,189 +156,175 @@ public class Web3AJ extends AWeb3AJ{
 
         Sign.SignatureData signature = Sign.signMessage(messageBytes, credentials.getEcKeyPair());
         // logger.debug("Signature: " + Numeric.toHexString(signature.getR()));
-        String sigHex = Numeric.toHexString(signature.getR()) 
-                + Numeric.toHexStringNoPrefix(signature.getS()) 
-                + Numeric.toHexStringNoPrefix(new byte[]{signature.getV()[0]});
+        String sigHex = Numeric.toHexString(signature.getR())
+                + Numeric.toHexStringNoPrefix(signature.getS())
+                + Numeric.toHexStringNoPrefix(new byte[] { signature.getV()[0] });
 
         return sigHex;
     }
 
     // Encodes a function call to be used in a transaction
     private String encodeFunction(
-        String functionName,
-        @SuppressWarnings("rawtypes") List<Type> inputParameters,
-        List<TypeReference<?>> outputParameters
-    ) {
-        
+            String functionName,
+            @SuppressWarnings("rawtypes") List<Type> inputParameters,
+            List<TypeReference<?>> outputParameters) {
+
         Function function = new Function(
                 functionName,
                 inputParameters,
-                outputParameters
-        );
+                outputParameters);
 
         return FunctionEncoder.encode(function);
-        
+
     }
 
     // Mint an NFT - for the user wallet and ENS
     String mintNFT(
-        String _userENS
-    ) throws IOException {
+            String _userENS) throws IOException {
 
         // Load your Ethereum wallet credentials
         Credentials credentials = Credentials.create(this.wallet.getPrivateKey());
 
-        // Raw Transaction 
+        // Raw Transaction
         TransactionManager transactionManager = new RawTransactionManager(
                 web3j,
                 credentials,
                 network.getChainID(),
-                new PollingTransactionReceiptProcessor(web3j, 1000, 60)
-        );
+                new PollingTransactionReceiptProcessor(web3j, 1000, 60));
 
         @SuppressWarnings("rawtypes")
-        List<Type> inputParameters = Arrays.asList(new Utf8String(this.wallet.getPublicKey()), new Utf8String(_userENS));
-        
+        List<Type> inputParameters = Arrays.asList(new Utf8String(this.wallet.getPublicKey()),
+                new Utf8String(_userENS));
+
         String encodedFunction = encodeFunction(
-            "safeMint", // Function name
-            inputParameters, // Function input parameters
-            Collections.emptyList() // Function return types (empty for a transaction)
+                "safeMint", // Function name
+                inputParameters, // Function input parameters
+                Collections.emptyList() // Function return types (empty for a transaction)
         );
 
         EthGasPrice ethGasPrice = web3j.ethGasPrice().send();
         BigInteger gasPrice = ethGasPrice.getGasPrice();
-        BigInteger valueInWei = new BigInteger("0"); 
+        BigInteger valueInWei = new BigInteger("0");
         BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(
-            credentials, 
-            encodedFunction, 
-            valueInWei, 
-            gasPrice, 
-            Utils.getContracts(logger).getNameHashAddress()
-        );
+                credentials,
+                encodedFunction,
+                valueInWei,
+                gasPrice,
+                Utils.getContracts(logger).getNameHashAddress());
 
         EthSendTransaction response = transactionManager.sendTransaction(
                 gasPrice,
                 estimatedGasLimit,
                 Utils.getContracts(logger).getNameHashAddress(),
                 encodedFunction,
-                valueInWei
-        );
-        
+                valueInWei);
+
         return response.getTransactionHash();
     }
 
     String redeemGiftcard(
-        String _userENS
-    ) throws IOException {
+            String _userENS) throws IOException {
 
         // Load your Ethereum wallet credentials
         Credentials credentials = Credentials.create(this.wallet.getPrivateKey());
 
-        // Raw Transaction 
+        // Raw Transaction
         TransactionManager transactionManager = new RawTransactionManager(
                 web3j,
                 credentials,
-                network.getChainID(), 
-                new PollingTransactionReceiptProcessor(web3j, 1000, 60)
-        );
+                network.getChainID(),
+                new PollingTransactionReceiptProcessor(web3j, 1000, 60));
 
         @SuppressWarnings("rawtypes")
-        List<Type> inputParameters = Arrays.asList(new Utf8String(this.wallet.getPublicKey()), new Utf8String(_userENS));
-        
+        List<Type> inputParameters = Arrays.asList(new Utf8String(this.wallet.getPublicKey()),
+                new Utf8String(_userENS));
+
         String encodedFunction = encodeFunction(
-            "safeMint", // Function name
-            inputParameters, // Function input parameters
-            Collections.emptyList() // Function return types (empty for a transaction)
+                "safeMint", // Function name
+                inputParameters, // Function input parameters
+                Collections.emptyList() // Function return types (empty for a transaction)
         );
 
         EthGasPrice ethGasPrice = web3j.ethGasPrice().send();
         BigInteger gasPrice = ethGasPrice.getGasPrice();
-        BigInteger valueInWei = new BigInteger("0"); 
+        BigInteger valueInWei = new BigInteger("0");
         BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(
-            credentials, 
-            encodedFunction, 
-            valueInWei, 
-            gasPrice, 
-            Utils.getContracts(logger).getNameHashAddress()
-        );
+                credentials,
+                encodedFunction,
+                valueInWei,
+                gasPrice,
+                Utils.getContracts(logger).getNameHashAddress());
 
         EthSendTransaction response = transactionManager.sendTransaction(
                 gasPrice,
                 estimatedGasLimit,
                 Utils.getContracts(logger).getNameHashAddress(),
                 encodedFunction,
-                valueInWei
-        );
-        
+                valueInWei);
+
         return response.getTransactionHash();
     }
 
     // Buys our ENS (for web2 users)
     String buyENS(
-        String _userENS
-    ) throws IOException {
+            String _userENS) throws IOException {
 
-            // Load your Ethereum wallet credentials
-            Credentials credentials = Credentials.create(this.wallet.getPrivateKey());
+        // Load your Ethereum wallet credentials
+        Credentials credentials = Credentials.create(this.wallet.getPrivateKey());
 
-            // Raw Transaction 
-            TransactionManager transactionManager = new RawTransactionManager(
-                    web3j,
-                    credentials,
-                    network.getChainID(), // Chain ID for Polygon Mumbai Testnet
-                    new PollingTransactionReceiptProcessor(web3j, 1000, 60)
-            );
+        // Raw Transaction
+        TransactionManager transactionManager = new RawTransactionManager(
+                web3j,
+                credentials,
+                network.getChainID(), // Chain ID for Polygon Mumbai Testnet
+                new PollingTransactionReceiptProcessor(web3j, 1000, 60));
 
-            @SuppressWarnings("rawtypes")
-            List<Type> inputParameters = Arrays.asList(new Address(this.wallet.getPublicKey()), new Utf8String(_userENS));
-            
-            String encodedFunction = encodeFunction(
+        @SuppressWarnings("rawtypes")
+        List<Type> inputParameters = Arrays.asList(new Address(this.wallet.getPublicKey()), new Utf8String(_userENS));
+
+        String encodedFunction = encodeFunction(
                 "safeMint", // Function name
                 inputParameters, // Function input parameters
                 Collections.emptyList() // Function return types (empty for a transaction)
-            );
+        );
 
-            EthGasPrice ethGasPrice = web3j.ethGasPrice().send();
-            BigInteger gasPrice = ethGasPrice.getGasPrice();
+        EthGasPrice ethGasPrice = web3j.ethGasPrice().send();
+        BigInteger gasPrice = ethGasPrice.getGasPrice();
 
-            // Need to change this to MATIC (network currency let's say.)
-            BigInteger valueInWei = new BigInteger("0"); 
-            
-            BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(
+        // Need to change this to MATIC (network currency let's say.)
+        BigInteger valueInWei = new BigInteger("0");
+
+        BigInteger estimatedGasLimit = getEstimatedGasForStateChanging(
                 credentials,
-                encodedFunction, 
-                valueInWei, 
+                encodedFunction,
+                valueInWei,
                 gasPrice,
-                Utils.getContracts(logger).getWENSAddress()
-            );
+                Utils.getContracts(logger).getWENSAddress());
 
-            EthSendTransaction response = transactionManager.sendTransaction(
-                    gasPrice,
-                    estimatedGasLimit,
-                    Utils.getContracts(logger).getWENSAddress(),
-                    encodedFunction,
-                    valueInWei 
-            );
-            
-            return response.getTransactionHash();
-        }
-    
+        EthSendTransaction response = transactionManager.sendTransaction(
+                gasPrice,
+                estimatedGasLimit,
+                Utils.getContracts(logger).getWENSAddress(),
+                encodedFunction,
+                valueInWei);
+
+        return response.getTransactionHash();
+    }
+
     // Helper function to estimate the gas limit for a state-changing function
     BigInteger getEstimatedGasForStateChanging(
-        Credentials credentials,
-        String encodedFunction, 
-        BigInteger valueInWei,
-        BigInteger gasPrice,
-        String contractAddress
-    ) throws IOException {
+            Credentials credentials,
+            String encodedFunction,
+            BigInteger valueInWei,
+            BigInteger gasPrice,
+            String contractAddress) throws IOException {
 
         BigInteger nonce = web3j.ethGetTransactionCount(
-            credentials.getAddress(), 
-            DefaultBlockParameterName.LATEST
-        ).send().getTransactionCount();
+                credentials.getAddress(),
+                DefaultBlockParameterName.LATEST).send().getTransactionCount();
 
-        //  BigInteger gasPrice = web3j.ethGasPrice().send().getGasPrice();
-        BigInteger gasLimitEstimation = BigInteger.valueOf(20000000);        
+        // BigInteger gasPrice = web3j.ethGasPrice().send().getGasPrice();
+        BigInteger gasLimitEstimation = BigInteger.valueOf(20000000);
 
         // Create the transaction object for the state-changing function
         RawTransaction rawTransaction = RawTransaction.createTransaction(
@@ -352,9 +332,8 @@ public class Web3AJ extends AWeb3AJ{
                 gasPrice,
                 gasLimitEstimation,
                 contractAddress,
-                valueInWei,//BigInteger.ZERO, // Value in wei to send with the transaction
-                encodedFunction
-        );
+                valueInWei, // BigInteger.ZERO, // Value in wei to send with the transaction
+                encodedFunction);
 
         Transaction transaction = Transaction.createFunctionCallTransaction(
                 credentials.getAddress(),
@@ -363,9 +342,7 @@ public class Web3AJ extends AWeb3AJ{
                 rawTransaction.getGasLimit(),
                 rawTransaction.getTo(),
                 rawTransaction.getValue(),
-                rawTransaction.getData()
-        );
-
+                rawTransaction.getData());
 
         // Estimate the gas limit for the transaction
         EthEstimateGas ethEstimateGas = web3j.ethEstimateGas(transaction).send();
@@ -377,32 +354,32 @@ public class Web3AJ extends AWeb3AJ{
         } else {
             estimatedGasLimit = ethEstimateGas.getAmountUsed();
         }
-        
+
         return estimatedGasLimit;
     }
 
     public BigDecimal checkBalance(
-        String publicKey
-    ) throws IOException {
-        
+            String publicKey) throws IOException {
+
         EthGetBalance balance = web3j.ethGetBalance(publicKey, DefaultBlockParameterName.LATEST).send();
         BigInteger big_wei = balance.getBalance();
         // Optionally, convert the balance to Ether
         BigDecimal wei = new BigDecimal(big_wei);
-        BigDecimal precise_balance = wei.divide(new BigDecimal("1000000000000000000")); 
-        
+        BigDecimal precise_balance = wei.divide(new BigDecimal("1000000000000000000"));
+
         return precise_balance;
     }
 
-
-    public String fetchStore() throws Exception { // This implementation can be anything but for us it's going to be an IPFS json
+    public String fetchStore() throws Exception { // This implementation can be anything but for us it's going to be an
+                                                  // IPFS json
 
         String serviceProviderName = dataSaveHelper.getPreference("serviceProviderName", null);
         logger.debug("Service Provider: " + serviceProviderName);
 
         String cid = Utils.getCloudFunctions(logger).getShopCID(serviceProviderName);
 
-        // Use a public IPFS gateway to fetch the content. You can also use a local IPFS node if you have one running.
+        // Use a public IPFS gateway to fetch the content. You can also use a local IPFS
+        // node if you have one running.
         String ipfsGateway = "https://ipfs.io/ipfs/";
         String ipfsLink = ipfsGateway + cid;
         URL url = new URL(ipfsLink);
@@ -431,54 +408,51 @@ public class Web3AJ extends AWeb3AJ{
     }
 
     public String getPaymentURL(
-        String packageNum,
-        String successDP,
-         String cancelDP
-    ) {
+            String packageNum,
+            String successDP,
+            String cancelDP) {
         return Utils.getPaymentURL(
-            this.wallet.getPublicKey(),
-            packageNum,
-            dataSaveHelper.getPreference("store", packageNum), 
-            successDP, 
-            cancelDP,
-            dataSaveHelper,
-            logger
-        );
+                this.wallet.getPublicKey(),
+                packageNum,
+                dataSaveHelper.getPreference("store", packageNum),
+                successDP,
+                cancelDP,
+                dataSaveHelper,
+                logger);
     }
 
     public void sendDirectFCM(
-        String fcm_token
-    ){
+            String fcm_token) {
         try {
             String sendTokensFlag = dataSaveHelper.getPreference("tokensSent", "false");
-            if (sendTokensFlag == "true"){
+            if (sendTokensFlag == "true") {
                 throw new RuntimeException("Error: Tokens already sent");
             }
             String fcmTokenJson = "{\"fcm_token\": \"" + fcm_token + "\"}";
             String fcm_signed = signMessage(fcmTokenJson);
             Utils.getCloudFunctions(logger).sendDirectFCM(fcmTokenJson, fcm_signed);
             dataSaveHelper.setPreference("tokensSent", "true");
-        } catch(Exception e){
+        } catch (Exception e) {
             throw new RuntimeException("Error: " + e);
         }
-        
+
     }
 
-    public void sendFCMToken(String fcm_token){
-        try{
+    public void sendFCMToken(String fcm_token) {
+        try {
 
             String sendTokensFlag = dataSaveHelper.getPreference("tokensSent", "false");
-            if (sendTokensFlag == "true"){
+            if (sendTokensFlag == "true") {
                 throw new RuntimeException("Error: Tokens already sent");
             }
 
             String ensJsonString = "";
             String ens = "";
-            
+
             while (ensJsonString.isEmpty()) {
 
                 ensJsonString = getENS();
-                if (ensJsonString == null){
+                if (ensJsonString == null) {
                     ensJsonString = "";
                 }
             }
@@ -497,65 +471,60 @@ public class Web3AJ extends AWeb3AJ{
             String fcm_signed = signMessage(fcmTokenJson);
 
             String result = Utils.getCloudFunctions(logger).sendFCM(fcmTokenJson, fcm_signed, ens);
-            if (result.equals("False")){
+            if (result.equals("False")) {
                 throw new RuntimeException("Error: FCM not sent");
             }
             dataSaveHelper.setPreference("tokensSent", "true");
 
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("Error: " + e);
         }
     }
 
     public void sendFCM(
-        String fcm_token
-    ) {
+            String fcm_token) {
         sendFCMToken(fcm_token);
         String ens = dataSaveHelper.getPreference("randomENS", null);
-        
-        if (ens == null){
+
+        if (ens == null) {
             throw new RuntimeException("Error: ENS not found");
         }
         logger.debug("ENS: " + ens);
 
         registerAyala(ens);
     }
-    
+
     public void registerAyala(String userENS) {
-        try{
-            
+        try {
+
             String randomData = getXData();
             String signedData = signMessage(randomData);
 
             Utils.getCloudFunctions(logger).registerAyala(randomData, signedData, userENS);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("Error: " + e);
         }
     }
 
     public void registerAyala(String userENS, String serviceProviderName) {
-        try{
+        try {
 
             String someData = getXData();
             String signedData = signMessage(someData);
-            
+
             Utils.getCloudFunctions(logger).registerAyala(someData, signedData, userENS, serviceProviderName);
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("Error: " + e);
         }
     }
 
-    public String[] getServiceProviderList(){
+    public String[] getServiceProviderList() {
 
         return Utils.getCloudFunctions(logger).getServiceProviderList();
     }
 
     public void setServiceProvider(
-        String serviceProviderName
-    ) {
+            String serviceProviderName) {
         dataSaveHelper.setPreference("serviceProviderName", serviceProviderName);
     }
 
@@ -563,15 +532,14 @@ public class Web3AJ extends AWeb3AJ{
 
         String ensList = getSavedENSList();
 
-        if ( ensList != null && !ensList.isEmpty()){
+        if (ensList != null && !ensList.isEmpty()) {
             return ensList;
         }
 
         String ens = Utils.getCloudFunctions(logger).getUserENS(this.wallet.getPublicKey(), null);
-        if (ens.equals("Error")){
+        if (ens.equals("Error")) {
             return null;
-        }
-        else{
+        } else {
             dataSaveHelper.setPreference("ensList", ens);
         }
         return ens;
@@ -579,14 +547,14 @@ public class Web3AJ extends AWeb3AJ{
 
     public String getENS(String customerID) {
 
-        String ens = Utils.getCloudFunctions(logger).getUserENS(this.wallet.getPublicKey(),customerID);
-        if (ens.equals("Error")){
+        String ens = Utils.getCloudFunctions(logger).getUserENS(this.wallet.getPublicKey(), customerID);
+        if (ens.equals("Error")) {
             return null;
         }
         return ens;
     }
 
-    public String getSavedENSList(){
+    public String getSavedENSList() {
         return dataSaveHelper.getPreference("ensList", null);
     }
 
@@ -595,64 +563,67 @@ public class Web3AJ extends AWeb3AJ{
         return Utils.getCloudFunctions(logger).getCalleeDomain(callee);
     }
 
-    public String getDomain(String callee) throws Exception {
+    public String getDomain(String item) throws Exception {
 
-        boolean isNumeric = callee.matches("^\\+?\\d+$");
-        boolean isAsterix = callee.matches("^[*#]\\d+$");
-
-
-        if(isNumeric || isAsterix){
-            return getGSMDomain(getCurrentProduct());
+        if (item == freeName){
+            return freeName;
         }
-        
+
+        if (item == getCurrentProduct()) {
+            return getCurrentItemDomain();
+        }
+
+        boolean isNumeric = item.matches("^\\+?\\d+$");
+        boolean isAsterix = item.matches("^[*#]\\d+$");
+
+        if (isNumeric || isAsterix) {
+            return getItemDomain(getCurrentProduct());
+        }
 
         Web3j web3j = Web3j.build(new HttpService(this.network.getRPC()));
 
         HLUI contractHLUI = HLUI.load(
                 Contracts.getContracts(logger).getHLUI(),
                 web3j,
-                new ReadonlyTransactionManager(web3j, this.wallet.getPublicKey()),  // For view functions, no credentials are needed
-                new DefaultGasProvider()
-        );
+                new ReadonlyTransactionManager(web3j, this.wallet.getPublicKey()), // For view functions, no credentials
+                                                                                   // are needed
+                new DefaultGasProvider());
 
         String domain;
 
-        try{
-            domain = contractHLUI.getServiceProviderDomain(callee).send();
-        } catch (Exception e){
+        try {
+            domain = contractHLUI.getServiceProviderDomain(item).send();
+        } catch (Exception e) {
             throw new RuntimeException("Error: " + e);
         }
 
         return domain;
     }
 
-    public void setGSMDomain(String gsm, String domain){
+    public void setItemDomain(String item, String domain) {
 
-        if (!gsm.matches("\\d+")) {
-            throw new RuntimeException("Error: Invalid GSM");
-        } 
+        String ItemValue = dataSaveHelper.getPreference(item, "rickrolled");
 
-        String gsmValue = dataSaveHelper.getPreference(gsm, "rickrolled");
-
-        if (!gsmValue.equals("rickrolled")){
-            throw new RuntimeException("GSM Already setted up.");
+        if (!ItemValue.equals("rickrolled")) {
+            throw new RuntimeException("Item Already setted up.");
         }
 
-        dataSaveHelper.setPreference(gsm, domain);
+        dataSaveHelper.setPreference(item, domain);
     }
 
-    public String getGSMDomain(String gsm) {
+    public String getCurrentItemDomain() {
+        return getItemDomain(getCurrentProduct());
+    }
 
-        if (!gsm.matches("\\d+")) {
-            throw new RuntimeException("Error: Invalid GSM");
-        } 
+    public String getItemDomain(String item) {
 
-        String serviceProviderOfGsm = dataSaveHelper.getPreference(gsm, null);
-        
-        if (serviceProviderOfGsm == null){
-            throw new RuntimeException("Error: GSM not found");
+        String serviceProviderOfItem = dataSaveHelper.getPreference(item, "rickrolled");
+
+        if (serviceProviderOfItem == "rickrolled") {
+            throw new RuntimeException("Error: Item not found");
         }
-        return serviceProviderOfGsm;
+
+        return serviceProviderOfItem;
     }
 
     public String getCurrentProduct() {
@@ -661,14 +632,14 @@ public class Web3AJ extends AWeb3AJ{
 
     public void setCurrentProduct(String currentProductChoosed) {
 
-        // Check if the currentProductChoosed is valid- meaning if it one of the ens in the ensList
+        // Check if the currentProductChoosed is valid- meaning if it one of the ens in
+        // the ensList
         String ensList = getSavedENSList();
-        if (ensList != null && !ensList.isEmpty()){
-            if (!ensList.contains(currentProductChoosed)){
+        if (ensList != null && !ensList.isEmpty()) {
+            if (!ensList.contains(currentProductChoosed)) {
                 throw new RuntimeException("Error: Invalid ENS");
             }
-        }
-        else{
+        } else {
             throw new RuntimeException("Error: ENS List not found");
         }
         dataSaveHelper.setPreference("currentProduct", currentProductChoosed);
@@ -716,9 +687,9 @@ public class Web3AJ extends AWeb3AJ{
             String serviceProviderOfENS = "";
             long timestamp = Instant.now().toEpochMilli();
 
-            if (jsonObject.has("ens")){
+            if (jsonObject.has("ens")) {
                 item = jsonObject.getString("ens");
-                if (jsonObject.has("sp")){
+                if (jsonObject.has("sp")) {
                     isCellENS = true;
                     logger.debug("ajshdjasdkasdhjakshdka");
                     serviceProviderOfENS = jsonObject.getString("sp");
@@ -726,7 +697,7 @@ public class Web3AJ extends AWeb3AJ{
 
                 data_to_sign = item + ":" + timestamp;
 
-            }else {
+            } else {
                 item = jsonObject.getString("gsm");
                 String serviceProviderOfGsm = jsonObject.getString("SP");
                 data_to_sign = item + ":" + serviceProviderOfGsm + ":" + timestamp;
@@ -734,15 +705,16 @@ public class Web3AJ extends AWeb3AJ{
             }
 
             String owner_signed = signMessage(data_to_sign);
-            
-            String data_signed = signMessageWithNewWallet(data_to_sign ,private_key);
 
-            Utils.getCloudFunctions(logger).registerNewProduct(data_to_sign, data_signed, this.wallet.getPublicKey(), owner_signed);
-            
-            if (isCellENS){
-                saveENSItem(item, serviceProviderOfENS);
-            } else{
-                saveENSItem(item);
+            String data_signed = signMessageWithNewWallet(data_to_sign, private_key);
+
+            Utils.getCloudFunctions(logger).registerNewProduct(data_to_sign, data_signed, this.wallet.getPublicKey(),
+                    owner_signed);
+
+            if (isCellENS) {
+                saveItem(item, serviceProviderOfENS);
+            } else {
+                saveItem(item);
             }
 
             return item;
@@ -753,15 +725,15 @@ public class Web3AJ extends AWeb3AJ{
     }
 
     // Save the ENS item to the list of ENS items - in reverse order
-    public void saveENSItem(String item) {
+    public void saveItem(String item) {
 
         boolean isNumeric = item.matches("^\\d+$");
         String ensListJsonStr = getSavedENSList();
         JSONArray ensListArray;
-        
+
         try {
 
-            if (!isNumeric && !item.equals(freeName)){
+            if (!isNumeric && !item.equals(freeName)) {
                 registerAyala(item);
             }
 
@@ -771,37 +743,35 @@ public class Web3AJ extends AWeb3AJ{
                 ensListArray = new JSONArray();
             }
 
-            if(item.equals(freeName)){
+            if (item.equals(freeName)) {
                 String alreadyCalled = dataSaveHelper.getPreference("free", "nope");
-                if (alreadyCalled.equals("nope")){
+                if (alreadyCalled.equals("nope")) {
                     item = freeName;
                     dataSaveHelper.setPreference("free", freeName);
-                }
-                else {
+                } else {
                     logger.debug("Already have a free product.");
                     return;
                 }
-            } 
+            }
 
             Utils.addItem(ensListArray, item);
 
             dataSaveHelper.setPreference("ensList", ensListArray.toString());
 
-            
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    public void saveENSItem(String item, String serviceProviderName) {
+    public void saveItem(String item, String serviceProviderName) {
 
         boolean isNumeric = item.matches("^\\d+$");
         String ensListJsonStr = getSavedENSList();
         JSONArray ensListArray;
-        
+
         try {
 
-            if (!isNumeric && !item.equals(freeName)){
+            if (!isNumeric && !item.equals(freeName)) {
                 registerAyala(item, serviceProviderName);
             }
 
@@ -811,35 +781,30 @@ public class Web3AJ extends AWeb3AJ{
                 ensListArray = new JSONArray();
             }
 
-            if(item.equals(freeName)){
+            if (item.equals(freeName)) {
                 String alreadyCalled = dataSaveHelper.getPreference("free", "nope");
-                if (alreadyCalled.equals("nope")){
+                if (alreadyCalled.equals("nope")) {
                     item = freeName;
                     dataSaveHelper.setPreference("free", freeName);
-                }
-                else {
+                } else {
                     logger.debug("Already have a free product.");
                     return;
                 }
-            } 
-
-            if(isNumeric){
-                setGSMDomain(item, serviceProviderName);
             }
+
+            setItemDomain(item, serviceProviderName);
 
             Utils.addItem(ensListArray, item);
 
             dataSaveHelper.setPreference("ensList", ensListArray.toString());
 
-            
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
-    private void getFreeProduct(){
-        saveENSItem(freeName);
+    private void getFreeProduct() {
+        saveItem(freeName);
     }
 
 }
-

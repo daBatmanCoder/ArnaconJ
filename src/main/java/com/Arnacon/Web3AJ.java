@@ -692,7 +692,6 @@ public class Web3AJ extends AWeb3AJ {
                 item = jsonObject.getString("ens");
                 if (jsonObject.has("sp")) {
                     isCellENS = true;
-                    logger.debug("ajshdjasdkasdhjakshdka");
                     serviceProviderOfENS = jsonObject.getString("sp");
                 }
 
@@ -760,7 +759,7 @@ public class Web3AJ extends AWeb3AJ {
             dataSaveHelper.setPreference("ensList", ensListArray.toString());
 
         } catch (JSONException e) {
-            e.printStackTrace();
+            logger.error(ensListJsonStr, e);
         }
     }
 
@@ -806,6 +805,7 @@ public class Web3AJ extends AWeb3AJ {
 
     private void getFreeProduct() {
         saveItem(freeName);
+        setCurrentProduct(freeName); 
     }
 
 }

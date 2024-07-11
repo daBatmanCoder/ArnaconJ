@@ -565,8 +565,7 @@ public class Web3AJ extends AWeb3AJ {
 
     public String getDomain(String item) throws Exception {
 
-        if (item == getCurrentProduct()) {
-            logger.debug("In the currentproductdomain if");
+        if (item.equals(getCurrentProduct())) {
             return getCurrentItemDomain();
         }
 

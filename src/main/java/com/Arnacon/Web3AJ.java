@@ -565,8 +565,8 @@ public class Web3AJ extends AWeb3AJ {
 
     public String getDomain(String item) throws Exception {
 
-
         if (item == getCurrentProduct()) {
+            logger.debug("In the currentproductdomain if");
             return getCurrentItemDomain();
         }
 
@@ -580,11 +580,12 @@ public class Web3AJ extends AWeb3AJ {
         Web3j web3j = Web3j.build(new HttpService(this.network.getRPC()));
 
         HLUI contractHLUI = HLUI.load(
-                Contracts.getContracts(logger).getHLUI(),
-                web3j,
-                new ReadonlyTransactionManager(web3j, this.wallet.getPublicKey()), // For view functions, no credentials
-                                                                                   // are needed
-                new DefaultGasProvider());
+            Contracts.getContracts(logger).getHLUI(),
+            web3j,
+            new ReadonlyTransactionManager(web3j, this.wallet.getPublicKey()), // For view functions, no credentials
+                                                                                // are needed
+            new DefaultGasProvider()
+        );
 
         String domain;
 
@@ -614,9 +615,7 @@ public class Web3AJ extends AWeb3AJ {
 
     public String getItemDomain(String item) {
 
-        if (item == freeName){
-            return "CHECKCHECKKINGYOAV";
-        }
+        logger.debug("Item is: " + item);
 
         String serviceProviderOfItem = dataSaveHelper.getPreference(item, "rickrolled");
 
@@ -631,7 +630,7 @@ public class Web3AJ extends AWeb3AJ {
         return dataSaveHelper.getPreference("currentProduct", null);
     }
 
-    public void setCurrentProduct(String currentProductChoosed) {
+    public void setCurrentProduct(String currentProductChoosed) throws Exception {
 
         // Check if the currentProductChoosed is valid- meaning if it one of the ens in
         // the ensList
@@ -804,8 +803,7 @@ public class Web3AJ extends AWeb3AJ {
     }
 
     private void getFreeProduct() {
-        saveItem(freeName);
-        setCurrentProduct(freeName); 
+        saveItem(freeName,freeName);
     }
 
 }

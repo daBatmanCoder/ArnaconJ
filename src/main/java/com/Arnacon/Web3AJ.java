@@ -67,10 +67,12 @@ public class Web3AJ extends AWeb3AJ {
     ANetwork network; // Ethereum / Polygon / Binance Smart Chain
 
     public Web3AJ(
-            ADataSaveHelper dataSaveHelper,
-            ALogger logger) {
+        ADataSaveHelper dataSaveHelper,
+        ALogger logger
+    ) {
 
         super(dataSaveHelper, logger);
+
         network = new Network(logger);
 
         String privateKey = dataSaveHelper.getPreference("privateKey", null);
@@ -90,14 +92,21 @@ public class Web3AJ extends AWeb3AJ {
         String uuid = UUID.randomUUID().toString();
         long timestamp = Instant.now().toEpochMilli();
         String xdata = uuid + ":" + timestamp;
+
         return xdata;
     }
 
-    public String getXSign(String data) {
-        return compressXSign(signMessage(data));
+    public String getXSign(
+        String data
+    ) {
+        return compressXSign(
+            signMessage(data, wallet)
+        );
     }
 
-    public String compressXSign(String hexString) {
+    public String compressXSign(
+        String hexString
+    ) {
 
         if (hexString.startsWith("0x")) {
             hexString = hexString.substring(2);
@@ -112,45 +121,31 @@ public class Web3AJ extends AWeb3AJ {
         return base64String;
     }
 
-    private static byte[] hexToBytes(String hex) {
+    private static byte[] hexToBytes(
+        String hex
+    ) {
         byte[] bytes = new byte[hex.length() / 2];
         for (int i = 0; i < bytes.length; i++) {
             bytes[i] = (byte) Integer.parseInt(hex.substring(2 * i, 2 * i + 2), 16);
         }
+
         return bytes;
     }
 
     public String getPublicKey() {
+
         return this.wallet.getPublicKey();
     }
 
     // Takes a message and signs it with the private key of the current wallet
     public String signMessage(
-            String Message) {
+        String Message,
+        Wallet walletForTheSign
+    ) {
         String prefix = "\u0019Ethereum Signed Message:\n" + Message.length();
         String prefixedMessage = prefix + Message;
 
-        Credentials credentials = wallet.getCredentials();
-
-        byte[] messageBytes = prefixedMessage.getBytes();
-
-        Sign.SignatureData signature = Sign.signMessage(messageBytes, credentials.getEcKeyPair());
-        logger.debug("Signature: " + Numeric.toHexString(signature.getR()));
-        String sigHex = Numeric.toHexString(signature.getR())
-                + Numeric.toHexStringNoPrefix(signature.getS())
-                + Numeric.toHexStringNoPrefix(new byte[] { signature.getV()[0] });
-
-        return sigHex;
-    }
-
-    private String signMessageWithNewWallet(
-            String Message,
-            String privateKey) {
-        String prefix = "\u0019Ethereum Signed Message:\n" + Message.length();
-        String prefixedMessage = prefix + Message;
-
-        Wallet wallet = new Wallet(privateKey);
-        Credentials credentials = wallet.getCredentials();
+        Credentials credentials = walletForTheSign.getCredentials();
 
         byte[] messageBytes = prefixedMessage.getBytes();
 
@@ -163,16 +158,19 @@ public class Web3AJ extends AWeb3AJ {
         return sigHex;
     }
 
+
     // Encodes a function call to be used in a transaction
     private String encodeFunction(
             String functionName,
             @SuppressWarnings("rawtypes") List<Type> inputParameters,
-            List<TypeReference<?>> outputParameters) {
+            List<TypeReference<?>> outputParameters
+        ) {
 
         Function function = new Function(
                 functionName,
                 inputParameters,
-                outputParameters);
+                outputParameters
+        );
 
         return FunctionEncoder.encode(function);
 
@@ -317,100 +315,121 @@ public class Web3AJ extends AWeb3AJ {
             String encodedFunction,
             BigInteger valueInWei,
             BigInteger gasPrice,
-            String contractAddress) throws IOException {
-
-        BigInteger nonce = web3j.ethGetTransactionCount(
+            String contractAddress
+    ) {
+        try{
+            BigInteger nonce = web3j.ethGetTransactionCount(
                 credentials.getAddress(),
                 DefaultBlockParameterName.LATEST).send().getTransactionCount();
 
-        // BigInteger gasPrice = web3j.ethGasPrice().send().getGasPrice();
-        BigInteger gasLimitEstimation = BigInteger.valueOf(20000000);
+            // BigInteger gasPrice = web3j.ethGasPrice().send().getGasPrice();
+            BigInteger gasLimitEstimation = BigInteger.valueOf(20000000);
 
-        // Create the transaction object for the state-changing function
-        RawTransaction rawTransaction = RawTransaction.createTransaction(
-                nonce,
-                gasPrice,
-                gasLimitEstimation,
-                contractAddress,
-                valueInWei, // BigInteger.ZERO, // Value in wei to send with the transaction
-                encodedFunction);
+            // Create the transaction object for the state-changing function
+            RawTransaction rawTransaction = RawTransaction.createTransaction(
+                    nonce,
+                    gasPrice,
+                    gasLimitEstimation,
+                    contractAddress,
+                    valueInWei, // BigInteger.ZERO, // Value in wei to send with the transaction
+                    encodedFunction);
 
-        Transaction transaction = Transaction.createFunctionCallTransaction(
-                credentials.getAddress(),
-                rawTransaction.getNonce(),
-                rawTransaction.getGasPrice(),
-                rawTransaction.getGasLimit(),
-                rawTransaction.getTo(),
-                rawTransaction.getValue(),
-                rawTransaction.getData());
+            Transaction transaction = Transaction.createFunctionCallTransaction(
+                    credentials.getAddress(),
+                    rawTransaction.getNonce(),
+                    rawTransaction.getGasPrice(),
+                    rawTransaction.getGasLimit(),
+                    rawTransaction.getTo(),
+                    rawTransaction.getValue(),
+                    rawTransaction.getData());
 
-        // Estimate the gas limit for the transaction
-        EthEstimateGas ethEstimateGas = web3j.ethEstimateGas(transaction).send();
+            // Estimate the gas limit for the transaction
+            EthEstimateGas ethEstimateGas = web3j.ethEstimateGas(transaction).send();
 
-        BigInteger estimatedGasLimit;
+            BigInteger estimatedGasLimit;
 
-        if (ethEstimateGas.hasError()) {
-            estimatedGasLimit = BigInteger.valueOf(2000000); // Fallback gas limit
-        } else {
-            estimatedGasLimit = ethEstimateGas.getAmountUsed();
+            if (ethEstimateGas.hasError()) {
+                estimatedGasLimit = BigInteger.valueOf(2000000); // Fallback gas limit
+            } else {
+                estimatedGasLimit = ethEstimateGas.getAmountUsed();
+            }
+
+            return estimatedGasLimit;
+        } catch(Exception e){
+            logger.error("", e);
+            return BigInteger.valueOf(0);
         }
-
-        return estimatedGasLimit;
+        
     }
 
     public BigDecimal checkBalance(
-            String publicKey) throws IOException {
+            String publicKey
+    ) {
+        try {
+            EthGetBalance balance = web3j.ethGetBalance(publicKey, DefaultBlockParameterName.LATEST).send();
+            BigInteger big_wei = balance.getBalance();
+            // Optionally, convert the balance to Ether
+            BigDecimal wei = new BigDecimal(big_wei);
+            BigDecimal precise_balance = wei.divide(new BigDecimal("1000000000000000000"));
+            return precise_balance;
 
-        EthGetBalance balance = web3j.ethGetBalance(publicKey, DefaultBlockParameterName.LATEST).send();
-        BigInteger big_wei = balance.getBalance();
-        // Optionally, convert the balance to Ether
-        BigDecimal wei = new BigDecimal(big_wei);
-        BigDecimal precise_balance = wei.divide(new BigDecimal("1000000000000000000"));
-
-        return precise_balance;
+        } catch(Exception e){
+            logger.error("",e);
+        }
+       
+        return new BigDecimal(0);
     }
 
-    public String fetchStore() throws Exception { // This implementation can be anything but for us it's going to be an
+    public String fetchStore() { // This implementation can be anything but for us it's going to be an
                                                   // IPFS json
+        try {
+            String serviceProviderName = dataSaveHelper.getPreference("serviceProviderName", null);
+            logger.debug("Service Provider: " + serviceProviderName);
+    
+            String cid = Utils.getCloudFunctions(logger).getShopCID(serviceProviderName);
+    
+            // Use a public IPFS gateway to fetch the content. You can also use a local IPFS
+            // node if you have one running.
+            String ipfsGateway = "https://ipfs.io/ipfs/";
+            String ipfsLink = ipfsGateway + cid;
+            URL url = new URL(ipfsLink);
+    
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+    
+            // Check for successful response
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String inputLine;
+                StringBuilder content = new StringBuilder();
+    
+                while ((inputLine = in.readLine()) != null) {
+                    content.append(inputLine);
+                }
+                in.close();
+    
+                dataSaveHelper.setPreference("store", content.toString());
+    
+                return content.toString(); // Returns the content of the file
 
-        String serviceProviderName = dataSaveHelper.getPreference("serviceProviderName", null);
-        logger.debug("Service Provider: " + serviceProviderName);
-
-        String cid = Utils.getCloudFunctions(logger).getShopCID(serviceProviderName);
-
-        // Use a public IPFS gateway to fetch the content. You can also use a local IPFS
-        // node if you have one running.
-        String ipfsGateway = "https://ipfs.io/ipfs/";
-        String ipfsLink = ipfsGateway + cid;
-        URL url = new URL(ipfsLink);
-
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-
-        // Check for successful response
-        int responseCode = connection.getResponseCode();
-        if (responseCode == HttpURLConnection.HTTP_OK) {
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine;
-            StringBuilder content = new StringBuilder();
-
-            while ((inputLine = in.readLine()) != null) {
-                content.append(inputLine);
+            } else {
+                throw new Exception("Failed to fetch content from IPFS. Response code: " + responseCode);
             }
-            in.close();
+        } catch(Exception e){
+            logger.error("",e);
 
-            dataSaveHelper.setPreference("store", content.toString());
-
-            return content.toString(); // Returns the content of the file
-        } else {
-            throw new Exception("Failed to fetch content from IPFS. Response code: " + responseCode);
+            return "Failed";
         }
+        
     }
 
     public String getPaymentURL(
             String packageNum,
             String successDP,
-            String cancelDP) {
+            String cancelDP
+    ) {
+
         return Utils.getPaymentURL(
                 this.wallet.getPublicKey(),
                 packageNum,
@@ -418,31 +437,39 @@ public class Web3AJ extends AWeb3AJ {
                 successDP,
                 cancelDP,
                 dataSaveHelper,
-                logger);
+                logger
+        );
     }
 
     public void sendDirectFCM(
-            String fcm_token) {
+            String fcm_token
+    ) {
         try {
-            String sendTokensFlag = dataSaveHelper.getPreference("tokensSent", "false");
-            if (sendTokensFlag == "true") {
-                throw new RuntimeException("Error: Tokens already sent");
+
+            String fcmToken = dataSaveHelper.getPreference("fcmToken", "blabla");
+            if(fcmToken.equals(fcm_token)){
+                throw new RuntimeException("the fcm token is already saved");
             }
+
             String fcmTokenJson = "{\"fcm_token\": \"" + fcm_token + "\"}";
-            String fcm_signed = signMessage(fcmTokenJson);
+            String fcm_signed = signMessage(fcmTokenJson, wallet);
             Utils.getCloudFunctions(logger).sendDirectFCM(fcmTokenJson, fcm_signed);
-            dataSaveHelper.setPreference("tokensSent", "true");
+            dataSaveHelper.setPreference("fcmToken", fcm_token);
+
         } catch (Exception e) {
-            throw new RuntimeException("Error: " + e);
+
+            logger.error(fcm_token, e);
         }
 
     }
 
-    public void sendFCMToken(String fcm_token) {
+    public void sendFCMToken(
+        String fcm_token
+    ) {
         try {
 
             String sendTokensFlag = dataSaveHelper.getPreference("tokensSent", "false");
-            if (sendTokensFlag == "true") {
+            if (sendTokensFlag.equals("true")) {
                 throw new RuntimeException("Error: Tokens already sent");
             }
 
@@ -468,7 +495,7 @@ public class Web3AJ extends AWeb3AJ {
             }
 
             String fcmTokenJson = "{\"fcm_token\": \"" + fcm_token + "\"}";
-            String fcm_signed = signMessage(fcmTokenJson);
+            String fcm_signed = signMessage(fcmTokenJson, wallet);
 
             String result = Utils.getCloudFunctions(logger).sendFCM(fcmTokenJson, fcm_signed, ens);
             if (result.equals("False")) {
@@ -477,12 +504,14 @@ public class Web3AJ extends AWeb3AJ {
             dataSaveHelper.setPreference("tokensSent", "true");
 
         } catch (Exception e) {
-            throw new RuntimeException("Error: " + e);
+
+            logger.error("FCM", e);
         }
     }
 
     public void sendFCM(
-            String fcm_token) {
+            String fcm_token
+    ) {
         sendFCMToken(fcm_token);
         String ens = dataSaveHelper.getPreference("randomENS", null);
 
@@ -494,27 +523,35 @@ public class Web3AJ extends AWeb3AJ {
         registerAyala(ens);
     }
 
-    public void registerAyala(String userENS) {
+    public void registerAyala(
+        String userENS
+    ) {
         try {
 
             String randomData = getXData();
-            String signedData = signMessage(randomData);
+            String signedData = signMessage(randomData, wallet);
 
             Utils.getCloudFunctions(logger).registerAyala(randomData, signedData, userENS);
+
         } catch (Exception e) {
-            throw new RuntimeException("Error: " + e);
+
+            logger.error("", e);
         }
     }
 
-    public void registerAyala(String userENS, String serviceProviderName) {
+    public void registerAyala(
+        String userENS, 
+        String serviceProviderName
+    ) {
         try {
 
             String someData = getXData();
-            String signedData = signMessage(someData);
+            String signedData = signMessage(someData, wallet);
 
             Utils.getCloudFunctions(logger).registerAyala(someData, signedData, userENS, serviceProviderName);
         } catch (Exception e) {
-            throw new RuntimeException("Error: " + e);
+
+            logger.error("", e);
         }
     }
 
@@ -524,7 +561,8 @@ public class Web3AJ extends AWeb3AJ {
     }
 
     public void setServiceProvider(
-            String serviceProviderName) {
+            String serviceProviderName
+    ) {
         dataSaveHelper.setPreference("serviceProviderName", serviceProviderName);
     }
 
@@ -542,10 +580,13 @@ public class Web3AJ extends AWeb3AJ {
         } else {
             dataSaveHelper.setPreference("ensList", ens);
         }
+
         return ens;
     }
 
-    public String getENS(String customerID) {
+    public String getENS(
+        String customerID
+    ) {
 
         String ens = Utils.getCloudFunctions(logger).getUserENS(this.wallet.getPublicKey(), customerID);
         if (ens.equals("Error")) {
@@ -558,12 +599,16 @@ public class Web3AJ extends AWeb3AJ {
         return dataSaveHelper.getPreference("ensList", null);
     }
 
-    public String getCalleeDomainCloud(String callee) {
+    public String getCalleeDomainCloud(
+        String callee
+    ) {
 
         return Utils.getCloudFunctions(logger).getCalleeDomain(callee);
     }
 
-    public String getDomain(String item) throws Exception {
+    public String getDomain(
+        String item
+    ) {
 
         if (item.equals(getCurrentProduct())) {
             return getCurrentItemDomain();
@@ -586,80 +631,108 @@ public class Web3AJ extends AWeb3AJ {
             new DefaultGasProvider()
         );
 
-        String domain;
+        String domain = "";
 
         try {
             domain = contractHLUI.getServiceProviderDomain(item).send();
         } catch (Exception e) {
-            throw new RuntimeException("Error: " + e);
+            logger.error("No domain found- will be empty string as domain", e);
         }
 
         return domain;
     }
 
-    public void setItemDomain(String item, String domain) {
+    public void setItemDomain(
+        String item, 
+        String domain
+    ) {
 
         String ItemValue = dataSaveHelper.getPreference(item, "rickrolled");
 
-        if (!ItemValue.equals("rickrolled")) {
-            throw new RuntimeException("Item Already setted up.");
+        if (ItemValue.equals("rickrolled")) {
+            dataSaveHelper.setPreference(item, domain);
         }
-
-        dataSaveHelper.setPreference(item, domain);
+        
     }
 
     public String getCurrentItemDomain() {
         return getItemDomain(getCurrentProduct());
     }
 
-    public String getItemDomain(String item) {
+    public String getItemDomain(
+        String item
+    ) {
 
         logger.debug("Item is: " + item);
 
         String serviceProviderOfItem = dataSaveHelper.getPreference(item, "rickrolled");
 
-        if (serviceProviderOfItem == "rickrolled") {
-            throw new RuntimeException("Error: Item not found");
+        if (!serviceProviderOfItem.equals("rickrolled")) {
+            return serviceProviderOfItem;
         }
 
-        return serviceProviderOfItem;
+        return "";
     }
 
     public String getCurrentProduct() {
         return dataSaveHelper.getPreference("currentProduct", null);
     }
 
-    public void setCurrentProduct(String currentProductChoosed) throws Exception {
+    public void setCurrentProduct(
+        String currentProductChoosed
+    ) {
 
         // Check if the currentProductChoosed is valid- meaning if it one of the ens in
         // the ensList
-        String ensList = getSavedENSList();
-        if (ensList != null && !ensList.isEmpty()) {
-            if (!ensList.contains(currentProductChoosed)) {
-                throw new RuntimeException("Error: Invalid ENS");
+        try {
+            String ensList = getSavedENSList();
+            if (ensList != null && !ensList.isEmpty()) {
+                if (!ensList.contains(currentProductChoosed)) {
+                    throw new RuntimeException("Error: Invalid ENS");
+                }
+            } else {
+                throw new RuntimeException("Error: ENS List not found");
             }
-        } else {
-            throw new RuntimeException("Error: ENS List not found");
+        } catch (Exception e) {
+            logger.error("", e);
         }
+        
         dataSaveHelper.setPreference("currentProduct", currentProductChoosed);
     }
 
-    private byte[] decrypt(byte[] ciphertext, String password) throws Exception {
-        SecretKeySpec secretKey = deriveKeyFromPassword(password);
-        logger.debug(secretKey.toString());
-        Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-        cipher.init(Cipher.DECRYPT_MODE, secretKey);
-        return cipher.doFinal(ciphertext);
+    private byte[] decrypt(
+        byte[] ciphertext, 
+        String password
+    ) throws Exception {
+        try{
+            SecretKeySpec secretKey = deriveKeyFromPassword(password);
+            logger.debug(secretKey.toString());
+            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
+            cipher.init(Cipher.DECRYPT_MODE, secretKey);
+
+            return cipher.doFinal(ciphertext);
+
+        } catch(Exception e){
+
+            logger.error("",e);
+            byte[] bt = new byte[5];
+            return bt;
+        }
+        
     }
 
-    private SecretKeySpec deriveKeyFromPassword(String password) throws NoSuchAlgorithmException {
+    private SecretKeySpec deriveKeyFromPassword(
+        String password
+    ) throws NoSuchAlgorithmException {
         MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
         byte[] key = sha256.digest(password.getBytes(StandardCharsets.UTF_8));
         key = Arrays.copyOf(key, 16); // Use only the first 128 bits
         return new SecretKeySpec(key, "AES");
     }
 
-    private byte[] hexStringToByteArray(String hexString) {
+    private byte[] hexStringToByteArray(
+        String hexString
+    ) {
         int len = hexString.length();
         byte[] data = new byte[len / 2];
         for (int i = 0; i < len; i += 2) {
@@ -670,7 +743,10 @@ public class Web3AJ extends AWeb3AJ {
     }
 
     // Decrypts the data, registers the new product and returns the item
-    public String updateNewProduct(String password, String ciphertextHex) {
+    public String updateNewProduct(
+        String password, 
+        String ciphertextHex
+    ) {
 
         try {
             byte[] ciphertext = hexStringToByteArray(ciphertextHex);
@@ -702,12 +778,17 @@ public class Web3AJ extends AWeb3AJ {
                 dataSaveHelper.setPreference(item, serviceProviderOfGsm);
             }
 
-            String owner_signed = signMessage(data_to_sign);
+            String owner_signed = signMessage(data_to_sign, wallet);
 
-            String data_signed = signMessageWithNewWallet(data_to_sign, private_key);
+            Wallet newWallet = new Wallet(private_key);
+            String data_signed = signMessage(data_to_sign, newWallet);
 
-            Utils.getCloudFunctions(logger).registerNewProduct(data_to_sign, data_signed, this.wallet.getPublicKey(),
-                    owner_signed);
+            Utils.getCloudFunctions(logger).registerNewProduct(
+                data_to_sign, 
+                data_signed, 
+                this.wallet.getPublicKey(),
+                owner_signed
+            );
 
             if (isCellENS) {
                 saveItem(item, serviceProviderOfENS);
@@ -718,12 +799,17 @@ public class Web3AJ extends AWeb3AJ {
             return item;
 
         } catch (Exception e) {
-            throw new RuntimeException("Error: " + e);
+
+            logger.error("",e);
+
+            return "Failed";
         }
     }
 
     // Save the ENS item to the list of ENS items - in reverse order
-    public void saveItem(String item) {
+    public void saveItem(
+        String item
+    ) {
 
         boolean isNumeric = item.matches("^\\d+$");
         String ensListJsonStr = getSavedENSList();
@@ -757,11 +843,15 @@ public class Web3AJ extends AWeb3AJ {
             dataSaveHelper.setPreference("ensList", ensListArray.toString());
 
         } catch (JSONException e) {
+
             logger.error(ensListJsonStr, e);
         }
     }
 
-    public void saveItem(String item, String serviceProviderName) {
+    public void saveItem(
+        String item, 
+        String serviceProviderName
+    ) {
 
         boolean isNumeric = item.matches("^\\d+$");
         String ensListJsonStr = getSavedENSList();
@@ -797,7 +887,7 @@ public class Web3AJ extends AWeb3AJ {
             dataSaveHelper.setPreference("ensList", ensListArray.toString());
 
         } catch (JSONException e) {
-            e.printStackTrace();
+            logger.error("", e);
         }
     }
 

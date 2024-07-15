@@ -634,7 +634,8 @@ public class Web3AJ extends AWeb3AJ {
         try {
             domain = contractHLUI.getServiceProviderDomain(item).send();
         } catch (Exception e) {
-            logger.error("No domain found- will be empty string as domain", e);
+            throw new RuntimeException("Error: No domain found from the HLUI contract");
+            // logger.error("No domain found- will be empty string as domain", e);
         }
 
         return domain;
@@ -856,7 +857,7 @@ public class Web3AJ extends AWeb3AJ {
         JSONArray ensListArray;
 
         try {
-            
+
             if (!isNumeric && !item.equals(freeName)) {
                 registerAyala(item, serviceProviderName);
             }

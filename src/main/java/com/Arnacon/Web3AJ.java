@@ -83,8 +83,6 @@ public class Web3AJ extends AWeb3AJ {
             updateWallet(new Wallet());
             dataSaveHelper.setPreference("privateKey", this.wallet.getPrivateKey());
         }
-
-        getFreeProduct();
     }
 
     public String getXData() {
@@ -858,7 +856,7 @@ public class Web3AJ extends AWeb3AJ {
         JSONArray ensListArray;
 
         try {
-
+            
             if (!isNumeric && !item.equals(freeName)) {
                 registerAyala(item, serviceProviderName);
             }
@@ -867,17 +865,6 @@ public class Web3AJ extends AWeb3AJ {
                 ensListArray = new JSONArray(ensListJsonStr);
             } else {
                 ensListArray = new JSONArray();
-            }
-
-            if (item.equals(freeName)) {
-                String alreadyCalled = dataSaveHelper.getPreference(freeName, "nope");
-                if (alreadyCalled.equals("nope")) {
-                    item = freeName;
-                    dataSaveHelper.setPreference(freeName, freeName);
-                } else {
-                    logger.debug("Already have a free product.");
-                    return;
-                }
             }
 
             setItemDomain(item, serviceProviderName);
@@ -889,10 +876,6 @@ public class Web3AJ extends AWeb3AJ {
         } catch (JSONException e) {
             logger.error("", e);
         }
-    }
-
-    private void getFreeProduct() {
-        saveItem(freeName,freeName);
     }
 
 }

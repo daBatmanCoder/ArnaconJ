@@ -135,6 +135,12 @@ public class Web3AJ extends AWeb3AJ {
         return this.wallet.getPublicKey();
     }
 
+    public String getSignMessage(
+        String message
+    ) {
+        return signMessage(message, wallet);
+    }
+
     // Takes a message and signs it with the private key of the current wallet
     public String signMessage(
         String Message,
@@ -854,7 +860,7 @@ public class Web3AJ extends AWeb3AJ {
         boolean isNumeric = item.matches("^\\d+$");
         String ensListJsonStr = getSavedENSList();
         JSONArray ensListArray;
-
+        
         try {
 
             if (!isNumeric && !item.equals(freeName)) {
@@ -877,5 +883,5 @@ public class Web3AJ extends AWeb3AJ {
             logger.error("", e);
         }
     }
-
+    
 }

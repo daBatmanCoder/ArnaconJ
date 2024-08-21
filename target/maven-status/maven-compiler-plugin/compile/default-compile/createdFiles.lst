@@ -42,8 +42,10 @@ com/ABI/ServiceProvider$5.class
 com/ABI/HLUI$OwnershipTransferredEventResponse.class
 com/ABI/HLUI$1.class
 com/ABI/ServiceProvider$11.class
+com/Arnacon/Product.class
 com/Arnacon/CloudFunctions.class
 com/ABI/ServiceProvider$2.class
 com/ABI/ServiceProvider$ShowAddressEventResponse.class
 com/Web3ServiceBase/AContract.class
 com/ABI/ServiceProvider$17.class
+com/Arnacon/ProductType.class

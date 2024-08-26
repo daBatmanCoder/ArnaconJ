@@ -12,6 +12,7 @@ com/ABI/HLUI$7.class
 com/Web3ServiceBase/ADataSaveHelper.class
 com/ABI/ServiceProvider$1.class
 com/ABI/HLUI$6.class
+com/Arnacon/SerializationUtils.class
 com/ABI/ServiceProvider$21.class
 com/ABI/HLUI.class
 com/ABI/ServiceProvider$15.class
@@ -26,6 +27,7 @@ com/ABI/ServiceProvider$AdminChangedEventResponse.class
 com/Arnacon/Config.class
 com/ABI/HLUI$5.class
 com/Web3ServiceBase/AWeb3AJ.class
+com/Arnacon/IUserApprovalListener.class
 com/ABI/ServiceProvider$10.class
 com/ABI/ServiceProvider$9.class
 com/ABI/ServiceProvider$20.class
@@ -33,6 +35,7 @@ com/ABI/ServiceProvider$3.class
 com/ABI/ServiceProvider$ShowENSEventResponse.class
 com/ABI/HLUI$2.class
 com/Arnacon/Wallet.class
+com/Arnacon/IApprovalCallback.class
 com/ABI/ServiceProvider$18.class
 com/Arnacon/CallStateListener.class
 com/ABI/ServiceProvider$6.class

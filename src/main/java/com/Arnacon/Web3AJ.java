@@ -62,11 +62,34 @@ import org.web3j.tx.response.PollingTransactionReceiptProcessor;
 
 public class Web3AJ extends AWeb3AJ {
 
+    private static Web3AJ web3AJ;
     Web3j web3j;
     String freeName = "ANONYMOUS";
     ANetwork network; // Ethereum / Polygon / Binance Smart Chain
+    // private IUserApprovalListener approvalListener;
 
-    public Web3AJ(
+    public static Web3AJ getWeb3AJ(
+        ADataSaveHelper dataSaveHelper,
+        ALogger logger
+    ) {
+        try {
+            String web3Instance = dataSaveHelper.getPreference("web3Instance", null);
+            if(web3Instance == null){
+                web3AJ = new Web3AJ(dataSaveHelper, logger);
+                dataSaveHelper.setPreference("web3Instance", SerializationUtils.serialize(web3AJ));
+                return web3AJ;
+
+            } else{
+                return (Web3AJ)SerializationUtils.deserialize(web3Instance);
+            }
+        } catch (Exception e) {
+            logger.warning(e.toString());
+            throw new RuntimeException("Error: Could not deserialize Web3AJ");
+        }
+        
+    }
+
+    private Web3AJ( 
         ADataSaveHelper dataSaveHelper,
         ALogger logger
     ) {
@@ -83,7 +106,30 @@ public class Web3AJ extends AWeb3AJ {
             updateWallet(new Wallet());
             dataSaveHelper.setPreference("privateKey", this.wallet.getPrivateKey());
         }
+
+        // this.approvalListener = listener;
+
     }
+
+    // public void handleAction(String action) {
+    //     if ("new-item".equals(action)) {
+    //         approvalListener.requestUserApproval(action, new IApprovalCallback() {
+    //             @Override
+    //             public void onApprovalGranted() {
+    //                 processNewItem();
+    //             }
+
+    //             @Override
+    //             public void onApprovalDenied() {
+    //                 logger.debug("not grandted");
+    //             }
+    //         });
+    //     }
+    // }
+
+    // private void processNewItem() {
+    //     logger.debug("granted");
+    // }
 
     public String getXData() {
 
@@ -444,7 +490,7 @@ public class Web3AJ extends AWeb3AJ {
                 logger
         );
     }
-
+    
     public void sendDirectFCM(
             String fcm_token
     ) {
@@ -462,7 +508,8 @@ public class Web3AJ extends AWeb3AJ {
 
         } catch (Exception e) {
 
-            logger.error(fcm_token, e);
+            logger.warning(e.toString());
+
         }
 
     }
@@ -509,7 +556,7 @@ public class Web3AJ extends AWeb3AJ {
 
         } catch (Exception e) {
 
-            logger.error("FCM", e);
+            logger.warning(e.toString());
         }
     }
 

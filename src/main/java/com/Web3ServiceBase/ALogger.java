@@ -10,6 +10,10 @@ public interface ALogger {
         String error, 
         Exception e
     );
+
+    void warning(
+        String error
+    );
     
 }
 

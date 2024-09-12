@@ -33,6 +33,7 @@ public class Network implements ANetwork{
             JSONObject networkConfig    = Utils.getCloudFunctions(logger).getNetwork(networkName);
             this.ENTRY_POINT_URL        = networkConfig.getString("entry_point_url");
             this.CHAIN_ID               = networkConfig.getInt("chain_id");
+            logger.debug(_networkName + " network entry point: " + this.ENTRY_POINT_URL + " chain id: " + this.CHAIN_ID);
 
         } catch (Exception e) {
 

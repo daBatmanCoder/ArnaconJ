@@ -615,16 +615,25 @@ public class Web3AJ extends AWeb3AJ {
     public String getDomain(
         String item
     ) {
+        String serviceProviderOfItem = dataSaveHelper.getPreference(item, "rickrolled");
 
-        if (item.equals(getCurrentProduct())) {
-            return getCurrentItemDomain();
+        if (!serviceProviderOfItem.equals("rickrolled")) {
+            return serviceProviderOfItem;
         }
 
-        boolean isNumeric = item.matches("^\\+?\\d+$");
-        boolean isAsterix = item.matches("^[*#]\\d+$");
+        return "";
+    }
+
+    public String getDomain(
+        String productReceivedTheRequest,
+        String productNeededForDomain
+    ) {
+
+        boolean isNumeric = productNeededForDomain.matches("^\\+?\\d+$");
+        boolean isAsterix = productNeededForDomain.matches("^[*#]\\d+$");
 
         if (isNumeric || isAsterix) {
-            return getRegistrar(getCurrentProduct());
+            return getDomain(productReceivedTheRequest);
         }
 
         Web3j web3j = Web3j.build(new HttpService(this.network.getRPC()));
@@ -640,7 +649,7 @@ public class Web3AJ extends AWeb3AJ {
         String domain = "";
 
         try {
-            domain = contractHLUI.getServiceProviderDomain(item).send();
+            domain = contractHLUI.getServiceProviderDomain(productNeededForDomain).send();
         } catch (Exception e) {
             throw new RuntimeException("Error: No domain found. Will be empty string as domain");
         }
@@ -662,22 +671,7 @@ public class Web3AJ extends AWeb3AJ {
     }
 
     public String getCurrentItemDomain() {
-        return getRegistrar(getCurrentProduct());
-    }
-
-    public String getRegistrar(
-        String item
-    ) {
-
-        logger.debug("Item is: " + item);
-
-        String serviceProviderOfItem = dataSaveHelper.getPreference(item, "rickrolled");
-
-        if (!serviceProviderOfItem.equals("rickrolled")) {
-            return serviceProviderOfItem;
-        }
-
-        return "";
+        return getDomain(getCurrentProduct());
     }
 
     public String getCurrentProduct() {

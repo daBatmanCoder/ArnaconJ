@@ -624,7 +624,7 @@ public class Web3AJ extends AWeb3AJ {
         boolean isAsterix = item.matches("^[*#]\\d+$");
 
         if (isNumeric || isAsterix) {
-            return getItemDomain(getCurrentProduct());
+            return getRegistrar(getCurrentProduct());
         }
 
         Web3j web3j = Web3j.build(new HttpService(this.network.getRPC()));
@@ -662,10 +662,10 @@ public class Web3AJ extends AWeb3AJ {
     }
 
     public String getCurrentItemDomain() {
-        return getItemDomain(getCurrentProduct());
+        return getRegistrar(getCurrentProduct());
     }
 
-    public String getItemDomain(
+    public String getRegistrar(
         String item
     ) {
 

@@ -3,7 +3,7 @@ package com.Arnacon;
 public class Config {
 
     private static final String DEFAULT_NETWORK_NAME    = "amoy";
-    private static final String DEFAULT_ENTRY_POINT_URL = "https://polygon-amoy-bor-rpc.publicnode.com";
+    private static final String DEFAULT_ENTRY_POINT_URL = "https://rpc-amoy.polygon.technology";
     private static final String DEFAULT_FUNCTIONS_URL   = "https://us-central1-arnacon-nl.cloudfunctions.net/Functions";
     private static final String PAYMENT_DEEPLINK_OK     = "https://success-java.vercel.app/";
     private static final String PAYMENT_DEEPLINK_NOK    = "https://failure-java.vercel.app/";

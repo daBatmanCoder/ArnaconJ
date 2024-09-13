@@ -484,7 +484,7 @@ public class Web3AJ extends AWeb3AJ {
 
             while (ensJsonString.isEmpty()) {
 
-                ensJsonString = getENS();
+                ensJsonString = getENSList();
                 if (ensJsonString == null) {
                     ensJsonString = "";
                 }
@@ -545,6 +545,7 @@ public class Web3AJ extends AWeb3AJ {
         }
     }
 
+
     public void registerAyala(
         String userENS, 
         String serviceProviderName
@@ -572,7 +573,7 @@ public class Web3AJ extends AWeb3AJ {
         dataSaveHelper.setPreference("serviceProviderName", serviceProviderName);
     }
 
-    public String getENS() {
+    public String getENSList() {
 
         String ensList = getSavedENSList();
 
@@ -848,6 +849,20 @@ public class Web3AJ extends AWeb3AJ {
         }
     }
 
+    public String getProductURL(
+        String product
+    ) {
+        String productURLKey = product + "_URL";
+        return dataSaveHelper.getPreference(productURLKey, "");
+    }
+
+    public String getProductState(
+        String product
+    ) {
+        String productStateKey = product + "_State";
+        return dataSaveHelper.getPreference(productStateKey, "");
+    }
+
     public void saveItem(
         String item, 
         String serviceProviderName
@@ -876,6 +891,50 @@ public class Web3AJ extends AWeb3AJ {
             dataSaveHelper.setPreference("ensList", ensListArray.toString());
 
         } catch (JSONException e) {
+            logger.error("", e);
+        }
+    }
+
+    public void installProduct(String product, String urlOfInstallation){
+        try {
+            // URL to fetch the content from
+            String urlString = "https://orange-acceptable-mouse-528.mypinata.cloud/ipfs/QmWdmEZJXq1vGuc6UdCfwfFRMTGTa3FwUeDCveX9vcjkis";
+            URL url = new URL(urlString);
+            
+            // Open connection
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("GET");
+            
+            // Read response
+            BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            String inputLine;
+            StringBuilder content = new StringBuilder();
+            
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine);
+            }
+            
+            // Close connections
+            in.close();
+            conn.disconnect();
+            
+            // Convert the response to a JSON object
+            JSONObject json = new JSONObject(content.toString());
+            
+            // Extract fields
+            String serviceProvider = json.getString("serviceProvider");
+            String urlField = json.getString("url");
+            String productState = json.getString("productState");
+
+            saveItem(product, serviceProvider);
+
+            String productURLKey = product + "_URL";
+            dataSaveHelper.setPreference(productURLKey, urlField);
+
+            String productStateKey = product + "_State";
+            dataSaveHelper.setPreference(productStateKey, productState);
+
+        } catch (Exception e) {
             logger.error("", e);
         }
     }

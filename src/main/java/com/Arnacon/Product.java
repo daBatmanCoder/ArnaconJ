@@ -7,6 +7,8 @@ public class Product {
     // private String serviceProvider;
     private ProductType state; // PORTING // Status 
     private String  type; // ENS/ GSM/ FREE...
+    private String  url; // ENS/ GSM/ FREE...
+
 
     // private String alias;
     // private String description;
@@ -43,6 +45,9 @@ public class Product {
         return type;
     }
     
+    public String fetchURL(){
+        return url;
+    }
 
     // public String getAlias() {
     //     return alias;

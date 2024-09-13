@@ -898,8 +898,7 @@ public class Web3AJ extends AWeb3AJ {
     public void installProduct(String product, String urlOfInstallation){
         try {
             // URL to fetch the content from
-            String urlString = "https://orange-acceptable-mouse-528.mypinata.cloud/ipfs/QmWdmEZJXq1vGuc6UdCfwfFRMTGTa3FwUeDCveX9vcjkis";
-            URL url = new URL(urlString);
+            URL url = new URL(urlOfInstallation);
             
             // Open connection
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
